@@ -70,9 +70,8 @@ interface CreateUserOptions {
   password: string
   username: string
 }
-export function createUser(user: CreateUserOptions) {
+export function createUser(db: BunSQLiteDatabase, user: CreateUserOptions) {
   if (!isValidEmail(user.email)) {
     throw new Error("Invalid email")
   }
-
 }
