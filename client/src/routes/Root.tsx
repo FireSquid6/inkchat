@@ -1,7 +1,8 @@
+
 export function Root() {
   return (
-    <div>
-      <p>Hello world!</p>
+    <div class="flex">
+      <a href="/auth">Login to a Server</a>
     </div>
   )
 }
