@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/core": "^6.1.0",
     "solid-js": "^1.8.15"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.1.0",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-solid": "^2.10.2"
