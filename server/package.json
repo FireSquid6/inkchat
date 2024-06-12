@@ -1,1 +1,18 @@
-{ "dependencies": { "@elysiajs/eden": "^1.0.14", "lucia": "^3.2.0" } }
+{
+  "name": "server",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.0.2",
+    "@elysiajs/eden": "^1.0.14",
+    "drizzle": "^1.4.0",
+    "elysia": "^1.0.23",
+    "lucia": "^3.2.0"
+  }
+}
