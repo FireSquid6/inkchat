@@ -1,9 +1,14 @@
+import { Router, Route } from "@solidjs/router"
+import { Root } from "./routes/Root";
+import { Layout } from "./Layout";
 
 function App() {
   return (
-    <>
-      <p class="text-2xl">Hello world!</p>
-    </>
+    <Layout>
+      <Router>
+        <Route path="/" component={Root}/>
+      </Router>
+    </Layout>
   )
 }
 
