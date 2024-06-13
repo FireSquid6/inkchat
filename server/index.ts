@@ -1,5 +1,4 @@
 import Elysia from "elysia";
-import type { Logger } from "./lib/logger";
 import { cors } from "@elysiajs/cors";
 
 
