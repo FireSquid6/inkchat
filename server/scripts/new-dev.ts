@@ -1,4 +1,4 @@
-import { startDevApp } from "@/setups"
+import { startDevApp } from "@/setups.ts"
 
 
 startDevApp(true)

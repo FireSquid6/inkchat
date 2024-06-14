@@ -5,7 +5,9 @@ import fs from "fs"
 
 
 export function startEphemeralApp(doSeed: boolean = false) {
-  deleteFolderIfExists("store/ephemeral")
+  deleteDirectoryIfExists("store/ephemeral")
+  ensureDirectoryExists("store/ephemeral")
+
   const config: AppConfig = {
     storeDir: "store/ephemeral",
     port: 3000,
@@ -22,6 +24,8 @@ export function startEphemeralApp(doSeed: boolean = false) {
 }
 
 export function startProductionApp() {
+  ensureDirectoryExists("store/prod")
+
   const config: AppConfig = {
     storeDir: "store/prod",
     port: 80,
@@ -36,6 +40,8 @@ export function startProductionApp() {
 
 
 export function startDevApp(reset: boolean = false) {
+  ensureDirectoryExists("store/dev")
+
   const config: AppConfig = {
     storeDir: "store/dev",
     port: 3000,
@@ -46,15 +52,23 @@ export function startDevApp(reset: boolean = false) {
 
 
   if (reset) {
-    deleteFolderIfExists("store/dev")
+    deleteDirectoryIfExists("store/dev")
+    ensureDirectoryExists("store/dev")
     seed(db)
   }
 
   return startApp(config, db) 
 }
 
-function deleteFolderIfExists(folder: string) {
-  if (fs.existsSync(folder)) {
-    fs.rmdirSync(folder, { recursive: true })
+function deleteDirectoryIfExists(directory: string) {
+  if (fs.existsSync(directory)) {
+    fs.rmdirSync(directory, { recursive: true })
+  }
+}
+
+
+function ensureDirectoryExists(directory: string) {
+  if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true })
   }
 }

@@ -13,7 +13,9 @@ export function getDb(filepath: string) {
 
 
 export function migrateDb(db: ReturnType<typeof getDb>) {
+  console.log("Migrating database...")
   migrate(db, { migrationsFolder: "drizzle" })
+  console.log("Database initialized!")
 }
 
 
