@@ -1,7 +1,9 @@
 import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
-import { Lucia } from "lucia"
+import { Lucia, generateIdFromEntropySize } from "lucia"
 import { sessionTable, userTable } from "./schema";
+import { hash } from "@node-rs/argon2";
+import { getDb } from "./db";
 
 
 export function getAuth(db: BunSQLiteDatabase) {
@@ -18,7 +20,7 @@ export function getAuth(db: BunSQLiteDatabase) {
       }
     }
   })
-} 
+}
 
 
 declare module "lucia" {
@@ -31,8 +33,8 @@ declare module "lucia" {
 }
 
 
-export function isValidEmail(email: string) {
-  return /.+@.+/.test(email)
+export function isValidUsername(username: string) {
+  return /^[a-zA-Z0-9_]+$/.test(username)
 }
 
 export function isValidPassword(password: string) {
@@ -65,13 +67,35 @@ export function isValidPassword(password: string) {
 }
 
 
-interface CreateUserOptions {
-  email: string
-  password: string
-  username: string
-}
-export function createUser(db: BunSQLiteDatabase, user: CreateUserOptions) {
-  if (!isValidEmail(user.email)) {
-    throw new Error("Invalid email")
+// todo: define a "kit" interface with the db, auth, logger, etc
+export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnType<typeof getDb>, username: string, password: string): Promise<{ code: number, message: string }> {
+  if (!isValidUsername(username)) {
+    return { code: 400, message: "Invalid username" }
   }
+
+  if (!isValidPassword(password)) {
+    return { code: 400, message: "Invalid password" }
+  }
+
+  const passwordHash = await hash(password, {
+    // recommended minimum parameters
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1
+  });
+  const userId = generateIdFromEntropySize(32)
+
+  try {
+    await db.insert(userTable).values({
+      id: userId,
+      username,
+      passwordHash,
+    })
+  } catch (e) {
+    console.error(e)
+    return { code: 500, message: "Failed to create user" }
+  }
+
+  return { code: 200, message: "User created" }
 }

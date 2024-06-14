@@ -1,4 +1,4 @@
-import type { AppConfig } from ".."
+import type { AppConfig } from "."
 
 // the appConfig will be used later at some point
 export function makeLoggerManager(_: AppConfig) {

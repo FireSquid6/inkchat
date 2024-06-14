@@ -20,7 +20,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"]
     }
   }
 }
