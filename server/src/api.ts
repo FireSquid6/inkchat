@@ -6,7 +6,7 @@ import { Kit } from ".";
 export const app = new Elysia()
   .use(cors())
 
-  // these states are deliberately left empty. They are set by startApp
+  // this is deliberately left empty. It is set whenever startApp() is called
   .state("kit", {} as Kit)
 
   .get("/", () => {
@@ -16,9 +16,8 @@ export const app = new Elysia()
     // TODO: users should only be able to sign up if they have a specific code to do so
     // TODO: santize inputs to prevent XSS or SQL injection
     const { password, username } = ctx.body
-    const kit  = ctx.store.kit
 
-    const { code, message, cookie } = await createUser(kit, username, password)
+    const { code, message, cookie } = await createUser(ctx.store.kit, username, password)
 
     ctx.set.status = code
     if (cookie != "") {
@@ -33,11 +32,12 @@ export const app = new Elysia()
   })
   .post("/auth/login", async (ctx) => {
     // TODO: implement throttling
+    const { username, password } = ctx.body
 
 
   }, {
     body: t.Object({
-      email: t.String(),
+      username: t.String(),
       password: t.String(),
     })
   })
