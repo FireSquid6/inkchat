@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { createUser, getAuth, isValidEmail, isValidPassword } from "./auth";
+import { createUser, getAuth, isValidPassword } from "./auth";
 import { makeLoggerManager } from "./logger";
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";

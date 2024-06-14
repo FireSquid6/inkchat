@@ -86,16 +86,16 @@ export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnTyp
   });
   const userId = generateIdFromEntropySize(32)
 
-  try {
-    await db.insert(userTable).values({
-      id: userId,
-      username,
-      passwordHash,
-    })
-  } catch (e) {
-    console.error(e)
-    return { code: 500, message: "Failed to create user" }
-  }
+  // try {
+  //   await db.insert(userTable).values({
+  //     id: userId,
+  //     username,
+  //     passwordHash,
+  //   })
+  // } catch (e) {
+  //   console.error(e)
+  //   return { code: 500, message: "Failed to create user" }
+  // }
 
   return { code: 200, message: "User created" }
 }
