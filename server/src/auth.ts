@@ -68,13 +68,13 @@ export function isValidPassword(password: string) {
 
 
 // todo: define a "kit" interface with the db, auth, logger, etc
-export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnType<typeof getDb>, username: string, password: string): Promise<{ code: number, message: string }> {
+export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnType<typeof getDb>, username: string, password: string): Promise<{ code: number, message: string, cookie: string }> {
   if (!isValidUsername(username)) {
-    return { code: 400, message: "Invalid username" }
+    return { code: 400, message: "Invalid username", cookie: "" }
   }
 
   if (!isValidPassword(password)) {
-    return { code: 400, message: "Invalid password" }
+    return { code: 400, message: "Invalid password", cookie: "" }
   }
 
   const passwordHash = await hash(password, {
@@ -86,16 +86,31 @@ export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnTyp
   });
   const userId = generateIdFromEntropySize(32)
 
-  // try {
-  //   await db.insert(userTable).values({
-  //     id: userId,
-  //     username,
-  //     passwordHash,
-  //   })
-  // } catch (e) {
-  //   console.error(e)
-  //   return { code: 500, message: "Failed to create user" }
-  // }
+  let cookie = ""
+  try {
+    await db.insert(userTable).values({
+      id: userId,
+      username,
+      password: passwordHash,
+    })
+    // TODO: standardize how long sesions last
+    const session = await createSession(auth, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
+    const cookieObj = auth.createSessionCookie(session.id)
+    cookie = cookieObj.serialize()
 
-  return { code: 200, message: "User created" }
+  } catch (e) {
+    console.error(e)
+    return { code: 500, message: "Failed to create user", cookie: "" }
+  }
+
+  return { code: 200, message: "User created", cookie: "" }
+}
+
+
+export async function createSession(auth: ReturnType<typeof getAuth>, userId: string, expiresAt: number) {
+  return await auth.createSession(userId, expiresAt)
+}
+
+
+export async function signIn(auth: ReturnType<typeof getAuth>, username: string, password: string) {
 }

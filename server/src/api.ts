@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { createUser, getAuth, isValidPassword } from "./auth";
+import { createUser, getAuth } from "./auth";
 import { makeLoggerManager } from "./logger";
 import { Elysia, t } from "elysia";
 import { cors } from "@elysiajs/cors";
@@ -23,9 +23,12 @@ export const app = new Elysia()
     const { password, username } = ctx.body
     const { auth, db } = ctx.store
 
-    const { code, message } = await createUser(auth, db, username, password)
+    const { code, message, cookie } = await createUser(auth, db, username, password)
 
     ctx.set.status = code
+    if (cookie != "") {
+      ctx.headers["Set-Cookie"] = cookie
+    }
     return message
   }, {
     body: t.Object({
