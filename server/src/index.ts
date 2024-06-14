@@ -19,16 +19,18 @@ export interface Kit {
   config: AppConfig
 }
 
-export function startApp(config: AppConfig, db: ReturnType<typeof getDb>) {
+export function startApp(config: AppConfig, db: ReturnType<typeof getDb>): Kit {
   const auth = getAuth(db)
   const loggerManager = makeLoggerManager(config)
 
-  app.store.kit = {
-    config,
+  const kit: Kit = {
+    logger: loggerManager,
     db,
     auth,
-    logger: loggerManager,
+    config,
   }
+
+  app.store.kit = kit
 
 
   app.listen(config.port, () => {
@@ -36,7 +38,7 @@ export function startApp(config: AppConfig, db: ReturnType<typeof getDb>) {
   })
 
 
-  return { db, auth, app }
+  return kit
 }
 
 

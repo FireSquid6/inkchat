@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { faker } from "@faker-js/faker"
 import { userTable } from "@/schema";
+import type { Kit } from ".";
+import { eq } from "drizzle-orm";
 
 export function getDb(filepath: string) {
   const sqlite = new Database(filepath);
@@ -26,6 +28,7 @@ interface SeedOptions {
 export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = {
   users: 10
 }) {
+  console.log("Seeding database...")
   for (let i = 0; i < options.users; i++) {
     db.insert(userTable).values({
       id: faker.string.uuid(),
@@ -33,4 +36,18 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
       password: faker.internet.password(),
     })
   }
+}
+
+
+export async function getUserWithUsername(kit: Kit, username: string) {
+  const users = await kit.db.select().from(userTable).where(eq(userTable.username, username))
+  if (users.length === 0) {
+    return null
+  }
+
+  if (users.length > 1) {
+    throw new Error("Multiple users with the same username. How'd you screw this up?")
+  }
+
+  return users[0]
 }

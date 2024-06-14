@@ -3,8 +3,7 @@ import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { Lucia, generateIdFromEntropySize } from "lucia"
 import { sessionTable, userTable } from "./schema";
 import { hash } from "@node-rs/argon2";
-import { getDb } from "./db";
-import { Kit } from ".";
+import type { Kit } from ".";
 
 
 export function getAuth(db: BunSQLiteDatabase) {
@@ -91,11 +90,17 @@ export async function createUser(kit: Kit, username: string, password: string): 
 
   let cookie = ""
   try {
-    await db.insert(userTable).values({
-      id: userId,
-      username,
+    console.log(username, passwordHash, userId)
+    await db.insert(userTable).values([{
+      id: userId, 
       password: passwordHash,
-    })
+      username: username,
+    }])
+
+    const check = await db.select().from(userTable)
+    console.log(check)
+
+
     // TODO: standardize how long sesions last
     const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
     const cookieObj = auth.createSessionCookie(session.id)

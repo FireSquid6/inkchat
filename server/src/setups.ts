@@ -10,7 +10,7 @@ export function startEphemeralApp(doSeed: boolean = false) {
 
   const config: AppConfig = {
     storeDir: "store/ephemeral",
-    port: 3000,
+    port: 3001,
   }
 
   const db = getDb(":memory:")
@@ -32,7 +32,7 @@ export function startProductionApp() {
   }
 
 
-  const db = getDb("store/prod/db")
+  const db = getDb("store/prod/db.sqlite")
   migrateDb(db)
 
   return startApp(config, db)
@@ -47,17 +47,24 @@ export function startDevApp(reset: boolean = false) {
     port: 3000,
   }
 
-  const db = getDb("store/dev/db")
-  migrateDb(db)
+
 
 
   if (reset) {
     deleteDirectoryIfExists("store/dev")
-    ensureDirectoryExists("store/dev")
+
+
+  }
+
+  ensureDirectoryExists("store/dev")
+
+  const db = getDb("store/dev/db.sqlite")
+  migrateDb(db)
+  if (reset) {
     seed(db)
   }
 
-  return startApp(config, db) 
+  return startApp(config, db)
 }
 
 function deleteDirectoryIfExists(directory: string) {
