@@ -19,6 +19,7 @@ const app = new Elysia()
     port: 3000,
     storeDir: "./data"
   } as AppConfig)
+
   .state("db", {} as ReturnType<typeof getDb>)
   .state("auth", {} as ReturnType<typeof getAuth>)
   .state("logger", {} as ReturnType<typeof makeLoggerManager>)
@@ -29,6 +30,16 @@ const app = new Elysia()
   })
 
 
+
+// helper function to save some annoying keystrokes
+function destructureContext(ctx: (typeof app)) {
+  return {
+    db: ctx.store.db,
+    auth: ctx.store.auth,
+    logger: ctx.store.logger,
+    config: ctx.store.config,
+  }
+}
 
 export function startApp(config: AppConfig) {
   const db = getDb(config.storeDir)
