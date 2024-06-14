@@ -1,4 +1,4 @@
-import { App } from "server";
+import { App } from "inkchat-server";
 import { treaty } from "@elysiajs/eden"
 
 
