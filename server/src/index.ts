@@ -4,6 +4,7 @@ import { makeLoggerManager } from "./logger";
 import { app } from "./api";
 
 
+// TODO: config factory
 export interface AppConfig {
   port: number
   storeDir: string
@@ -18,8 +19,7 @@ export interface Kit {
   config: AppConfig
 }
 
-export function startApp(config: AppConfig) {
-  const db = getDb(config.storeDir)
+export function startApp(config: AppConfig, db: ReturnType<typeof getDb>) {
   const auth = getAuth(db)
   const loggerManager = makeLoggerManager(config)
 
@@ -38,6 +38,7 @@ export function startApp(config: AppConfig) {
 
   return { db, auth, app }
 }
+
 
 
 export type App = typeof app;

@@ -4,8 +4,8 @@ import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { faker } from "@faker-js/faker"
 import { userTable } from "@/schema";
 
-export function getDb(storeDirectory: string) {
-  const sqlite = new Database(storeDirectory + "/db.sqlite");
+export function getDb(filepath: string) {
+  const sqlite = new Database(filepath);
   const db = drizzle(sqlite);
 
   return db

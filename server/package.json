@@ -7,7 +7,11 @@
     "drizzle-kit": "^0.22.7"
   },
   "scripts": {
-    "dev": "bun run scripts/start.ts"
+    "dev": "bun run scripts/dev.ts",
+    "new-dev": "bun run scripts/new-dev.ts",
+    "ephemeral": "bun run scripts/ephemeral.ts",
+    "prod": "bun run scripts/prod.ts",
+    "generate": "bunx drizzle-kit generate"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"

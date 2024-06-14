@@ -17,4 +17,4 @@ There are three main packages:
 
 
 ## Setup
-Just run the `setup.sh` script to set up package linking and install all of your packages
+Just run the `setup.sh` script to set up package linking and install all of your packages. Specific setups for each package are in their respective README's.
