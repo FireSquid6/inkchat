@@ -4,6 +4,7 @@ import { Lucia, generateIdFromEntropySize } from "lucia"
 import { sessionTable, userTable } from "./schema";
 import { hash } from "@node-rs/argon2";
 import { getDb } from "./db";
+import { Kit } from ".";
 
 
 export function getAuth(db: BunSQLiteDatabase) {
@@ -68,7 +69,9 @@ export function isValidPassword(password: string) {
 
 
 // todo: define a "kit" interface with the db, auth, logger, etc
-export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnType<typeof getDb>, username: string, password: string): Promise<{ code: number, message: string, cookie: string }> {
+export async function createUser(kit: Kit, username: string, password: string): Promise<{ code: number, message: string, cookie: string }> {
+  const { auth, db } = kit
+
   if (!isValidUsername(username)) {
     return { code: 400, message: "Invalid username", cookie: "" }
   }
@@ -94,7 +97,7 @@ export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnTyp
       password: passwordHash,
     })
     // TODO: standardize how long sesions last
-    const session = await createSession(auth, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
+    const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
     const cookieObj = auth.createSessionCookie(session.id)
     cookie = cookieObj.serialize()
 
@@ -107,7 +110,7 @@ export async function createUser(auth: ReturnType<typeof getAuth>, db: ReturnTyp
 }
 
 
-export async function createSession(auth: ReturnType<typeof getAuth>, userId: string, expiresAt: number) {
+export async function createSession({ auth }: Kit, userId: string, expiresAt: number) {
   return await auth.createSession(userId, expiresAt)
 }
 
