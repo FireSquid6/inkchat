@@ -32,6 +32,9 @@ declare module "lucia" {
   }
 }
 
+export function signOut(kit: Kit, userId: string) {
+  return kit.auth.invalidateUserSessions(userId)
+}
 
 export function isValidUsername(username: string) {
   return /^[a-zA-Z0-9_]+$/.test(username)
@@ -68,16 +71,8 @@ export function isValidPassword(password: string) {
 
 
 // todo: define a "kit" interface with the db, auth, logger, etc
-export async function createUser(kit: Kit, username: string, password: string): Promise<{ code: number, message: string, cookie: string }> {
-  const { auth, db } = kit
-
-  if (!isValidUsername(username)) {
-    return { code: 400, message: "Invalid username", cookie: "" }
-  }
-
-  if (!isValidPassword(password)) {
-    return { code: 400, message: "Invalid password", cookie: "" }
-  }
+export async function createUser(kit: Kit, username: string, password: string): Promise<string> {
+  const { db } = kit
 
   const passwordHash = await hash(password, {
     // recommended minimum parameters
@@ -88,30 +83,26 @@ export async function createUser(kit: Kit, username: string, password: string): 
   });
   const userId = generateIdFromEntropySize(32)
 
-  let cookie = ""
+  let token = ""
   try {
-    console.log(username, passwordHash, userId)
     await db.insert(userTable).values([{
-      id: userId, 
+      id: userId,
       password: passwordHash,
       username: username,
     }])
 
-    const check = await db.select().from(userTable)
-    console.log(check)
-
+    kit.logger.log(`User created: ${username}`)
 
     // TODO: standardize how long sesions last
     const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
-    const cookieObj = auth.createSessionCookie(session.id)
-    cookie = cookieObj.serialize()
+    token = session.id
 
   } catch (e) {
     console.error(e)
-    return { code: 500, message: "Failed to create user", cookie: "" }
+    return ""
   }
 
-  return { code: 200, message: "User created", cookie: "" }
+  return token
 }
 
 
