@@ -1,7 +1,8 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { createUser } from "@/auth";
-import { isValidPassword, isValidUsername } from "@/auth";
+import { isValidPassword, isValidUsername, verifyPassword, createSession } from "@/auth";
+import { getUserWithUsername } from "@/db";
 
 export const unprotectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)
@@ -9,7 +10,6 @@ export const unprotectedAuthApi = (app: Elysia) => app
     // TODO: users should only be able to sign up if they have a specific code to do so
     // TODO: santize inputs to prevent XSS or SQL injection
     const { password, username } = ctx.body
-
     if (!isValidUsername(username)) {
       ctx.set.status = 400
       return { message: "Invalid username", token: "" }
@@ -36,11 +36,45 @@ export const unprotectedAuthApi = (app: Elysia) => app
       username: t.String(),
     })
   })
+  // TODO: implement throttling
+  .post("/auth/signin", async (ctx) => {
+    const { username, password } = ctx.body
+    const user = await getUserWithUsername(ctx.store.kit, username)
 
+    if (!user) {
+      ctx.set.status = 400
+      return {
+        message: "Invalid username or password",
+        token: ""
+      }
+    }
+
+    const passwordValid = await verifyPassword(password, user.password)
+    if (!passwordValid) {
+      ctx.set.status = 400
+      return {
+        message: "Invalid username or password",
+        token: ""
+      }
+    }
+
+    const session = await createSession(ctx.store.kit, user.id, Date.now() + 1000 * 60 * 60 * 24 * 30)
+
+    ctx.set.status = 200
+    return {
+      message: "Logged in successfully",
+      token: session.id
+    }
+  }, {
+    body: t.Object({
+      username: t.String(),
+      password: t.String(),
+    })
+  })
 
 export const protectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)
-  .post("/auth/logout", async (ctx) => {
+  .post("/auth/signout", async (ctx) => {
     const { auth } = ctx.store.kit
 
     await auth.invalidateUserSessions(ctx.user!.id)
@@ -50,14 +84,4 @@ export const protectedAuthApi = (app: Elysia) => app
       message: "Logged out. All sessions invalidated."
     }
   })
-  .post("/auth/login", async (ctx) => {
-    // TODO: implement throttling
-    const { username, password } = ctx.body
 
-
-  }, {
-    body: t.Object({
-      username: t.String(),
-      password: t.String(),
-    })
-  })

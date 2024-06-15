@@ -51,11 +51,11 @@ export const kitPlugin = (app: Elysia) => app
   })
 
 export const app = new Elysia()
+  // up here is unprotected! No auth required
   .use(cors())
   .use(kitPlugin)
   .use(unprotectedAuthApi)
 
-  // protected routes
   .guard({
     async beforeHandle(ctx) {
       if (!ctx.token) {
@@ -80,6 +80,7 @@ export const app = new Elysia()
       }
     }
   }, (app) => app
+    // anything down here is protected
     .use(protectedAuthApi)
 
   )

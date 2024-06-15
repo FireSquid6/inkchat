@@ -29,7 +29,7 @@ test("signup and signin flow", async () => {
   expect(sessionResult.length).toBe(1)
   expect(sessionResult[0].id).toBe(res.data?.token!)
 
-  const res2 = await api.auth.logout.post({}, {
+  const res2 = await api.auth.signout.post({}, {
     headers: {
       Authorization: `Bearer ${res.data?.token}`
     }
@@ -44,8 +44,14 @@ test("signup and signin flow", async () => {
 
 
   // log in
-  const res3 = await api.auth.login.post({
+  const res3 = await api.auth.signin.post({
     username: "testuser",
     password: "teStp@ssw0rd"
   })
-})
+
+  expect(res3.status).toBe(200)
+  expect(res3.data?.token).toBeDefined()
+
+  const sessionResult3 = await db.select().from(sessionTable).where(eq(sessionTable.userId, userResult[0].id))
+  expect(sessionResult3.length).toBe(1)
+  expect(sessionResult3[0].id).toBe(res3.data?.token!) })

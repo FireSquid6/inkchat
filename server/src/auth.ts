@@ -2,7 +2,7 @@ import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { Lucia, generateIdFromEntropySize } from "lucia"
 import { sessionTable, userTable } from "./schema";
-import { hash } from "@node-rs/argon2";
+import { hash, verify } from "@node-rs/argon2";
 import type { Kit } from ".";
 
 
@@ -30,6 +30,17 @@ declare module "lucia" {
       email: string
     }
   }
+}
+
+export async function verifyPassword(password: string, storedHash: string) {
+	const validPassword = await verify(storedHash, password, {
+		memoryCost: 19456,
+		timeCost: 2,
+		outputLen: 32,
+		parallelism: 1
+	});
+
+  return validPassword
 }
 
 export function signOut(kit: Kit, userId: string) {
