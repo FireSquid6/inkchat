@@ -18,16 +18,19 @@ export const connectionApi = (app: Elysia) => app
     },
     message: (ws, message) => {
       const processor = ws.data.store.processor
-      const newMessage = processor.processMessage(ws.data.store.kit, message, ws.id)
+      const { response, error } = processor.processMessage(ws.data.store.kit, message, ws.id)
 
-      if (newMessage === null) {
-        return
-      }
 
       // you would think that publish would send it to every subscriber, but it sends it to every subscriber but the current client
-      ws.send(newMessage)
-      ws.publish(wsChannelName, newMessage)
+      if (response != "") {
+        ws.send(response)
+        ws.publish(wsChannelName, response)
+      }
+      if (error != "") {
+        ws.send(error)
+      }
     },
+
     close: (ws) => {
       // not sure if this is necessary but it can't hurt
       ws.unsubscribe(wsChannelName)
