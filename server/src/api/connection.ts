@@ -12,12 +12,17 @@ export const connectionApi = (app: Elysia) => app
   .ws("/socket", {
     body: t.String(),
     open: (ws) => {
+      // TODO: only let people who authenticate connect
       ws.subscribe(wsChannelName)
       ws.data.store.processor.addClient(ws.id)
     },
     message: (ws, message) => {
       const processor = ws.data.store.processor
       const newMessage = processor.processMessage(ws.data.store.kit, message, ws.id)
+
+      if (newMessage === null) {
+        return
+      }
 
       // you would think that publish would send it to every subscriber, but it sends it to every subscriber but the current client
       ws.send(newMessage)

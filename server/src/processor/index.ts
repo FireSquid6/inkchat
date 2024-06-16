@@ -12,7 +12,9 @@ export class MessageProcessor {
     // TODO
   }
 
-  processMessage(kit: Kit, message: string, senderId: string): string {
+  // TODO: better error handling. If it's an error, we should only send the response message to the client that sent it
+  processMessage(kit: Kit, message: string, senderId: string): string | null {
+    // if the sender has not been authenticated or connected, just return nothing 
     return message
   }
 
