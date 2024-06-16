@@ -1,4 +1,5 @@
-import { startApp, type AppConfig } from "@/index"
+import { startApp } from "@/index"
+import type { AppConfig } from "@/config"
 import { getDb, migrateDb, seed } from "@/db"
 import fs from "fs"
 
