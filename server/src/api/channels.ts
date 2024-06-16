@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { channelTable, messageTable } from "@/schema"
-import { eq, and, gt } from "drizzle-orm"
+import { eq, and, lte } from "drizzle-orm"
 
 
 
@@ -48,7 +48,7 @@ export const channelsApi = (app: Elysia) => app
     const messages = await db
       .select()
       .from(messageTable)
-      .where(and(eq(messageTable.channelId, ctx.params.id), gt(messageTable.createdAt, before)))
+      .where(and(eq(messageTable.channelId, ctx.params.id), lte(messageTable.createdAt, before)))
       .orderBy(messageTable.createdAt)
       .limit(last)
 

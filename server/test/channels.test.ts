@@ -27,22 +27,23 @@ test("channels routes", async () => {
   }]
 
 
-  // generate 400 random messages for each channel
-  // we don't actually care if the userIds mean anything for this test
+
   const messages = []
   
   // just a quick veritifcation of our assumption that the current unix time is not in the 70s
-  if (Date.now() <= 400) {
+  if (Date.now() <= 50) {
     throw new Error("You are in the 70s. What happened?")
   }
+
   for (const channel of channels) {
-    for (let i = 0; i < 400; i++) {
-      // TODO: make each message happen later than the previous one
+    for (let i = 0; i < 50; i++) {
       messages.push({
         id: faker.string.uuid(),
+        // we don't actually care if the userIds mean anything for this test
         userId: faker.string.uuid(),
-        content: faker.lorem.paragraph(),
-        createdAt: Date.now(),
+        content: faker.hacker.phrase(),
+        // this means that messages[0] will be the newest message while messages[399] will be the oldest
+        createdAt: Date.now() - i,
         channelId: channel.id,
       })
     }
@@ -66,4 +67,30 @@ test("channels routes", async () => {
   })
   expect(channelRes.status).toBe(200)
   expect(channelRes.data).toEqual(channels[0])
+
+
+  const expectedMessages = []
+
+  for (const message of messages) {
+    if (message.channelId === channels[0].id) {
+      expectedMessages.push(message)
+    }
+  }
+  expectedMessages.sort((a, b) => a.createdAt - b.createdAt)
+
+
+  const messagesRes = await api.channels({ id: channels[0].id}).messages.get({
+    headers: {
+      Authorization: `Bearer ${session.id}`
+    },
+    query: {
+      last: 5,
+      before: Date.now()
+    }
+  })
+
+  expect(messagesRes.status).toBe(200)
+  console.log(messagesRes.data)
+  console.log(expectedMessages.slice(0, 5))
+  expect(messagesRes.data).toEqual(expectedMessages.slice(0, 5))
 })
