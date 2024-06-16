@@ -5,7 +5,7 @@ import { eq, and, gt } from "drizzle-orm"
 
 
 
-export const chatApi = (app: Elysia) => app
+export const channelsApi = (app: Elysia) => app
   .use(kitPlugin)
   .get("/channels/:id", async (ctx) => {
     const { db } = ctx.store.kit

@@ -4,7 +4,7 @@ import type { Kit } from "@/index";
 import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import type { User } from "lucia";
 import { Logestic } from "logestic";
-
+import { channelsApi } from "@/api/channels";
 
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
@@ -87,5 +87,5 @@ export const app = new Elysia()
   }, (app) => app
     // anything down here is protected
     .use(protectedAuthApi)
-
+    .use(channelsApi)
   )
