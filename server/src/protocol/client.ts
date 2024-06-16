@@ -1,19 +1,19 @@
 import type { Message, MessageHandler } from ".";
 
-export type ClientMessageKind =
+export type MessageKind =
   "CONNECT" | "CHAT" | "UNKOWN"
 
 
-export function doForClientMessage<ReturnType>(msg: Message, map: Map<ClientMessageKind, MessageHandler<ReturnType>>): ReturnType | Error {
+export function doForMessage<ReturnType>(msg: Message, map: Map<MessageKind, MessageHandler<ReturnType>>): ReturnType | Error {
   if (!map.has("UNKOWN")) {
     throw Error("Passed map has to have a handler for an unkown message")
   }
 
   // we know this won't be null because we just checked earlier
   let handler: MessageHandler<ReturnType> = map.get("UNKOWN")!
-  if (map.has(msg.kind as ClientMessageKind)) {
+  if (map.has(msg.kind as MessageKind)) {
     // again, we also know that 
-    handler = map.get(msg.kind as ClientMessageKind)!
+    handler = map.get(msg.kind as MessageKind)!
   } 
 
   // since we're only really loosely checking if the json fits the payload we expect stuff to not work
