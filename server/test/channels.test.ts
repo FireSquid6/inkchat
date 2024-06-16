@@ -84,13 +84,11 @@ test("channels routes", async () => {
       Authorization: `Bearer ${session.id}`
     },
     query: {
-      last: 5,
-      before: Date.now()
+      last: "5",
+      before: Date.now().toString(),
     }
   })
 
   expect(messagesRes.status).toBe(200)
-  console.log(messagesRes.data)
-  console.log(expectedMessages.slice(0, 5))
   expect(messagesRes.data).toEqual(expectedMessages.slice(0, 5))
 })

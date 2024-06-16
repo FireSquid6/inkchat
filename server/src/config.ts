@@ -1,6 +1,7 @@
 export interface AppConfig {
-  port?: number
-  storeDir?: string
+  port?: number  // the port to serve the app on. Default 3000
+  storeDir?: string  // the directory to store files and the database in. Default ./store
+  maxMessages?: number  // the maximum amount of messages a client can request at once. Default 200
 }
 
 
@@ -17,5 +18,9 @@ export class Config {
 
   storeDir(): string {
     return this.givenConfig.storeDir || "./store"
+  }
+
+  maxMessages(): number {
+    return this.givenConfig.maxMessages || 200
   }
 }
