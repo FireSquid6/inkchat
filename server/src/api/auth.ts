@@ -19,7 +19,13 @@ export const unprotectedAuthApi = (app: Elysia) => app
       ctx.set.status = 400
       return { message: "Invalid password", token: "" }
     }
-    const token = await createUser(ctx.store.kit, username, password)
+    let token = ""
+    try {
+      token = await createUser(ctx.store.kit, username, password)
+    } catch (e) {
+      ctx.logestic.error(e as string)
+    }
+
     if (token === "") {
       ctx.set.status = 500
       return { message: "Error creating user", token: "" }

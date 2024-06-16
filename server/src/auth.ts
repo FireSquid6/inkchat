@@ -33,12 +33,12 @@ declare module "lucia" {
 }
 
 export async function verifyPassword(password: string, storedHash: string) {
-	const validPassword = await verify(storedHash, password, {
-		memoryCost: 19456,
-		timeCost: 2,
-		outputLen: 32,
-		parallelism: 1
-	});
+  const validPassword = await verify(storedHash, password, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1
+  });
 
   return validPassword
 }
@@ -95,23 +95,16 @@ export async function createUser(kit: Kit, username: string, password: string): 
   const userId = generateIdFromEntropySize(32)
 
   let token = ""
-  try {
-    await db.insert(userTable).values([{
-      id: userId,
-      password: passwordHash,
-      username: username,
-    }])
+  await db.insert(userTable).values([{
+    id: userId,
+    password: passwordHash,
+    username: username,
+  }])
 
-    kit.logger.log(`User created: ${username}`)
+  // TODO: standardize how long sesions last
+  const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
+  token = session.id
 
-    // TODO: standardize how long sesions last
-    const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
-    token = session.id
-
-  } catch (e) {
-    console.error(e)
-    return ""
-  }
 
   return token
 }

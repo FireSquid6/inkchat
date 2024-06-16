@@ -3,11 +3,13 @@ import { cors } from "@elysiajs/cors";
 import type { Kit } from "@/index";
 import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import type { User } from "lucia";
+import { Logestic } from "logestic";
 
 
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
   .state("kit", {} as Kit)
+  .use(Logestic.preset("fancy"))
   .derive(async (ctx): Promise<{
     token: string | null
     user: User | null

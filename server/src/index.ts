@@ -1,6 +1,5 @@
 import { getDb } from "./db";
 import { getAuth } from "./auth";
-import { makeLoggerManager } from "./logger";
 import { app } from "./api";
 
 
@@ -13,7 +12,6 @@ export interface AppConfig {
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
 export interface Kit {
-  logger: ReturnType<typeof makeLoggerManager>
   db: ReturnType<typeof getDb>
   auth: ReturnType<typeof getAuth>
   config: AppConfig
@@ -21,10 +19,8 @@ export interface Kit {
 
 export function startApp(config: AppConfig, db: ReturnType<typeof getDb>): Kit {
   const auth = getAuth(db)
-  const loggerManager = makeLoggerManager(config)
 
   const kit: Kit = {
-    logger: loggerManager,
     db,
     auth,
     config,
