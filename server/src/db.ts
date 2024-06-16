@@ -2,7 +2,7 @@ import { Database } from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { faker } from "@faker-js/faker"
-import { userTable } from "@/schema";
+import { channelTable, userTable, messageTable } from "@/schema";
 import type { Kit } from ".";
 import { eq } from "drizzle-orm";
 
@@ -22,18 +22,46 @@ export function migrateDb(db: ReturnType<typeof getDb>) {
 
 interface SeedOptions {
   users: number
+  channels: number
+  messagesPerChannel: number
 }
 
 export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = {
-  users: 10
+  users: 10,
+  channels: 4,
+  messagesPerChannel: 25,
 }) {
+  const userIds = []
   for (let i = 0; i < options.users; i++) {
+    const id = faker.string.uuid()
     db.insert(userTable).values({
-      id: faker.string.uuid(),
+      id: id,
       username: faker.internet.userName(),
       password: faker.internet.password(),
     })
+    userIds.push(id)
   }
+  
+  for (let i = 0; i < options.channels; i++) {
+    const id = faker.string.uuid()
+    db.insert(channelTable).values({
+      id,
+      name: faker.hacker.noun(),
+      description: faker.hacker.phrase(),
+      createdAt: Date.now(),
+    })
+
+    for (let j = 0; j < options.messagesPerChannel; j++) {
+      db.insert(messageTable).values({
+        userId: faker.helpers.arrayElement(userIds),
+        id: faker.string.uuid(),
+        content: faker.lorem.paragraph(),
+        createdAt: Date.now(),
+        channelId: id,
+      })
+    }
+  }
+
   console.log("🌱 Seeded Database")
 }
 
