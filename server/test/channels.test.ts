@@ -53,5 +53,11 @@ test("channels routes", async () => {
   expect(channelsRes.status).toBe(200)
   expect(channelsRes.data).toEqual(channels)
 
-
+  const channelRes = await api.channels({ id: channels[0].id }).get({
+    headers: {
+      Authorization: `Bearer ${session.id}`
+    }
+  })
+  expect(channelRes.status).toBe(200)
+  expect(channelRes.data).toEqual(channels[0])
 })

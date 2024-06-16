@@ -54,4 +54,5 @@ test("signup and signin flow", async () => {
 
   const sessionResult3 = await db.select().from(sessionTable).where(eq(sessionTable.userId, userResult[0].id))
   expect(sessionResult3.length).toBe(1)
-  expect(sessionResult3[0].id).toBe(res3.data?.token!) })
+  expect(sessionResult3[0].id).toBe(res3.data?.token!)
+})
