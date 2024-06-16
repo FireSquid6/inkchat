@@ -43,14 +43,12 @@ export const channelsApi = (app: Elysia) => app
     // TODO: this won't scale. We have to sort through the entire table to get the last N messages.
     // I don't actually know how sql really works
     // chaching is probably necessary
-    ctx.logestic.debug("Right before the query")
     const messages = await db
       .select()
       .from(messageTable)
       .where(and(eq(messageTable.channelId, ctx.params.id), lte(messageTable.createdAt, before)))
       .orderBy(messageTable.createdAt)
       .limit(last)
-    ctx.logestic.debug("Right after the query")
 
     return messages
   }, {
