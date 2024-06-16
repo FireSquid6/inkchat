@@ -15,9 +15,8 @@ export function getDb(filepath: string) {
 
 
 export function migrateDb(db: ReturnType<typeof getDb>) {
-  console.log("Migrating database...")
   migrate(db, { migrationsFolder: "drizzle" })
-  console.log("Database initialized!")
+  console.log("🗄️ Migrated Database")
 }
 
 
@@ -28,7 +27,6 @@ interface SeedOptions {
 export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = {
   users: 10
 }) {
-  console.log("Seeding database...")
   for (let i = 0; i < options.users; i++) {
     db.insert(userTable).values({
       id: faker.string.uuid(),
@@ -36,6 +34,7 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
       password: faker.internet.password(),
     })
   }
+  console.log("🌱 Seeded Database")
 }
 
 

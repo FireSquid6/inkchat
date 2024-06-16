@@ -2,6 +2,7 @@ import { getDb } from "./db";
 import { getAuth } from "./auth";
 import { app } from "./api";
 import { Config, type AppConfig } from "@/config";
+import Chalk from "chalk";
 
 
 // TODO: config factory
@@ -29,10 +30,8 @@ export function startApp(appConfig: AppConfig, db: ReturnType<typeof getDb>): Ki
 
 
   app.listen(config.port(), () => {
-    console.log(`Server is running on port ${config.port}`)
+    console.log(`🚀 Server launched at ${config.port()}`)
   })
-
-
   return kit
 }
 

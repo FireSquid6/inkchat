@@ -57,6 +57,9 @@ export const app = new Elysia()
   .use(cors())
   .use(kitPlugin)
   .use(unprotectedAuthApi)
+  .get("/", () => {
+    return "Hello World!"
+  })
 
   .guard({
     async beforeHandle(ctx) {
