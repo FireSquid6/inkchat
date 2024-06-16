@@ -1,9 +1,5 @@
 // messages passed alawys look like:
-// <type>|<data>
+// <kind>|<sender>|<data>
 //
 // data is in json form
 
-
-export function parseMessage(message: string) {
-
-}

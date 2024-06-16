@@ -57,8 +57,11 @@ export const app = new Elysia()
   .use(cors())
   .use(kitPlugin)
   .use(unprotectedAuthApi)
-  .get("/", () => {
-    return "Hello World!"
+  .get("/", (ctx) => {
+    return {
+      info: ctx.store.kit.config.serverInformation(),
+      version: 1,  // this is in case we make breaking changes to the api and clients have to distinguish between multiple versions
+    }
   })
 
   .guard({
