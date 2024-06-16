@@ -1,5 +1,5 @@
+import type { messageTable } from "@/schema"
 import type { Message, MessageHandler } from "."
-import { messageTable } from "@/schema"
 
 export type MessageKind = "CHAT" | "USER_JOINED" | "USER_LEFT" | "UNKOWN"
 
@@ -23,7 +23,6 @@ export function doForMessage<ReturnType>(msg: Message, map: Map<MessageKind, Mes
     return e as Error
   }
 }
-
 
 // TODO: figure out how to get the type of a table in drizzle
 export type ChatPayload = typeof messageTable
