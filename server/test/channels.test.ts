@@ -30,8 +30,14 @@ test("channels routes", async () => {
   // generate 400 random messages for each channel
   // we don't actually care if the userIds mean anything for this test
   const messages = []
+  
+  // just a quick veritifcation of our assumption that the current unix time is not in the 70s
+  if (Date.now() <= 400) {
+    throw new Error("You are in the 70s. What happened?")
+  }
   for (const channel of channels) {
     for (let i = 0; i < 400; i++) {
+      // TODO: make each message happen later than the previous one
       messages.push({
         id: faker.string.uuid(),
         userId: faker.string.uuid(),

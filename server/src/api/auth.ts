@@ -64,6 +64,7 @@ export const unprotectedAuthApi = (app: Elysia) => app
       }
     }
 
+    // TODO: session length should still be a configurable value
     const session = await createSession(ctx.store.kit, user.id, Date.now() + 1000 * 60 * 60 * 24 * 30)
 
     ctx.set.status = 200
