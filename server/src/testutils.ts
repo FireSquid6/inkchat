@@ -47,3 +47,27 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
     session
   }
 }
+
+// Note: this function assumes that nothing is sent whenever the socket is first opened
+export async function converse(socket: WebSocket, messages: string[]): Promise<string[]> {
+  return new Promise(async (resolve) => {
+    const responses: string[] = []
+
+    for (const message of messages) {
+      const response = await sendAndWait(socket, message)
+      responses.push(response)
+    }
+
+    return resolve(responses)
+  })
+
+}
+
+export function sendAndWait(socket: WebSocket, message: string): Promise<string> {
+  return new Promise((resolve) => {
+    socket.send(message)
+    socket.onmessage = (event) => {
+      resolve(event.data.toString())
+    }
+  })
+}

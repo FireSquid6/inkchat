@@ -11,15 +11,20 @@ export const connectionApi = (app: Elysia) => app
   .state("processor", new MessageProcessor())
   .ws("/socket", {
     body: t.String(),
-    open: (ws) => {
-      // TODO: only let people who authenticate connect
-      ws.subscribe(wsChannelName)
-      ws.data.store.processor.addClient(ws.id)
-    },
-    message: (ws, message) => {
+    message: async (ws, message) => {
       const processor = ws.data.store.processor
-      const { response, error } = processor.processMessage(ws.data.store.kit, message, ws.id)
 
+      let response = ""
+      let error = ""
+
+      try {
+        const data = await processor.processMessage(ws.data.store.kit, message, ws.id)
+        response = data.response
+        error = data.error
+      } catch (e) {
+        response = ""
+        error = `Something went horribly wwrong: ${e as string}`
+      }
 
       // you would think that publish would send it to every subscriber, but it sends it to every subscriber but the current client
       if (response != "") {

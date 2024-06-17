@@ -1,10 +1,13 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import type { Kit } from "@/index";
-import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import type { User } from "lucia";
 import { Logestic } from "logestic";
+
+import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import { channelsApi } from "@/api/channels";
+import { usersApi } from "@/api/users";
+import { filesApi } from "@/api/files";
 
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
@@ -91,4 +94,6 @@ export const app = new Elysia()
     // anything down here is protected
     .use(protectedAuthApi)
     .use(channelsApi)
+    .use(usersApi)
+    .use(filesApi)
   )
