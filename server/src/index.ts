@@ -5,8 +5,6 @@ import { Config, type AppConfig } from "@/config";
 import Chalk from "chalk";
 
 
-// TODO: config factory
-
 
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
