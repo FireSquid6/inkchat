@@ -1,17 +1,15 @@
 import type { InferSelectModel } from "drizzle-orm"
-import { messageTable, userTable } from "@/schema"
+import { messageTable } from "@/schema"
 
 export interface Message {
   kind: string
-  senderId: string  // this is always  if it's sent from thue server
   payload: object
 }
 
 
-export function makeMessage<PayloadType>(kind: string, payload: PayloadType, senderId: string): string {
+export function makeMessage<PayloadType>(kind: string, payload: PayloadType): string {
   const msg: Message = {
     kind,
-    senderId,
     payload: payload as object
   }
 

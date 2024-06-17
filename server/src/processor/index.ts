@@ -5,8 +5,6 @@ import { channelTable, messageTable } from "@/schema"
 import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize, type User } from "lucia"
 
-const serverId = "SERVER"
-
 // right now the ws just echos back
 export class MessageProcessor {
   private clients: Map<string, User> = new Map()
@@ -38,7 +36,7 @@ export class MessageProcessor {
         this.clients.set(senderId, user)
         response = makeMessage<UserJoinedPayload>("USER_JOINED", {
           id: user.id,
-        }, serverId)
+        })
         return
       }],
       ["CHAT", async (msg) => {
