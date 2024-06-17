@@ -1,6 +1,7 @@
 {
   "name": "inkchat-server",
   "module": "public.ts",
+  "main": "public.ts",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",

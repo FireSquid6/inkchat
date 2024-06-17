@@ -12,6 +12,7 @@
     "@capacitor/core": "^6.1.0",
     "@elysiajs/eden": "^1.0.14",
     "@solidjs/router": "^0.13.5",
+    "elysia": "^1.0.23",
     "inkchat-server": "link:inkchat-server",
     "solid-forms": "^0.4.8",
     "solid-js": "^1.8.15"

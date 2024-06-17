@@ -2,8 +2,6 @@ import { getDb } from "./db";
 import { getAuth } from "./auth";
 import { app } from "./api";
 import { Config, type AppConfig } from "@/config";
-import Chalk from "chalk";
-
 
 
 // this kit is in the context for every api request
