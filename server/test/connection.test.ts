@@ -3,6 +3,7 @@ import type { ConnectPayload, ChatPayload } from "@/protocol";
 import { channelTable, messageTable } from "@/schema";
 import { converse, testApp, getTestUser } from "@/testutils";
 import { test, expect } from "bun:test";
+import { eq } from "drizzle-orm";
 
 
 test("chat flow", async () => {
