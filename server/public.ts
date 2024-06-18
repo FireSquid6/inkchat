@@ -2,8 +2,7 @@
 // this file is where everything is exported directly
 
 export * as protocol from "@/protocol"
-export * as sdk from "@/sdk"
-
+export { InkchatClient } from "@/sdk"
 
 
 
