@@ -4,6 +4,8 @@ import { userTable } from "@/schema";
 import { eq } from "drizzle-orm";
 
 
+// TODO: allow the user to set their own information
+// bio, display name, etc
 export const usersApi = (app: Elysia) => app
   .use(kitPlugin)
   .get("/users/:id", async (ctx) => {
