@@ -1,10 +1,10 @@
-import { AuthPage } from "#/components/Auth"
+import { AuthPage } from "./pages/Auth"
 
 
 function App() {
   return (
     <>
-      <p className="text-xl">Hello world!</p>
+      <AuthPage />
     </>
   )
 }

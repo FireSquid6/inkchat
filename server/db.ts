@@ -5,6 +5,8 @@ import { faker } from "@faker-js/faker"
 import { channelTable, userTable, messageTable } from "@/schema";
 import type { Kit } from ".";
 import { eq } from "drizzle-orm";
+import { createUser } from "./auth";
+import { hash } from "@node-rs/argon2";
 
 export function getDb(filepath: string) {
   const sqlite = new Database(filepath);
@@ -32,19 +34,27 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
   messagesPerChannel: 25,
 }) {
   const userIds = []
+
+  db.insert(userTable).values({
+    id: faker.string.uuid(),
+    username: "grock",
+    password: await hashPassword("lumberandlogs"),
+  })
+
+
   for (let i = 0; i < options.users; i++) {
     const id = faker.string.uuid()
-    db.insert(userTable).values({
-      id: id,
+    await db.insert(userTable).values({
+      id,
       username: faker.internet.userName(),
-      password: faker.internet.password(),
+      password: await hashPassword(faker.internet.password()),
     })
     userIds.push(id)
   }
   
   for (let i = 0; i < options.channels; i++) {
     const id = faker.string.uuid()
-    db.insert(channelTable).values({
+    await db.insert(channelTable).values({
       id,
       name: faker.hacker.noun(),
       description: faker.hacker.phrase(),
@@ -52,7 +62,7 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
     })
 
     for (let j = 0; j < options.messagesPerChannel; j++) {
-      db.insert(messageTable).values({
+      await db.insert(messageTable).values({
         userId: faker.helpers.arrayElement(userIds),
         id: faker.string.uuid(),
         content: faker.lorem.paragraph(),
@@ -63,6 +73,15 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
   }
 
   console.log("🌱 Seeded Database")
+}
+
+async function hashPassword(password: string) {
+  return await hash(password, {
+    memoryCost: 19456,
+    timeCost: 2,
+    outputLen: 32,
+    parallelism: 1
+  })
 }
 
 
