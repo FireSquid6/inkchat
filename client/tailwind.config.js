@@ -6,6 +6,11 @@ export default {
   theme: {
     extend: {},
   },
-  plugins: [],
+  daisyui: {
+    themes: ["forest"]
+  },
+  plugins: [
+    require("daisyui")
+  ],
 }
 

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "dom"],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
@@ -22,7 +22,8 @@
     "forceConsistentCasingInFileNames": true,
 
     "paths": {
-      "@/*": ["./server/*"]
+      "@/*": ["./server/*"],
+      "#/*": ["./client/*"]
     }
   }
 }

@@ -1,3 +1,6 @@
+import { AuthPage } from "#/components/Auth"
+
+
 function App() {
   return (
     <>
