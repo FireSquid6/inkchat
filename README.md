@@ -1,20 +1,15 @@
-# inkchat
-Inkchat is a self hosted chat application. It provides you a server with as many channels as you want for you, the people you wnat to be there, and nobody else. Inkchat gives you full control and privacy for your comversations.
-
-# Contributors
-If you'd like to contribute, great! Feel free to tackle any issue. Leave a comment and I'll assign it to you.
-
-## Requirements
-- have bun installed
-- typescript knowledge
-- write tested code
-
-## Project Overview
-There are three main packages:
-- `client` - the default client application. Built in react + vite
-- `server` - the main server. Built in lucia.
-- `protocol` - handles the communication between clients and servers over websocket
-
+# Inkchat Server
+Contains the logic for the actual server aspect of inkchat
 
 ## Setup
-Just run the `setup.sh` script to set up package linking and install all of your packages. Specific setups for each package are in their respective README's.
+1. Run the `setup.sh` script in the scripts directory
+2. Start the server any way you please
+
+There are several ways to start the sever:
+- `bun run dev` - migrates and resumes a development server in `store/prod`
+- `bun run new-dev` - deletes the data for the old development server and re-seeds it
+- `bun run ephemeral` - starts a new ephemeral database using sqlite in memory. Useful for testing. Optionally seeded
+- `bun run prod` - migrates and starts the app for production. Uses a separate, unseeded database. It is stored in `store/prod` so don't delete it unless you want to kill your production data
+
+
+Additionally, any time you change the schema you will need to re-run `bun run generate`
