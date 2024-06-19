@@ -7,6 +7,7 @@ import { eq } from "drizzle-orm";
 
 
 test("chat flow", async () => {
+  console.log("chat flow")
   const { api, db } = testApp()
   const { user, session } = await getTestUser(db)
   // initialize a channel
@@ -18,35 +19,53 @@ test("chat flow", async () => {
     createdAt: Date.now(),
   })
 
-  const socket = new WebSocket("ws://localhost:3001")
-  socket.onopen = async () => {
-    const messages: string[] = [
-      makeMessage<ConnectPayload>("CONNECT", {
-        token: session.id
-      }),
-      makeMessage<ChatPayload>("CHAT", {
-        channelId: "testchannel",
-        content: "Hello, world!"
-      })
-    ]
 
-    const responses = await converse(socket, messages)
-    console.log(responses)
-    const connectResponse = parseMessage(responses[0])
-    expect(connectResponse.kind).toBe("USER_JOINED")
-    const connectPayload = expectUserJoinedPayload(connectResponse)
-    expect(connectPayload.id).toBe(user.id)
+  const socketRes = await new Promise<boolean>((resolve) => {
+    const socket = api.socket.subscribe()
+    socket.on("error", (err) => {
+      console.error(err)
+      socket.close()
+      resolve(false)
+    })
+    socket.on("close", (event) => {
+      console.log(event)
+      socket.close()
+      resolve(false)
+    })
+    socket.on("open", async () => {
+      console.log("socket opened")
+      const messages: string[] = [
+        makeMessage<ConnectPayload>("CONNECT", {
+          token: session.id
+        }),
+        makeMessage<ChatPayload>("CHAT", {
+          channelId: "testchannel",
+          content: "Hello, world!"
+        })
+      ]
 
-    const newMessage = parseMessage(responses[1])
-    expect(newMessage.kind).toBe("NEW_MESSAGE")
-    const newMessagePayload = expectNewMessagePayload(newMessage)
+      const responses = await converse(socket, messages)
+      socket.close()
 
-    expect(newMessagePayload.content).toBe("Hello, world!")
-    expect(newMessagePayload.channelId).toBe("testchannel")
-    const chatMessages = await db.select().from(messageTable).where(eq(messageTable.channelId, "testchannel"))
-    expect(chatMessages.length).toBe(1)
+      const connectResponse = parseMessage(responses[0])
+      expect(connectResponse.kind).toBe("USER_JOINED")
+      const connectPayload = expectUserJoinedPayload(connectResponse)
+      expect(connectPayload.id).toBe(user.id)
+
+      const newMessage = parseMessage(responses[1])
+      expect(newMessage.kind).toBe("NEW_MESSAGE")
+      const newMessagePayload = expectNewMessagePayload(newMessage)
+
+      expect(newMessagePayload.content).toBe("Hello, world!")
+      expect(newMessagePayload.channelId).toBe("testchannel")
+      const chatMessages = await db.select().from(messageTable).where(eq(messageTable.channelId, "testchannel"))
+      expect(chatMessages.length).toBe(1)
 
 
-    socket.close()
-  }
+      resolve(true)
+    })
+  })
+
+
+  expect(socketRes).toBe(true)
 })

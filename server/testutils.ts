@@ -6,7 +6,7 @@ import { Config } from "@/config";
 import { treaty } from "@elysiajs/eden";
 import { startEphemeralApp } from "./setups";
 import { sessionTable, userTable } from "./schema";
-import { faker } from "@faker-js/faker";
+import type { EdenWS } from "@elysiajs/eden/treaty";
 
 export interface TestKit {
   db: ReturnType<typeof getDb>
@@ -32,11 +32,11 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   const user = {
     username: "testuser",
     password: "T3stp@ssword",
-    id: faker.string.uuid(),
+    id: "testuser",
   }
   await db.insert(userTable).values(user)
   const session = {
-    id: faker.string.uuid(),
+    id: "testsession",
     userId: user.id,
     expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30,
   }
@@ -49,12 +49,14 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
 }
 
 // Note: this function assumes that nothing is sent whenever the socket is first opened
-export async function converse(socket: WebSocket, messages: string[]): Promise<string[]> {
+export async function converse(socket: EdenWS<any>, messages: string[]): Promise<string[]> {
+  console.log("conversing")
   return new Promise(async (resolve) => {
     const responses: string[] = []
 
     for (const message of messages) {
       const response = await sendAndWait(socket, message)
+      console.log(message, ":", response)
       responses.push(response)
     }
 
@@ -63,11 +65,11 @@ export async function converse(socket: WebSocket, messages: string[]): Promise<s
 
 }
 
-export function sendAndWait(socket: WebSocket, message: string): Promise<string> {
+export function sendAndWait(socket: EdenWS, message: string): Promise<string> {
   return new Promise((resolve) => {
     socket.send(message)
-    socket.onmessage = (event) => {
-      resolve(event.data.toString())
-    }
+    socket.on("message", (response) => {
+      resolve(response.data as string)
+    })
   })
 }

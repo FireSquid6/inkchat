@@ -1,13 +1,17 @@
 import { TextInput, Button } from "../components/Forms";
 import { useState } from "react"
+import { client } from "../lib/client"
 
 export function AuthPage() {
   return (
     <>
       <h1>Sign into Server</h1>
       <div>
-        <SignIn onSignIn={(username, password, address) => {
-          console.log(username, password, address)
+        <SignIn onSignIn={async (username, password, _) => {
+          const connResult = await client.connect("http://localhost:3000", "ws://localhost:3000/socket")
+          console.log(connResult)
+          const signInResult = await client.signIn(username, password)
+          console.log(signInResult)
         }} />
 
       </div>
@@ -33,7 +37,7 @@ export function SignIn(props: SignInProps) {
       <Button onClick={() => {
         props.onSignIn(username, password, address)
       }}>
-
+        Sign In
       </Button>
     </form>
   )

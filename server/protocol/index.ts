@@ -6,18 +6,26 @@ export interface Message {
   payload: object
 }
 
+const separator = "|"
 
 export function makeMessage<PayloadType>(kind: string, payload: PayloadType): string {
-  const msg: Message = {
-    kind,
-    payload: payload as object
-  }
-
-  return JSON.stringify(msg)
+  return kind + separator + JSON.stringify(payload)
 }
 
 export function parseMessage(msg: string): Message {
-  const parsedMessage: Message = JSON.parse(msg)
+  const split = msg.split(separator)
+  const payload = split.slice(1).join("")
+
+  // there could be more parts if the separator is in the payload
+  if (split.length < 2) {
+    throw Error("Invalid message format")
+  }
+
+
+  const parsedMessage: Message = {
+    kind: split[0],
+    payload: JSON.parse(payload)
+  }
   // TODO - ensure that it satiesfies the interface
   return parsedMessage
 }

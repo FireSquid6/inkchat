@@ -1,26 +1,25 @@
 import { channelTable, messageTable } from "@/schema"
 import { getTestUser, testApp } from "@/testutils"
 import { test, expect } from "bun:test"
-import { faker } from "@faker-js/faker"
 
 
 test("channels routes", async () => {
   const { api, db } = testApp()
-  const { user, session } = await getTestUser(db)
+  const { session } = await getTestUser(db)
 
   // seed the database with channels
   const channels = [{
-    id: faker.string.uuid(),
+    id: "1",
     name: "General",
     description: "General chat",
     createdAt: Date.now(),
   }, {
-    id: faker.string.uuid(),
+    id: "2",
     name: "Random",
     description: "Random chat",
     createdAt: Date.now(),
   }, {
-    id: faker.string.uuid(),
+    id: "3",
     name: "Secret",
     description: "Secret chat",
     createdAt: Date.now(),
@@ -35,18 +34,20 @@ test("channels routes", async () => {
     throw new Error("You are in the 70s. What happened?")
   }
 
+  let j = 0
   for (const channel of channels) {
     for (let i = 0; i < 50; i++) {
       messages.push({
-        id: faker.string.uuid(),
+        id: i.toString() + j.toString(),
         // we don't actually care if the userIds mean anything for this test
-        userId: faker.string.uuid(),
-        content: faker.hacker.phrase(),
+        userId: "someuser",
+        content: "lorem ipsum",
         // this means that messages[0] will be the newest message while messages[399] will be the oldest
         createdAt: Date.now() - i,
         channelId: channel.id,
       })
     }
+    j += 1
   }
 
   await db.insert(channelTable).values(channels)

@@ -8,6 +8,7 @@ import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import { channelsApi } from "@/api/channels";
 import { usersApi } from "@/api/users";
 import { filesApi } from "@/api/files";
+import { connectionApi } from "@/api/connection"
 
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
@@ -60,6 +61,7 @@ export const app = new Elysia()
   .use(cors())
   .use(kitPlugin)
   .use(unprotectedAuthApi)
+  .use(connectionApi)
   .get("/", (ctx) => {
     return {
       info: ctx.store.kit.config.serverInformation(),
@@ -96,4 +98,5 @@ export const app = new Elysia()
     .use(channelsApi)
     .use(usersApi)
     .use(filesApi)
+
   )
