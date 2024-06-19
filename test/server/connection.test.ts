@@ -7,12 +7,11 @@ import { eq } from "drizzle-orm";
 
 
 test("chat flow", async () => {
-  console.log("chat flow")
   const { api, db } = testApp()
   const { user, session } = await getTestUser(db)
   // initialize a channel
 
-  db.insert(channelTable).values({
+  await db.insert(channelTable).values({
     id: "testchannel",
     name: "Test Channel",
     description: "Test channel",
@@ -20,20 +19,19 @@ test("chat flow", async () => {
   })
 
 
-  const socketRes = await new Promise<boolean>((resolve) => {
+  await new Promise<void>((resolve) => {
     const socket = api.socket.subscribe()
     socket.on("error", (err) => {
       console.error(err)
+      // if the test is failing here it's because the socket is erroring for some reason
+      expect(err).toBeUndefined()
       socket.close()
-      resolve(false)
     })
-    socket.on("close", (event) => {
-      console.log(event)
+    socket.on("close", () => {
       socket.close()
-      resolve(false)
+      resolve()
     })
     socket.on("open", async () => {
-      console.log("socket opened")
       const messages: string[] = [
         makeMessage<ConnectPayload>("CONNECT", {
           token: session.id
@@ -62,10 +60,7 @@ test("chat flow", async () => {
       expect(chatMessages.length).toBe(1)
 
 
-      resolve(true)
+      resolve()
     })
   })
-
-
-  expect(socketRes).toBe(true)
 })

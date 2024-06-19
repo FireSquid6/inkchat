@@ -50,13 +50,11 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
 
 // Note: this function assumes that nothing is sent whenever the socket is first opened
 export async function converse(socket: EdenWS<any>, messages: string[]): Promise<string[]> {
-  console.log("conversing")
   return new Promise(async (resolve) => {
     const responses: string[] = []
 
     for (const message of messages) {
       const response = await sendAndWait(socket, message)
-      console.log(message, ":", response)
       responses.push(response)
     }
 

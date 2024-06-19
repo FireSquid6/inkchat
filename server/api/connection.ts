@@ -12,7 +12,6 @@ export const connectionApi = (app: Elysia) => app
   .ws("/socket", {
     body: t.String(),
     message: async (ws, message) => {
-      console.log("processing the message:")
       const processor = ws.data.store.processor
 
       let response = ""

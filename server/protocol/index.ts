@@ -18,7 +18,7 @@ export function parseMessage(msg: string): Message {
 
   // there could be more parts if the separator is in the payload
   if (split.length < 2) {
-    throw Error("Invalid message format")
+    throw Error("Invalid message format: " + msg)
   }
 
 

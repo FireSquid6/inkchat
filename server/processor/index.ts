@@ -63,7 +63,7 @@ export class MessageProcessor {
         }
         await db.insert(messageTable).values(message)
 
-        response = makeMessage("CHAT", message, serverId)
+        response = makeMessage("NEW_MESSAGE", message)
       }],
       ["UNKOWN", (msg) => {
         error = `Unkown message kind: ${msg.kind}`
