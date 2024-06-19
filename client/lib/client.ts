@@ -70,6 +70,7 @@ export class InkchatClient {
     })
 
     if (res.error) {
+      console.log(res.error)
       return new Error("Error signing in")
     }
 

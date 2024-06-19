@@ -50,7 +50,7 @@ export const unprotectedAuthApi = (app: Elysia) => app
     if (!user) {
       ctx.set.status = 400
       return {
-        message: "Invalid username or password",
+        message: "Invalid username",
         token: ""
       }
     }
@@ -59,7 +59,7 @@ export const unprotectedAuthApi = (app: Elysia) => app
     if (!passwordValid) {
       ctx.set.status = 400
       return {
-        message: "Invalid username or password",
+        message: "Invalid password",
         token: ""
       }
     }

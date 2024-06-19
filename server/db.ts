@@ -5,7 +5,6 @@ import { faker } from "@faker-js/faker"
 import { channelTable, userTable, messageTable } from "@/schema";
 import type { Kit } from ".";
 import { eq } from "drizzle-orm";
-import { createUser } from "./auth";
 import { hash } from "@node-rs/argon2";
 
 export function getDb(filepath: string) {
