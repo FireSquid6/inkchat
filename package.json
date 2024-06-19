@@ -27,6 +27,7 @@
     "@elysiajs/eden": "^1.0.14",
     "@faker-js/faker": "^8.4.1",
     "@kitajs/html": "^4.1.0",
+    "@kitajs/ts-html-plugin": "^4.0.1",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@node-rs/argon2": "^1.8.3",
     "autoprefixer": "^10.4.19",

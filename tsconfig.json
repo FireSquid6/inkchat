@@ -4,11 +4,15 @@
     "target": "ES2020",
     "module": "ESNext",
     "moduleDetection": "force",
-    "jsx": "react-jsx",
+    "allowJs": true,
+
+    "esModuleInterop": true,
+    "jsx": "react",
     "jsxFactory": "Html.createElement",
     "jsxFragmentFactory": "Html.Fragment",
-    "jsxImportSource": "@kitajs/html",
-    "allowJs": true,
+    "plugins": [
+      { "name": "@kitajs/ts-html-plugin" }
+    ],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
