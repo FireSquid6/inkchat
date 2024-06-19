@@ -1,22 +1,14 @@
 import type { Message } from "@/protocol";
 import { client } from "../lib/client";
-import { useCallback, useEffect, useState } from "react";
 import { Button, TextInput } from "#/components/Forms";
 
 
 export function RoomPage() {
-  const messageHandler = useCallback((message: Message) => {
+  const messageHandler = (message: Message) => {
     console.log(message)
-  }, [])
+  }
   
-  useEffect(() => {
-    client.onMessage(messageHandler)
-    return () => {
-      client.offMessage(messageHandler)
-    }
-  })
-
-  const [message, setMessage] = useState("")
+  client.onMessage(messageHandler)
 
   return (
     <div>

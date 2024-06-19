@@ -5,8 +5,6 @@
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
     "daisyui": "latest",
     "drizzle-kit": "^0.22.7",
     "postcss": "^8.4.38",
@@ -28,9 +26,9 @@
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/eden": "^1.0.14",
     "@faker-js/faker": "^8.4.1",
+    "@kitajs/html": "^4.1.0",
     "@lucia-auth/adapter-drizzle": "^1.0.7",
     "@node-rs/argon2": "^1.8.3",
-    "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.19",
     "chalk": "^5.3.0",
     "drizzle": "^1.4.0",
@@ -39,8 +37,6 @@
     "logestic": "^1.2.0",
     "lucia": "^3.2.0",
     "oslo": "^1.2.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "vite": "^5.3.1"
   }
 }
