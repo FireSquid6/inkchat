@@ -23,7 +23,11 @@ export function RoomPage() {
       <form>
         <TextInput value={message} label={""} placeholder="Type your message here" onChange={(text) => setMessage(text)} />
         <Button onClick={async () => {
-          const channels = await client.api?.channels.get()
+          const channels = await client.api?.channels.get({
+            headers: {
+              Authorization: `Bearer ${client.authToken}`
+            }
+          })
           if (!channels || !channels.data) {
             return
           }

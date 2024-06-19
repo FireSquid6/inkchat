@@ -3,6 +3,7 @@ import { kitPlugin } from "@/api"
 import { createUser } from "@/auth";
 import { isValidPassword, isValidUsername, verifyPassword, createSession } from "@/auth";
 import { getUserWithUsername } from "@/db";
+import { userTable } from "@/schema";
 
 export const unprotectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)

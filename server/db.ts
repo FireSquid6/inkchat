@@ -34,7 +34,7 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
 }) {
   const userIds = []
 
-  db.insert(userTable).values({
+  await db.insert(userTable).values({
     id: faker.string.uuid(),
     username: "grock",
     password: await hashPassword("lumberandlogs"),

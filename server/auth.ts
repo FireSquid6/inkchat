@@ -114,6 +114,3 @@ export async function createSession({ auth }: Kit, userId: string, expiresAt: nu
   return await auth.createSession(userId, expiresAt)
 }
 
-
-export async function signIn(auth: ReturnType<typeof getAuth>, username: string, password: string) {
-}
