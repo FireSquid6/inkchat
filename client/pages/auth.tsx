@@ -13,6 +13,7 @@ export function setAuthPage() {
 
 
 function Auth() {
+  // TODO: add the new identities as buttons to quickly switch between
   return (
     <main>
       <div class="bg-base-200 p-4 m-4 rounded-xl">
@@ -33,14 +34,16 @@ function AuthForm() {
         <TextInput id="address" label="Address" placeholder="chat.example.com" />
       </div>
       <div class="flex flex-col w-full border-opacity-50">
-        <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
-          <Button type="button" class="btn-primary w-[90%]" id="signinbutton">Sign Into Existing Account</Button>
+        <div class="grid bg-base-300 rounded-box place-items-center">
+          <Button type="button" class="btn-primary w-[90%] max-w-xl" id="signinbutton">Sign Into Existing Account</Button>
         </div>
         <div class="divider">OR</div>
-        <div class="grid h-20 card bg-base-300 rounded-box place-items-center">
-          <div class="flex flex-row w-[90%]">
-            <TextInput class="w-[40%] mx-0" id="code" label="Code" placeholder="Your signup code" />
-            <Button type="button" class="btn-secondary w-[60%]" id="signupbutton">Create New Account</Button>
+        <div class="grid bg-base-300 rounded-box place-items-center">
+          <div class="w-[90%] max-w-xl">
+            <div class="join mx-auto">
+              <TextInput class="join-item mx-0" id="code" label="Code" placeholder="Your signup code" />
+              <Button type="button" class="btn-secondary mx-0 join-item" id="signupbutton">Create New Account</Button>
+            </div>
           </div>
         </div>
       </div>

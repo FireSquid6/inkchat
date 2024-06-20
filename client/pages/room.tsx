@@ -14,3 +14,7 @@ function Room() {
     </main>
   )
 }
+
+
+function Sidebar() {
+}
