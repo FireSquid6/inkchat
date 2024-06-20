@@ -25,6 +25,7 @@
   "dependencies": {
     "@elysiajs/cors": "^1.0.2",
     "@elysiajs/eden": "^1.0.14",
+    "@elysiajs/swagger": "^1.0.5",
     "@faker-js/faker": "^8.4.1",
     "@kitajs/html": "^4.1.0",
     "@kitajs/ts-html-plugin": "^4.0.1",
