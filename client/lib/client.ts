@@ -1,7 +1,7 @@
 import type { App } from "../../server/index";
 import { treaty } from "@elysiajs/eden";
-import type { Message, ChatPayload, ConnectPayload } from "../../server/protocol";
-import { makeMessage, parseMessage } from "../../server/protocol";
+import type { Message, ChatPayload, ConnectPayload, NewMessagePayload } from "../../server/protocol";
+import { expectNewMessagePayload, makeMessage, parseMessage } from "../../server/protocol";
 
 type OK = string
 export const ok: OK = "OK"
@@ -15,6 +15,8 @@ export class InkchatClient {
   socket: WebSocket | null = null
   messageListeners: MessageListener[] = []
   connectListeners: ConnectListener[] = []
+
+  private messagesCache = new MessagesCache(this)
 
   isConnected(): boolean {
     return this.api !== null && this.socket !== null
@@ -113,6 +115,62 @@ export class InkchatClient {
       content,
       channelId
     }))
+  }
+
+  async messagesInChannel(channelId: string) {
+    return await this.messagesCache.get(channelId)
+  }
+}
+
+
+class MessagesCache {
+  channelsMap = new Map<string, number>()  // maps the channel ids to where they are located in the messages array
+  messages: NewMessagePayload[][] = []
+  client: InkchatClient
+
+  constructor(client: InkchatClient) {
+    this.client = client
+    client.onMessage((msg) => {
+      if (msg.kind === "NEW_MESSAGE") {
+        const payload = expectNewMessagePayload(msg)
+
+      }
+    })
+  }
+
+  async get(channelId: string) {
+    let index = this.channelsMap.get(channelId)
+    if (index === undefined) {
+      index = await this.miss(channelId)
+
+      if (index === -1) {
+        return []
+      }
+    }
+
+    return this.messages[index]
+  }
+
+
+  private async miss(channelId: string) {
+    const messages = await this.client.api?.channels({ id: channelId }).messages.get({
+      headers: {
+        Authorization: this.client.authToken
+      },
+      query: {
+        last: "200",
+        before: Date.now().toString()
+      }
+    })
+
+    if (messages === undefined || messages.error) {
+      return -1
+    }
+
+    this.channelsMap.set(channelId, this.messages.length)
+    this.messages.push(messages.data)
+
+    return this.messages.length - 1
   }
 }
 

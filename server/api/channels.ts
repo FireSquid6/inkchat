@@ -35,9 +35,7 @@ export const channelsApi = (app: Elysia) => app
 
     if (last > config.maxMessages()) {
       ctx.set.status = 400
-      return {
-        message: `Cannot request more than ${config.maxMessages} messages at a time`
-      }
+      return []
     }
 
     // TODO: this won't scale. We have to sort through the entire table to get the last N messages.
