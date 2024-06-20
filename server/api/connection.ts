@@ -2,6 +2,7 @@ import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { MessageProcessor } from "@/processor"
 
+export const SOCKET_PATH = "/socket"
 
 // this could be anything. A channel is needed to enable the pubsub pattern
 const wsChannelName = "communication"
@@ -9,7 +10,7 @@ const wsChannelName = "communication"
 export const connectionApi = (app: Elysia) => app
   .use(kitPlugin)
   .state("processor", new MessageProcessor())
-  .ws("/socket", {
+  .ws(SOCKET_PATH, {
     body: t.String(),
     message: async (ws, message) => {
       console.log("NEW MESSAGE", message)
