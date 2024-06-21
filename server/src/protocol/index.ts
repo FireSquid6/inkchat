@@ -61,7 +61,7 @@ export function expectUserJoinedPayload(msg: Message): UserJoinedPayload {
   return msg.payload as UserJoinedPayload
 }
 export type UserLeftPayload = {
-  userId: string
+  id: string
 }
 export function expectUserLeftPayload(msg: Message): UserLeftPayload {
   return msg.payload as UserLeftPayload
