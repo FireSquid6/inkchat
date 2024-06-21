@@ -12,7 +12,6 @@
     "vite-tsconfig-paths": "^4.3.2"
   },
   "scripts": {
-    "vite": "vite",
     "dev": "bun run scripts/dev.ts",
     "new-dev": "bun run scripts/new-dev.ts",
     "ephemeral": "bun run scripts/ephemeral.ts",

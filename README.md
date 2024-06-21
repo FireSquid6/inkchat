@@ -10,6 +10,11 @@ Inkchat runs on a self-hosted `server` (located in the `/server` directory). The
 
 # Usage
 
+Whenever a change to the DB is made, you'll need to regenerate the migrations:
+```
+bun run generate
+```
+
 Inkchat's backend uses several database types:
 
 - Ephemeral - this database is started up and then instantly destroyed. Useful for testing
