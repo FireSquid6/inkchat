@@ -8,7 +8,7 @@ This repository contains the backend api for inkchat.
 
 Inkchat runs on a self-hosted `server` (located in the `/server` directory). The `client` website (or app) makes a websocket connection to the server as well as API calls that communicate JSON back and forth.
 
-For more details on the API and Websocket protocol, see the README in the server directory.
+For more details on the API and Websocket protocol, see the README in the server directory or the README in the client directory.
 
 
 # Quickstart
