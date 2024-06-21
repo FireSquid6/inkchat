@@ -7,13 +7,6 @@
     "allowJs": true,
 
     "esModuleInterop": true,
-    "jsx": "react",
-    "jsxFactory": "Html.createElement",
-    "jsxFragmentFactory": "Html.Fragment",
-    "plugins": [
-      { "name": "@kitajs/ts-html-plugin" }
-    ],
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -29,8 +22,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "paths": {
-      "@/*": ["./server/*"],
-      "#/*": ["./client/*"]
+      "@/*": ["./server/*"]
     }
   }
 }
