@@ -8,30 +8,27 @@ This repository contains the backend api for inkchat.
 
 Inkchat runs on a self-hosted `server` (located in the `/server` directory). The `client` website (or app) makes a websocket connection to the server as well as API calls that communicate JSON back and forth.
 
-# Usage
+For more details on the API and Websocket protocol, see the README in the server directory.
 
-Whenever a change to the DB is made, you'll need to regenerate the migrations:
+
+# Quickstart
+
+To start a new database for development purposes:
 ```
-bun run generate
-```
-
-Inkchat's backend uses several database types:
-
-- Ephemeral - this database is started up and then instantly destroyed. Useful for testing
-- Dev - this database serves as a "workbench." You can reset it whenever.
-- Prod - this is the main production database. You shouldn't delete it.
-
-If you just want a dev db, run:
-```
+cd server/
 bun run new-dev
 ```
 
-To then contibue from that database later:
+You can then start a client with:
 ```
+cd cient/
 bun run dev
 ```
 
-You can then reset it with another `bun run new-dev`
 
+In the server directory, you can run `bun run dev` to resume that database, or `bun run new-dev` to delete it and start a new one. The database is always seeded with some random data, as well as a user that you can easily log into:
 
-
+```
+username: grock
+password: lumberandlogs
+```
