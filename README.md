@@ -4,6 +4,9 @@ Inkchat is a self hosted social hub for your friends, collegues, and/or fellow h
 
 This repository contains the backend api for inkchat.
 
+# Technical Overview
+
+Inkchat runs on a self-hosted `server` (located in the `/server` directory). The `client` website (or app) makes a websocket connection to the server as well as API calls that communicate JSON back and forth.
 
 # Usage
 
@@ -25,5 +28,5 @@ bun run dev
 
 You can then reset it with another `bun run new-dev`
 
-# Why is there Frontend Here
-I've been working on a basic frontend in vite. You can run it with `bun run vite`. It will be moved to another repository at some point.
+
+
