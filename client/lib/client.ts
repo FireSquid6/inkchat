@@ -130,9 +130,12 @@ class MessagesCache {
 
   constructor(client: InkchatClient) {
     this.client = client
-    client.onMessage((msg) => {
+    client.onMessage(async (msg) => {
       if (msg.kind === "NEW_MESSAGE") {
         const payload = expectNewMessagePayload(msg)
+        if (!this.channelsMap.has(payload.channelId)) {
+          await this.miss(payload.channelId)
+        }
 
       }
     })
