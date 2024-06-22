@@ -2,8 +2,8 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import type { Kit } from "@/index";
 import type { User } from "lucia";
-import { Logestic } from "logestic";
 import { swagger } from "@elysiajs/swagger";
+import { logger } from "@bogeychan/elysia-logger";
 
 import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import { channelsApi } from "@/api/channels";
@@ -15,7 +15,9 @@ import { connectionApi } from "@/api/connection"
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
   .state("kit", {} as Kit)
-  .use(Logestic.preset("fancy"))
+  .use(logger({
+    level: "info" 
+  }))
   .derive(async (ctx): Promise<{
     token: string | null
     user: User | null
