@@ -13,6 +13,12 @@ export const connectionApi = (app: Elysia) => app
   .state("socketIdToUserId", new Map<string, string>())
   .ws(SOCKET_PATH, {
     body: t.String(),
+    upgrade: (ctx) => {
+      const headers: Record<string, string> = {
+        "authorization": ctx.request.headers.get("authorization") ?? "",
+      }
+      return headers
+    },
     open: (ws) => {
       console.log(ws)
       const user = ws.data.user
@@ -21,7 +27,7 @@ export const connectionApi = (app: Elysia) => app
         ws.close()
         return
       }
-      
+
       ws.data.store.socketIdToUserId.set(ws.id, user.id)
     },
     message: async (ws, message) => {
