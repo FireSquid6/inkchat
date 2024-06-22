@@ -1,4 +1,4 @@
-import { expectNewMessagePayload, expectUserJoinedPayload, makeMessage, parseMessage } from "@/protocol";
+import {serverMessages, clientMessages, parseMessage } from "@/protocol";
 import type { ConnectPayload, ChatPayload } from "@/protocol";
 import { channelTable, messageTable } from "@/schema";
 import { converse, testApp, getTestUser } from "@/testutils";
@@ -19,48 +19,54 @@ test("chat flow", async () => {
   })
 
 
+  let doneEverything = false
   await new Promise<void>((resolve) => {
-    const socket = api.socket.subscribe()
+    const socket = api.socket.subscribe({
+      headers: {
+        Authorization: `Bearer ${session.id}`
+      }
+    })
+
     socket.on("error", (err) => {
       console.error(err)
       // if the test is failing here it's because the socket is erroring for some reason
-      expect(err).toBeUndefined()
       socket.close()
+      resolve()
     })
     socket.on("close", () => {
-      socket.close()
       resolve()
     })
     socket.on("open", async () => {
       const messages: string[] = [
-        makeMessage<ConnectPayload>("CONNECT", {
-          token: session.id
-        }),
-        makeMessage<ChatPayload>("CHAT", {
+        clientMessages.chat.make({
           channelId: "testchannel",
           content: "Hello, world!"
         })
       ]
+      console.log("open!")
 
       const responses = await converse(socket, messages)
-      socket.close()
 
       const connectResponse = parseMessage(responses[0])
       expect(connectResponse.kind).toBe("USER_JOINED")
-      const connectPayload = expectUserJoinedPayload(connectResponse)
+      const connectPayload = serverMessages.userJoined.payloadAs(connectResponse)
+
       expect(connectPayload.id).toBe(user.id)
 
       const newMessage = parseMessage(responses[1])
       expect(newMessage.kind).toBe("NEW_MESSAGE")
-      const newMessagePayload = expectNewMessagePayload(newMessage)
+      const newMessagePayload = serverMessages.newChat.payloadAs(newMessage)
 
       expect(newMessagePayload.content).toBe("Hello, world!")
       expect(newMessagePayload.channelId).toBe("testchannel")
       const chatMessages = await db.select().from(messageTable).where(eq(messageTable.channelId, "testchannel"))
       expect(chatMessages.length).toBe(1)
 
-
-      resolve()
+      doneEverything = true
+      socket.close()
     })
   })
+
+  // if the test is failing here it's because the socket is being shut down
+  expect(doneEverything).toBe(true)
 })

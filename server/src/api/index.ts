@@ -74,13 +74,14 @@ export const app = new Elysia()
   }))
   .use(kitPlugin)
   .use(unprotectedAuthApi)
-  .use(connectionApi)
+
   .get("/", (ctx) => {
     return {
       info: ctx.store.kit.config.serverInformation(),
       version: 1,  // this is in case we make breaking changes to the api and clients have to distinguish between multiple versions
     }
   })
+  .use(connectionApi)
 
   .guard({
     async beforeHandle(ctx) {
@@ -108,6 +109,7 @@ export const app = new Elysia()
   }, (app) => app
     // anything down here is protected
     .use(protectedAuthApi)
+
     .use(channelsApi)
     .use(usersApi)
     .use(filesApi)

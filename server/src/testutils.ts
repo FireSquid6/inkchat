@@ -48,10 +48,14 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   }
 }
 
-// Note: this function assumes that nothing is sent whenever the socket is first opened
-export async function converse(socket: EdenWS<any>, messages: string[]): Promise<string[]> {
+export async function converse(socket: EdenWS<any>, messages: string[], waitFirst: boolean = true): Promise<string[]> {
   return new Promise(async (resolve) => {
     const responses: string[] = []
+
+    if (waitFirst) {
+      const firstMessage = await waitForMessage(socket)
+      responses.push(firstMessage)
+    }
 
     for (const message of messages) {
       const response = await sendAndWait(socket, message)
@@ -61,6 +65,14 @@ export async function converse(socket: EdenWS<any>, messages: string[]): Promise
     return resolve(responses)
   })
 
+}
+
+export function waitForMessage(socket: EdenWS): Promise<string> {
+  return new Promise((resolve) => {
+    socket.on("message", (message) => {
+      resolve(message.data as string)
+    })
+  })
 }
 
 export function sendAndWait(socket: EdenWS, message: string): Promise<string> {
