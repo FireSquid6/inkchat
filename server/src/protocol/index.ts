@@ -1,6 +1,8 @@
 import type { InferSelectModel } from "drizzle-orm"
 import { messageTable } from "@/schema"
 
+
+
 export interface Message {
   kind: string
   payload: object

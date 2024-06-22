@@ -1,6 +1,7 @@
 {
   "name": "inkchat-server",
   "module": "public.ts",
+  "version": "0.1.0",
   "main": "public.ts",
   "type": "module",
   "devDependencies": {

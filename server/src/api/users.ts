@@ -14,15 +14,13 @@ export interface PublicUser {
 // bio, display name, etc
 export const usersApi = (app: Elysia) => app
   .use(kitPlugin)
-  .get("/users/:id", async (ctx): Promise<PublicUser | { message: string }> => {
+  .get("/users/:id", async (ctx): Promise<PublicUser | null > => {
     const { db } = ctx.store.kit
     const users = await db.select().from(userTable).where(eq(userTable.id, ctx.params.id))
 
     if (users.length === 0) {
       ctx.set.status = 404
-      return {
-        message: "User not found"
-      }
+      return null
     }
 
     const user = users[0]
