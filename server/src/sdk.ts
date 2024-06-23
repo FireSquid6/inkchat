@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import type { PublicUser } from "./api/users"
-import { makeMessage, parseMessage, expectNewMessagePayload, expectUserLeftPayload, expectUserJoinedPayload, type ChatPayload, type NewMessagePayload, type UserJoinedPayload } from "@/protocol"
+import { clientMessages, makeMessage, parseMessage, serverMessages } from "@/protocol"
 
 
 export class InkchatClient {
@@ -10,12 +10,12 @@ export class InkchatClient {
   socket: WebSocket | null = null
 
   events = {
-    chat: new Pubsub<NewMessagePayload>(),
+    chat: new Pubsub<ReturnType<typeof serverMessages.newChat.payloadAs>>(),
     connected: new Pubsub<null>(),
     disconnected: new Pubsub<null>(),
-    userJoined: new Pubsub<UserJoinedPayload>(),
-    userLeft: new Pubsub<UserJoinedPayload>(),
-    error: new Pubsub<string>(),
+    userJoined: new Pubsub<ReturnType<typeof serverMessages.userJoined.payloadAs>>(),
+    userLeft: new Pubsub<ReturnType<typeof serverMessages.userLeft.payloadAs>>(),
+    error: new Pubsub<ReturnType<typeof serverMessages.error.payloadAs>>(),
   }
 
   constructor(token: string, url: string) {
@@ -54,13 +54,16 @@ export class InkchatClient {
 
     switch (message.kind) {
       case "NEW_MESSAGE":
-        this.events.chat.trigger(expectNewMessagePayload(message))
+        this.events.chat.trigger(serverMessages.newChat.payloadAs(message))
         break
       case "USER_JOINED":
-        this.events.userJoined.trigger(expectUserJoinedPayload(message))
+        this.events.userJoined.trigger(serverMessages.userJoined.payloadAs(message))
         break
       case "USER_LEFT":
-        this.events.userLeft.trigger(expectUserLeftPayload(message))
+        this.events.userLeft.trigger(serverMessages.userLeft.payloadAs(message))
+        break
+      case "ERROR":
+        this.events.error.trigger(serverMessages.error.payloadAs(message))
         break
       default:
         this.events.error.trigger(`Unknown message: ${msg}`)
@@ -90,7 +93,7 @@ export class InkchatClient {
       return None("Socket not connected")
     }
 
-    this.socket.send(makeMessage<ChatPayload>("CHAT", { channelId, content }))
+    this.socket.send(clientMessages.chat.make({ channelId, content }))
     return Some(null)
   }
 }

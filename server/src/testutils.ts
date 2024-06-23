@@ -1,6 +1,6 @@
 // contains frequently used functions for testing
 import { getDb } from "./db";
-import { getAuth } from "./auth";
+import { getAuth } from "@/db/auth";
 import type { App } from "./index";
 import { Config } from "@/config";
 import { treaty } from "@elysiajs/eden";
