@@ -15,9 +15,7 @@ import { connectionApi } from "@/api/connection"
 export const kitPlugin = (app: Elysia) => app
   // this is deliberately left empty. It is set whenever startApp() is called
   .state("kit", {} as Kit)
-  .use(logger({
-    level: "info" 
-  }))
+
   .derive(async (ctx): Promise<{
     token: string | null
     user: User | null
@@ -63,6 +61,9 @@ export const kitPlugin = (app: Elysia) => app
 export const app = new Elysia()
   // up here is unprotected! No auth required
   .use(cors())
+  .use(logger({
+    level: "info" 
+  }))
   .use(swagger({
     documentation: {
       info: {

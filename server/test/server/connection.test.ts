@@ -44,7 +44,6 @@ test("chat flow", async () => {
       const responses = await converse(socket, messages)
 
       const connectResponse = parseMessage(responses[0])
-      console.log(connectResponse)
       expect(connectResponse.kind).toBe("USER_JOINED")
       const connectPayload = serverMessages.userJoined.payloadAs(connectResponse)
 

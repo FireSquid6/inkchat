@@ -17,7 +17,7 @@ export const connectionApi = (app: Elysia) => app
   .ws(SOCKET_PATH, {
     body: t.String(),
     message: async (ws, message) => {
-      ws.data.log.info(`Received message: ${message}`)
+      console.log(`Received message: ${message}`)
 
       let response = ""
       let error = ""
