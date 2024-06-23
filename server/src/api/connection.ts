@@ -1,7 +1,10 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { processMessage } from "@/processor"
-import { serverMessages } from "@/protocol"
+import { getResponse } from "@/processor"
+import { clientMessages, parseMessage, serverMessages } from "@/protocol"
+import type { Kit } from "@/index"
+import type { Message } from "@/protocol"
+
 
 export const SOCKET_PATH = "/socket"
 
@@ -13,23 +16,6 @@ export const connectionApi = (app: Elysia) => app
   .state("socketIdToUserId", new Map<string, string>())
   .ws(SOCKET_PATH, {
     body: t.String(),
-    upgrade: (ctx) => {
-      const headers: Record<string, string> = {
-        "authorization": ctx.request.headers.get("authorization") ?? "",
-      }
-      return headers
-    },
-    open: (ws) => {
-      console.log(ws)
-      const user = ws.data.user
-      console.log(`User connected: ${user?.id}`)
-      if (!user) {
-        ws.close()
-        return
-      }
-
-      ws.data.store.socketIdToUserId.set(ws.id, user.id)
-    },
     message: async (ws, message) => {
       ws.data.log.info(`Received message: ${message}`)
 
@@ -37,9 +23,11 @@ export const connectionApi = (app: Elysia) => app
       let error = ""
 
       try {
-        const data = await processMessage(ws.data.store.kit, message, ws.id)
-        response = data.response
-        error = data.error
+        const msg = parseMessage(message)
+        const res = await processMessage(ws.data.store.kit, ws.id, ws.data.store.socketIdToUserId, msg)
+
+        response = res.response
+        error = res.error
       } catch (e) {
         response = ""
         error = `Caught message processing error: ${e as string}`
@@ -61,3 +49,35 @@ export const connectionApi = (app: Elysia) => app
       ws.unsubscribe(wsChannelName)
     }
   })
+
+
+async function processMessage(kit: Kit, wsId: string, socketIdToUserId: Map<string, string>, msg: Message): Promise<{ response: string, error: string }> {
+  if (msg.kind === clientMessages.connect.name) {
+    const payload = clientMessages.connect.payloadAs(msg)
+    const { auth } = kit
+
+    const session = auth.readBearerToken(payload.authorization)
+
+    if (!session) {
+      return { response: "", error: "Invalid authorization" }
+    }
+
+    const { user } = await auth.validateSession(session)
+
+    if (!user) {
+      return { response: "", error: "Invalid authorization" }
+    }
+
+    socketIdToUserId.set(wsId, user.id)
+    return { response: serverMessages.userJoined.make({ id: user.id }), error: "" }
+  }
+
+  const userId = socketIdToUserId.get(wsId)
+
+  if (!userId) {
+    return { response: "", error: "User not authenticated" }
+  }
+
+  const data = await getResponse(kit, msg, userId!)
+  return data
+}

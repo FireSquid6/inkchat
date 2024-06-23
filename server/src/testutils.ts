@@ -48,7 +48,7 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   }
 }
 
-export async function converse(socket: EdenWS<any>, messages: string[], waitFirst: boolean = true): Promise<string[]> {
+export async function converse(socket: EdenWS<any>, messages: string[], waitFirst: boolean = false): Promise<string[]> {
   return new Promise(async (resolve) => {
     const responses: string[] = []
 

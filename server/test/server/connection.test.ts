@@ -1,5 +1,4 @@
 import {serverMessages, clientMessages, parseMessage } from "@/protocol";
-import type { ConnectPayload, ChatPayload } from "@/protocol";
 import { channelTable, messageTable } from "@/schema";
 import { converse, testApp, getTestUser } from "@/testutils";
 import { test, expect } from "bun:test";
@@ -21,11 +20,7 @@ test("chat flow", async () => {
 
   let doneEverything = false
   await new Promise<void>((resolve) => {
-    const socket = api.socket.subscribe({
-      headers: {
-        Authorization: `Bearer ${session.id}`
-      }
-    })
+    const socket = api.socket.subscribe()
 
     socket.on("error", (err) => {
       console.error(err)
@@ -38,16 +33,18 @@ test("chat flow", async () => {
     })
     socket.on("open", async () => {
       const messages: string[] = [
+        clientMessages.connect.make({
+          authorization: `Bearer ${session.id}`
+        }),
         clientMessages.chat.make({
           channelId: "testchannel",
           content: "Hello, world!"
         })
       ]
-      console.log("open!")
-
       const responses = await converse(socket, messages)
 
       const connectResponse = parseMessage(responses[0])
+      console.log(connectResponse)
       expect(connectResponse.kind).toBe("USER_JOINED")
       const connectPayload = serverMessages.userJoined.payloadAs(connectResponse)
 

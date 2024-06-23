@@ -34,6 +34,7 @@ export const serverMessages = {
 
 export const clientMessages = {
   chat: new MessageKind<ChatPayload>("CHAT"),
+  connect: new MessageKind<ConnectPayload>("CONNECT"),
 }
 
 export type NewMessagePayload = InferSelectModel<typeof messageTable>
@@ -44,7 +45,7 @@ export type UserLeftPayload = {
   id: string
 }
 export type ConnectPayload = {
-  token: string
+  authorization: string
 }
 export type ChatPayload = {
   content: string

@@ -1,12 +1,11 @@
 import type { Kit } from "@/index"
-import { doForMessage, clientMessages, serverMessages, parseMessage } from "@/protocol"
+import { doForMessage, clientMessages, serverMessages, type Message } from "@/protocol"
 import { channelTable, messageTable } from "@/schema"
 import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 
-export async function processMessage(kit: Kit, message: string, senderId: string): Promise<{ response: string, error: string }> {
+export async function getResponse(kit: Kit, msg: Message, senderId: string): Promise<{ response: string, error: string }> {
   const { db } = kit
-  const msg = parseMessage(message)
 
   let response = ""
   let error = ""
