@@ -2,8 +2,8 @@ import { Database } from "bun:sqlite";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator"
 import { faker } from "@faker-js/faker"
-import { channelTable, userTable, messageTable } from "@/schema";
-import type { Kit } from ".";
+import { channelTable, userTable, messageTable } from "@/db/schema";
+import type { Kit } from "@/index";
 import { eq } from "drizzle-orm";
 import { hash } from "@node-rs/argon2";
 

@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import type { PublicUser } from "./api/users"
-import { makeMessage, parseMessage, expectNewMessagePayload, expectUserLeftPayload, expectUserJoinedPayload, type ChatPayload, type NewMessagePayload, type UserJoinedPayload } from "./protocol"
+import { makeMessage, parseMessage, expectNewMessagePayload, expectUserLeftPayload, expectUserJoinedPayload, type ChatPayload, type NewMessagePayload, type UserJoinedPayload } from "@/protocol"
 
 
 export class InkchatClient {

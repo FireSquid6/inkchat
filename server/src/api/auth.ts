@@ -1,9 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { createUser } from "@/auth";
-import { isValidPassword, isValidUsername, verifyPassword, createSession } from "@/auth";
+import { createUser, isValidPassword, isValidUsername, verifyPassword, createSession } from "@/db/auth";
 import { getUserWithUsername } from "@/db";
-import { userTable } from "@/schema";
 
 export const unprotectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)
@@ -24,7 +22,7 @@ export const unprotectedAuthApi = (app: Elysia) => app
     try {
       token = await createUser(ctx.store.kit, username, password)
     } catch (e) {
-      ctx.logestic.error(e as string)
+      console.error(e as string)
     }
 
     if (token === "") {

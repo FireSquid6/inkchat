@@ -2,7 +2,6 @@ import { startApp } from "@/index"
 import type { AppConfig } from "@/config"
 import { getDb, migrateDb, seed } from "@/db"
 import fs from "fs"
-import { startVite } from "#/start"
 
 
 export function startEphemeralApp(doSeed: boolean = false) {

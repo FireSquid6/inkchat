@@ -1,5 +1,5 @@
 import { getDb } from "./db";
-import { getAuth } from "./auth";
+import { getAuth } from "./db/auth";
 import { app } from "./api";
 import { Config, type AppConfig } from "@/config";
 

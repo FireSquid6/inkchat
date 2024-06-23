@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { channelTable, messageTable } from "@/schema"
+import { channelTable, messageTable } from "@/db/schema"
 import { eq, and, lte } from "drizzle-orm"
 
 

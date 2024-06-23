@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia"
 import { doForMessage, clientMessages, serverMessages, parseMessage, type Message } from "@/protocol"
-import { channelTable, messageTable } from "@/schema"
+import { channelTable, messageTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 import { kitPlugin } from "@/api"

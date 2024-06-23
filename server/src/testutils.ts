@@ -5,7 +5,7 @@ import type { App } from "./index";
 import { Config } from "@/config";
 import { treaty } from "@elysiajs/eden";
 import { startEphemeralApp } from "./setups";
-import { sessionTable, userTable } from "./schema";
+import { sessionTable, userTable } from "@/db/schema";
 import type { EdenWS } from "@elysiajs/eden/treaty";
 
 export interface TestKit {
