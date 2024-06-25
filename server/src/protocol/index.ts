@@ -1,5 +1,5 @@
 import type { InferSelectModel } from "drizzle-orm"
-import { messageTable } from "@/db/schema"
+import { channelTable, messageTable } from "@/db/schema"
 
 export interface Message {
   kind: string
@@ -29,12 +29,32 @@ export const serverMessages = {
   userJoined: new MessageKind<UserJoinedPayload>("USER_JOINED"),
   userLeft: new MessageKind<UserLeftPayload>("USER_LEFT"),
 
+  deleteChannel: new MessageKind<DeleteChannelPayload>("DELETE_CHANNEL"),
+  modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
+  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
+
   error: new MessageKind<string>("ERROR"),
 }
 
 export const clientMessages = {
   chat: new MessageKind<ChatPayload>("CHAT"),
   connect: new MessageKind<ConnectPayload>("CONNECT"),
+
+  deleteChannel: new MessageKind<DeleteChannelPayload>("DELETE_CHANNEL"),
+  modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
+  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
+}
+
+export type DeleteChannelPayload = {
+  id: string
+}
+export type ModifyChannelPayload = {
+  id: string
+  name: string
+  description: string
+}
+export type CreateChannelPayload = {
+  name: string
 }
 
 export type NewMessagePayload = InferSelectModel<typeof messageTable>
