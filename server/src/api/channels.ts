@@ -12,9 +12,7 @@ export const channelsApi = (app: Elysia) => app
 
     if (channels.length === 0) {
       ctx.set.status = 404
-      return {
-        message: "Channel not found"
-      }
+      return null
     }
 
     return channels[0]

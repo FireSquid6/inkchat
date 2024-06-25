@@ -1,4 +1,5 @@
 import { channelTable, messageTable } from "@/db/schema"
+import { InkchatClient } from "@/sdk"
 import { getTestUser, testApp } from "@/testutils"
 import { test, expect } from "bun:test"
 
@@ -92,4 +93,41 @@ test("channels routes", async () => {
 
   expect(messagesRes.status).toBe(200)
   expect(messagesRes.data).toEqual(expectedMessages.slice(0, 5))
+})
+
+
+test("sdk", async () => {
+  const { db } = testApp()
+  const { session } = await getTestUser(db)
+
+  const client = new InkchatClient(`Bearer ${session.id}`, "http://localhost:3001")
+  
+  const channels = [{
+    id: "1",
+    name: "General",
+    description: "General chat",
+    createdAt: Date.now(),
+  }, {
+    id: "2",
+    name: "Random",
+    description: "Random chat",
+    createdAt: Date.now(),
+  }, {
+    id: "3",
+    name: "Secret",
+    description: "Secret chat",
+    createdAt: Date.now(),
+  }]
+
+  await db.insert(channelTable).values(channels)
+  const channelsRes = await client.getChannels()
+
+  if (channelsRes.error != null) {
+    throw new Error(channelsRes.error)
+  }
+
+  expect(channelsRes.data).toEqual(channels)
+
+  const channelRes = await client.getChannel(channels[0].id)
+  expect(channelRes.data).toEqual(channels[0])
 })

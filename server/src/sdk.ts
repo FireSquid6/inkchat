@@ -2,6 +2,8 @@ import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import type { PublicUser } from "./api/users"
 import { clientMessages, parseMessage, serverMessages } from "@/protocol"
+import type { InferSelectModel } from "drizzle-orm"
+import type { channelTable, messageTable } from "./db/schema"
 
 
 export class InkchatClient {
@@ -18,6 +20,8 @@ export class InkchatClient {
     error: new Pubsub<ReturnType<typeof serverMessages.error.payloadAs>>(),
   }
 
+  isConnected: boolean = false
+
   constructor(token: string, url: string) {
     this.token = token
     this.api = treaty<App>(url)
@@ -27,15 +31,17 @@ export class InkchatClient {
     this.socket = new WebSocket(url)
 
     this.socket.onopen = () => {
-      console.log("connected")
+      this.isConnected = true
       this.socket!.send(clientMessages.connect.make({ authorization: this.token }))
     }
 
     this.socket.onerror = (e) => {
+      this.isConnected = false
       this.events.error.trigger(`websocket errored with event: ${e}`)
     }
 
     this.socket.onclose = () => {
+      this.isConnected = false
       this.events.disconnected.trigger(null)
     }
 
@@ -45,6 +51,7 @@ export class InkchatClient {
   }
 
   disconnect() {
+    this.isConnected = false
     if (this.socket) {
       this.socket.close()
     }
@@ -97,6 +104,53 @@ export class InkchatClient {
     this.socket.send(clientMessages.chat.make({ channelId, content }))
     return Some(null)
   }
+
+  async getMessages(channelId: string, before: number, last: number): Promise<Maybe<InferSelectModel<typeof messageTable>[]>> {
+    const messagesResponse = await this.api.channels({ id: channelId }).messages.get({
+      headers: {
+        Authorization: this.token
+      },
+      query: {
+        before: before.toString(),
+        last: last.toString(),
+      }
+    })
+
+    if (messagesResponse.data !== null) {
+      return Some(messagesResponse.data)
+    }
+
+    return None(`Failed to get messages: ${messagesResponse.error}`)
+  }
+
+  async getChannels(): Promise<Maybe<InferSelectModel<typeof channelTable>[]>> {
+    const channelsResponse = await this.api.channels.get({
+      headers: {
+        Authorization: this.token
+      }
+    })
+
+    if (channelsResponse.data !== null) {
+      return Some(channelsResponse.data)
+    }
+
+    console.log(channelsResponse)
+    return None(`Failed to get channels: ${channelsResponse.error}`)
+  }
+
+  async getChannel(id: string): Promise<Maybe<InferSelectModel<typeof channelTable>>> {
+    const channelResponse = await this.api.channels({ id: id }).get({
+      headers: {
+        Authorization: this.token
+      }
+    })
+
+    if (channelResponse.data !== null) {
+      return Some(channelResponse.data)
+    }
+
+    return None(`Failed to get channel: ${channelResponse.error}`)
+  }
 }
 
 // logs into the server at the specified url and returns a Maybe of the token
@@ -111,9 +165,14 @@ export async function newSession(url: string, username: string, password: string
   return None(`Failed to login: ${res.error}`)
 }
 
+// TODO: should create a new account on the server
+export function newAccount(url: string, username: string, passsword: string, code: string): Promise<Maybe<string>> {
+  return Promise.resolve(None<string>("not implemented"))
+}
+
 
 // the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
-export type Maybe<T> = { some: T, error: null } | { some: null, error: string }
+export type Maybe<T> = { data: T, error: null } | { data: null, error: string }
 
 
 type SomeMaybeHandler<T, R> = (some: T) => R
@@ -122,8 +181,8 @@ type NoneMaybeHandler<R> = (error: string) => R
 
 // handles a maybe of type T
 export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T, Return>, none: NoneMaybeHandler<Return>) {
-  if (maybe.some) {
-    return some(maybe.some!)
+  if (maybe.data) {
+    return some(maybe.data!)
   } else {
     return none(maybe.error!)
   }
@@ -131,14 +190,14 @@ export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T
 
 function Some<T>(value: T): Maybe<T> {
   return {
-    some: value,
+    data: value,
     error: null,
   }
 }
 
 function None<T>(error: string): Maybe<T> {
   return {
-    some: null,
+    data: null,
     error: error,
   }
 }
