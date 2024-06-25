@@ -6,6 +6,9 @@ import type { InferSelectModel } from "drizzle-orm"
 import type { channelTable, messageTable } from "./db/schema"
 
 
+// conventions:
+// if a property is called "authorization" it takes the form of: "Bearer <session id>"
+// if a property is just "token" it is just the session id
 export class InkchatClient {
   token: string
   api: ReturnType<typeof treaty<App>>
@@ -22,8 +25,8 @@ export class InkchatClient {
 
   isConnected: boolean = false
 
-  constructor(token: string, url: string) {
-    this.token = token
+  constructor(authorization: string, url: string) {
+    this.token = authorization
     this.api = treaty<App>(url)
   }
 
@@ -153,6 +156,13 @@ export class InkchatClient {
   }
 }
 
+
+// checks if a session is valid or not
+export async function sessionValid(url: string, authorization: string): Promise<Maybe<boolean>> {
+  return Promise.resolve(None<boolean>("not implemented"))
+
+}
+
 // logs into the server at the specified url and returns a Maybe of the token
 export async function newSession(url: string, username: string, password: string): Promise<Maybe<string>> {
   const api: ReturnType<typeof treaty<App>> = treaty<App>(url)
@@ -169,7 +179,6 @@ export async function newSession(url: string, username: string, password: string
 export function newAccount(url: string, username: string, passsword: string, code: string): Promise<Maybe<string>> {
   return Promise.resolve(None<string>("not implemented"))
 }
-
 
 // the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
 export type Maybe<T> = { data: T, error: null } | { data: null, error: string }

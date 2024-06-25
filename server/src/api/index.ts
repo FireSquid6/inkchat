@@ -17,26 +17,26 @@ export const kitPlugin = (app: Elysia) => app
   .state("kit", {} as Kit)
 
   .derive(async (ctx): Promise<{
-    token: string | null
+    authorization: string | null
     user: User | null
     session: string | null
   }> => {
     // we always read and try to check for the token
-    const token = ctx.request.headers.get("Authorization")
+    const authorization = ctx.request.headers.get("Authorization")
     const { auth } = ctx.store.kit
 
-    if (!token) {
+    if (!authorization) {
       return {
-        token: null,
+        authorization: null,
         user: null,
         session: null,
       }
     }
 
-    const session = auth.readBearerToken(token)
+    const session = auth.readBearerToken(authorization)
     if (!session) {
       return {
-        token,
+        authorization: authorization,
         user: null,
         session: null,
       }
@@ -45,14 +45,14 @@ export const kitPlugin = (app: Elysia) => app
     const { user } = await auth.validateSession(session)
     if (!user) {
       return {
-        token,
+        authorization: authorization,
         user: null,
         session: null,
       }
     }
 
     return {
-      token,
+      authorization: authorization,
       user,
       session,
     }
@@ -86,7 +86,7 @@ export const app = new Elysia()
 
   .guard({
     async beforeHandle(ctx) {
-      if (!ctx.token) {
+      if (!ctx.authorization) {
         ctx.set.status = 401
         return {
           message: "No token provided"
