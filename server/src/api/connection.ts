@@ -36,10 +36,12 @@ export const connectionApi = (app: Elysia) => app
 
       // you would think that publish would send it to every subscriber, but it sends it to every subscriber but the current client
       if (response != "") {
+        console.log(`Sending response: ${response}`)
         ws.send(response)
         ws.publish(wsChannelName, response)
       }
       if (error != "") {
+        console.log(`Sending error: ${response}`)
         ws.send(serverMessages.error.make(error))
       }
     },

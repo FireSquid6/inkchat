@@ -3,6 +3,7 @@ import { channelTable, messageTable } from "@/db/schema";
 import { converse, testApp, getTestUser } from "@/testutils";
 import { test, expect } from "bun:test";
 import { eq } from "drizzle-orm";
+import { InkchatClient } from "@/sdk";
 
 
 test("chat flow", async () => {
@@ -65,4 +66,31 @@ test("chat flow", async () => {
 
   // if the test is failing here it's because the socket is being shut down
   expect(doneEverything).toBe(true)
+})
+
+test("sdk connection", async () => {
+  const { db } = testApp()
+  const { session } = await getTestUser(db)
+
+  let finished = false
+  const client = new InkchatClient(`Bearer ${session.id}`, "http://localhost:3001")
+
+  await new Promise<void>((resolve) => {
+    client.connect("ws://localhost:3001/socket")
+    client.events.connected.once(() => {
+      finished = true
+      resolve()
+    })
+    client.events.userJoined.once(() => {
+      finished = true
+      resolve()
+    })
+    client.events.error.once((err) => {
+      console.log(err)
+      resolve()
+    })
+  })
+
+  expect(finished).toBe(true)
+
 })

@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import type { PublicUser } from "./api/users"
-import { clientMessages, makeMessage, parseMessage, serverMessages } from "@/protocol"
+import { clientMessages, parseMessage, serverMessages } from "@/protocol"
 
 
 export class InkchatClient {
@@ -27,7 +27,8 @@ export class InkchatClient {
     this.socket = new WebSocket(url)
 
     this.socket.onopen = () => {
-      this.socket!.send(makeMessage("CONNECT", { token: this.token }))
+      console.log("connected")
+      this.socket!.send(clientMessages.connect.make({ authorization: this.token }))
     }
 
     this.socket.onerror = (e) => {
@@ -53,16 +54,16 @@ export class InkchatClient {
     const message = parseMessage(msg)
 
     switch (message.kind) {
-      case "NEW_MESSAGE":
+      case serverMessages.newChat.name:
         this.events.chat.trigger(serverMessages.newChat.payloadAs(message))
         break
-      case "USER_JOINED":
+      case serverMessages.userJoined.name:
         this.events.userJoined.trigger(serverMessages.userJoined.payloadAs(message))
         break
-      case "USER_LEFT":
+      case serverMessages.userLeft.name:
         this.events.userLeft.trigger(serverMessages.userLeft.payloadAs(message))
         break
-      case "ERROR":
+      case serverMessages.error.name:
         this.events.error.trigger(serverMessages.error.payloadAs(message))
         break
       default:
@@ -70,7 +71,7 @@ export class InkchatClient {
     }
   }
 
-  async getUsers(): Promise<Maybe<string[]>> {
+  async getUserIds(): Promise<Maybe<string[]>> {
     const usersResponse = await this.api.users.get()
 
     if (usersResponse.data !== null) {

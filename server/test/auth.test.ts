@@ -1,6 +1,6 @@
 import { test, expect } from "bun:test";
 import { testApp } from "@/testutils";
-import { sessionTable, userTable } from "@/schema";
+import { sessionTable, userTable } from "@/db/schema";
 import { eq } from "drizzle-orm"
 
 

@@ -1,4 +1,4 @@
-import { channelTable, messageTable } from "@/schema"
+import { channelTable, messageTable } from "@/db/schema"
 import { getTestUser, testApp } from "@/testutils"
 import { test, expect } from "bun:test"
 
