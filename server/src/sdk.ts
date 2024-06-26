@@ -15,12 +15,17 @@ export class InkchatClient {
   socket: WebSocket | null = null
 
   events = {
-    chat: new Pubsub<ReturnType<typeof serverMessages.newChat.payloadAs>>(),
     connected: new Pubsub<null>(),
     disconnected: new Pubsub<null>(),
+    error: new Pubsub<ReturnType<typeof serverMessages.error.payloadAs>>(),
+
+    chat: new Pubsub<ReturnType<typeof serverMessages.newChat.payloadAs>>(),
     userJoined: new Pubsub<ReturnType<typeof serverMessages.userJoined.payloadAs>>(),
     userLeft: new Pubsub<ReturnType<typeof serverMessages.userLeft.payloadAs>>(),
-    error: new Pubsub<ReturnType<typeof serverMessages.error.payloadAs>>(),
+
+    deleteChannel: new Pubsub<ReturnType<typeof serverMessages.deleteChannel.payloadAs>>(),
+    modifyChannel: new Pubsub<ReturnType<typeof serverMessages.modifyChannel.payloadAs>>(),
+    createChannel: new Pubsub<ReturnType<typeof serverMessages.createChannel.payloadAs>>(),
   }
 
   isConnected: boolean = false
