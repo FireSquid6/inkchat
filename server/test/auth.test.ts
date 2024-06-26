@@ -1,5 +1,5 @@
 import { test, expect } from "bun:test";
-import { testApp } from "@/testutils";
+import { getTestUser, testApp } from "@/testutils";
 import { sessionTable, userTable } from "@/db/schema";
 import { eq } from "drizzle-orm"
 
@@ -12,11 +12,26 @@ test("signup and signin flow", async () => {
   // - new session can be created by logging in
 
   const { api, db } = testApp()
+  const { user, session } = await getTestUser(db)
+  console.log(user)
+
+  // new code
+  const codeRes = await api.admin.joincode.post({}, {
+    headers: {
+      Authorization: `Bearer ${session}`
+    }
+  })
+
+  if (!codeRes.data?.code) {
+    console.log(codeRes)
+    throw new Error("No code returned")
+  }
 
   // create a new account
   const res = await api.auth.signup.post({
     username: "testuser",
-    password: "teStp@ssw0rd"
+    password: "teStp@ssw0rd",
+    code: codeRes.data?.code,
   });
 
   expect(res.status).toBe(200)

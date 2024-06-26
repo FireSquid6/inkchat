@@ -18,6 +18,7 @@ export const unprotectedAuthApi = (app: Elysia) => app
       ctx.set.status = 400
       return { message: "Invalid password", token: "" }
     }
+
     let token = ""
     try {
       token = await createUser(ctx.store.kit, username, password)
@@ -27,18 +28,18 @@ export const unprotectedAuthApi = (app: Elysia) => app
 
     if (token === "") {
       ctx.set.status = 500
-      return { message: "Error creating user", token: "" }
+      return { token: "" }
     }
 
     ctx.set.status = 200
     return {
-      message: "User created successfully",
       token
     }
   }, {
     body: t.Object({
       password: t.String(),
       username: t.String(),
+      code: t.String(),
     })
   })
   // TODO: implement throttling

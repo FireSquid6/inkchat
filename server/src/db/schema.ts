@@ -30,3 +30,9 @@ export const channelTable = sqliteTable("channel", {
   description: text("description").notNull(),
   createdAt: integer("created_at").notNull(),
 })
+
+
+export const joincodeTable = sqliteTable("joincode", {
+  id: text("id").notNull().primaryKey().unique(),
+  createdAt: integer("created_at").notNull(),
+})

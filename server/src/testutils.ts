@@ -33,6 +33,7 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
     username: "testuser",
     password: "T3stp@ssword",
     id: "testuser",
+    isAdmin: 1,
   }
   await db.insert(userTable).values(user)
   const session = {
