@@ -13,7 +13,8 @@
     "new-dev": "bun run scripts/new-dev.ts",
     "ephemeral": "bun run scripts/ephemeral.ts",
     "prod": "bun run scripts/prod.ts",
-    "generate": "bunx drizzle-kit generate"
+    "generate": "bunx drizzle-kit generate",
+    "build": "bun run scripts/build.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
