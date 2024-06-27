@@ -1,11 +1,11 @@
 // contains frequently used functions for testing
 import { getDb } from "./db";
-import { getAuth } from "./auth";
+import { getAuth } from "@/db/auth";
 import type { App } from "./index";
 import { Config } from "@/config";
 import { treaty } from "@elysiajs/eden";
 import { startEphemeralApp } from "./setups";
-import { sessionTable, userTable } from "./schema";
+import { sessionTable, userTable } from "@/db/schema";
 import type { EdenWS } from "@elysiajs/eden/treaty";
 
 export interface TestKit {
@@ -33,6 +33,7 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
     username: "testuser",
     password: "T3stp@ssword",
     id: "testuser",
+    isAdmin: 1,
   }
   await db.insert(userTable).values(user)
   const session = {
@@ -48,10 +49,14 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   }
 }
 
-// Note: this function assumes that nothing is sent whenever the socket is first opened
-export async function converse(socket: EdenWS<any>, messages: string[]): Promise<string[]> {
+export async function converse(socket: EdenWS<any>, messages: string[], waitFirst: boolean = false): Promise<string[]> {
   return new Promise(async (resolve) => {
     const responses: string[] = []
+
+    if (waitFirst) {
+      const firstMessage = await waitForMessage(socket)
+      responses.push(firstMessage)
+    }
 
     for (const message of messages) {
       const response = await sendAndWait(socket, message)
@@ -61,6 +66,14 @@ export async function converse(socket: EdenWS<any>, messages: string[]): Promise
     return resolve(responses)
   })
 
+}
+
+export function waitForMessage(socket: EdenWS): Promise<string> {
+  return new Promise((resolve) => {
+    socket.on("message", (message) => {
+      resolve(message.data as string)
+    })
+  })
 }
 
 export function sendAndWait(socket: EdenWS, message: string): Promise<string> {

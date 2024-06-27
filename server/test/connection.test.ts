@@ -1,9 +1,9 @@
-import { expectNewMessagePayload, expectUserJoinedPayload, makeMessage, parseMessage } from "@/protocol";
-import type { ConnectPayload, ChatPayload } from "@/protocol";
-import { channelTable, messageTable } from "@/schema";
+import {serverMessages, clientMessages, parseMessage } from "@/protocol";
+import { channelTable, messageTable } from "@/db/schema";
 import { converse, testApp, getTestUser } from "@/testutils";
 import { test, expect } from "bun:test";
 import { eq } from "drizzle-orm";
+import { InkchatClient } from "@/sdk";
 
 
 test("chat flow", async () => {
@@ -19,48 +19,78 @@ test("chat flow", async () => {
   })
 
 
+  let doneEverything = false
   await new Promise<void>((resolve) => {
     const socket = api.socket.subscribe()
+
     socket.on("error", (err) => {
       console.error(err)
       // if the test is failing here it's because the socket is erroring for some reason
-      expect(err).toBeUndefined()
       socket.close()
+      resolve()
     })
     socket.on("close", () => {
-      socket.close()
       resolve()
     })
     socket.on("open", async () => {
       const messages: string[] = [
-        makeMessage<ConnectPayload>("CONNECT", {
-          token: session.id
+        clientMessages.connect.make({
+          authorization: `Bearer ${session.id}`
         }),
-        makeMessage<ChatPayload>("CHAT", {
+        clientMessages.chat.make({
           channelId: "testchannel",
           content: "Hello, world!"
         })
       ]
-
       const responses = await converse(socket, messages)
-      socket.close()
 
       const connectResponse = parseMessage(responses[0])
       expect(connectResponse.kind).toBe("USER_JOINED")
-      const connectPayload = expectUserJoinedPayload(connectResponse)
+      const connectPayload = serverMessages.userJoined.payloadAs(connectResponse)
+
       expect(connectPayload.id).toBe(user.id)
 
       const newMessage = parseMessage(responses[1])
       expect(newMessage.kind).toBe("NEW_MESSAGE")
-      const newMessagePayload = expectNewMessagePayload(newMessage)
+      const newMessagePayload = serverMessages.newChat.payloadAs(newMessage)
 
       expect(newMessagePayload.content).toBe("Hello, world!")
       expect(newMessagePayload.channelId).toBe("testchannel")
       const chatMessages = await db.select().from(messageTable).where(eq(messageTable.channelId, "testchannel"))
       expect(chatMessages.length).toBe(1)
 
+      doneEverything = true
+      socket.close()
+    })
+  })
 
+  // if the test is failing here it's because the socket is being shut down
+  expect(doneEverything).toBe(true)
+})
+
+test("sdk connection", async () => {
+  const { db } = testApp()
+  const { session } = await getTestUser(db)
+
+  let finished = false
+  const client = new InkchatClient(`Bearer ${session.id}`, "http://localhost:3001")
+
+  await new Promise<void>((resolve) => {
+    client.connect("ws://localhost:3001/socket")
+    client.events.connected.once(() => {
+      finished = true
+      resolve()
+    })
+    client.events.userJoined.once(() => {
+      finished = true
+      resolve()
+    })
+    client.events.error.once((err) => {
+      console.log(err)
       resolve()
     })
   })
+
+  expect(finished).toBe(true)
+
 })

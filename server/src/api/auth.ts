@@ -1,9 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { createUser } from "@/auth";
-import { isValidPassword, isValidUsername, verifyPassword, createSession } from "@/auth";
+import { createUser, isValidPassword, isValidUsername, verifyPassword, createSession } from "@/db/auth";
 import { getUserWithUsername } from "@/db";
-import { userTable } from "@/schema";
 
 export const unprotectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)
@@ -20,27 +18,28 @@ export const unprotectedAuthApi = (app: Elysia) => app
       ctx.set.status = 400
       return { message: "Invalid password", token: "" }
     }
+
     let token = ""
     try {
       token = await createUser(ctx.store.kit, username, password)
     } catch (e) {
-      ctx.logestic.error(e as string)
+      console.error(e as string)
     }
 
     if (token === "") {
       ctx.set.status = 500
-      return { message: "Error creating user", token: "" }
+      return { token: "" }
     }
 
     ctx.set.status = 200
     return {
-      message: "User created successfully",
       token
     }
   }, {
     body: t.Object({
       password: t.String(),
       username: t.String(),
+      code: t.String(),
     })
   })
   // TODO: implement throttling
@@ -77,6 +76,17 @@ export const unprotectedAuthApi = (app: Elysia) => app
     body: t.Object({
       username: t.String(),
       password: t.String(),
+    })
+  })
+  .post("/auth/validate", async (ctx) => {
+    if (ctx.session) {
+      ctx.set.status = 200
+    } else {
+      ctx.set.status = 401
+    }
+  }, {
+    headers: t.Object({
+      Authorization: t.String()
     })
   })
 

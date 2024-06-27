@@ -1,6 +1,6 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { userTable } from "@/schema";
+import { userTable } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 

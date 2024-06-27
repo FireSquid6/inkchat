@@ -1,30 +1,16 @@
-FROM oven/bun:1 as base
+FROM oven/bun
+
 WORKDIR /app
 
-FROM base as install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lockb /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY package.json .
+COPY bun.lockb .
 
+RUN bun install --production
 
-RUN mkdir -p /temp/prod
-COPY package.json bun.lockb /temp/prod
-RUN cd /temp/prod && bun install --froze-lockfile --production
+COPY src src
+COPY tsconfig.json .
 
+ENV NODE_ENV production
+CMD ["bun", "scripts/prod.ts"]
 
-FROM base as prerelease
-COPY --from=install /temp/dev/node_modules node_modules
-COPY . .
-
-ENV NODE_ENV=production
-RUN bun test
-
-
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app .
-
-
-USER bun
 EXPOSE 3000
-ENTRYPOINT ["bun", "run", "index.ts"]

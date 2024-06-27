@@ -1,25 +1,37 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import type { PublicUser } from "./api/users"
-import { makeMessage, parseMessage, expectNewMessagePayload, expectUserLeftPayload, expectUserJoinedPayload, type ChatPayload, type NewMessagePayload, type UserJoinedPayload } from "./protocol"
+import { clientMessages, parseMessage, serverMessages } from "@/protocol"
+import type { InferSelectModel } from "drizzle-orm"
+import type { channelTable, messageTable } from "./db/schema"
 
 
+// conventions:
+// if a property is called "authorization" it takes the form of: "Bearer <session id>"
+// if a property is just "token" it is just the session id
 export class InkchatClient {
   token: string
   api: ReturnType<typeof treaty<App>>
   socket: WebSocket | null = null
 
   events = {
-    chat: new Pubsub<NewMessagePayload>(),
     connected: new Pubsub<null>(),
     disconnected: new Pubsub<null>(),
-    userJoined: new Pubsub<UserJoinedPayload>(),
-    userLeft: new Pubsub<UserJoinedPayload>(),
-    error: new Pubsub<string>(),
+    error: new Pubsub<ReturnType<typeof serverMessages.error.payloadAs>>(),
+
+    chat: new Pubsub<ReturnType<typeof serverMessages.newChat.payloadAs>>(),
+    userJoined: new Pubsub<ReturnType<typeof serverMessages.userJoined.payloadAs>>(),
+    userLeft: new Pubsub<ReturnType<typeof serverMessages.userLeft.payloadAs>>(),
+
+    deleteChannel: new Pubsub<ReturnType<typeof serverMessages.deleteChannel.payloadAs>>(),
+    modifyChannel: new Pubsub<ReturnType<typeof serverMessages.modifyChannel.payloadAs>>(),
+    createChannel: new Pubsub<ReturnType<typeof serverMessages.createChannel.payloadAs>>(),
   }
 
-  constructor(token: string, url: string) {
-    this.token = token
+  isConnected: boolean = false
+
+  constructor(authorization: string, url: string) {
+    this.token = authorization
     this.api = treaty<App>(url)
   }
 
@@ -27,14 +39,17 @@ export class InkchatClient {
     this.socket = new WebSocket(url)
 
     this.socket.onopen = () => {
-      this.socket!.send(makeMessage("CONNECT", { token: this.token }))
+      this.isConnected = true
+      this.socket!.send(clientMessages.connect.make({ authorization: this.token }))
     }
 
     this.socket.onerror = (e) => {
+      this.isConnected = false
       this.events.error.trigger(`websocket errored with event: ${e}`)
     }
 
     this.socket.onclose = () => {
+      this.isConnected = false
       this.events.disconnected.trigger(null)
     }
 
@@ -44,6 +59,7 @@ export class InkchatClient {
   }
 
   disconnect() {
+    this.isConnected = false
     if (this.socket) {
       this.socket.close()
     }
@@ -53,21 +69,24 @@ export class InkchatClient {
     const message = parseMessage(msg)
 
     switch (message.kind) {
-      case "NEW_MESSAGE":
-        this.events.chat.trigger(expectNewMessagePayload(message))
+      case serverMessages.newChat.name:
+        this.events.chat.trigger(serverMessages.newChat.payloadAs(message))
         break
-      case "USER_JOINED":
-        this.events.userJoined.trigger(expectUserJoinedPayload(message))
+      case serverMessages.userJoined.name:
+        this.events.userJoined.trigger(serverMessages.userJoined.payloadAs(message))
         break
-      case "USER_LEFT":
-        this.events.userLeft.trigger(expectUserLeftPayload(message))
+      case serverMessages.userLeft.name:
+        this.events.userLeft.trigger(serverMessages.userLeft.payloadAs(message))
+        break
+      case serverMessages.error.name:
+        this.events.error.trigger(serverMessages.error.payloadAs(message))
         break
       default:
         this.events.error.trigger(`Unknown message: ${msg}`)
     }
   }
 
-  async getUsers(): Promise<Maybe<string[]>> {
+  async getUserIds(): Promise<Maybe<string[]>> {
     const usersResponse = await this.api.users.get()
 
     if (usersResponse.data !== null) {
@@ -90,9 +109,68 @@ export class InkchatClient {
       return None("Socket not connected")
     }
 
-    this.socket.send(makeMessage<ChatPayload>("CHAT", { channelId, content }))
+    this.socket.send(clientMessages.chat.make({ channelId, content }))
     return Some(null)
   }
+
+  async getMessages(channelId: string, before: number, last: number): Promise<Maybe<InferSelectModel<typeof messageTable>[]>> {
+    const messagesResponse = await this.api.channels({ id: channelId }).messages.get({
+      headers: {
+        Authorization: this.token
+      },
+      query: {
+        before: before.toString(),
+        last: last.toString(),
+      }
+    })
+
+    if (messagesResponse.data !== null) {
+      return Some(messagesResponse.data)
+    }
+
+    return None(`Failed to get messages: ${messagesResponse.error}`)
+  }
+
+  async getChannels(): Promise<Maybe<InferSelectModel<typeof channelTable>[]>> {
+    const channelsResponse = await this.api.channels.get({
+      headers: {
+        Authorization: this.token
+      }
+    })
+
+    if (channelsResponse.data !== null) {
+      return Some(channelsResponse.data)
+    }
+
+    return None(`Failed to get channels: ${channelsResponse.error}`)
+  }
+
+  async getChannel(id: string): Promise<Maybe<InferSelectModel<typeof channelTable>>> {
+    const channelResponse = await this.api.channels({ id: id }).get({
+      headers: {
+        Authorization: this.token
+      }
+    })
+
+    if (channelResponse.data !== null) {
+      return Some(channelResponse.data)
+    }
+
+    return None(`Failed to get channel: ${channelResponse.error}`)
+  }
+}
+
+
+// checks if a session is valid or not
+export async function sessionValid(url: string, authorization: string): Promise<boolean> {
+  const api = treaty<App>(url)
+  const res = await api.auth.validate.post({}, {
+    headers: {
+      Authorization: authorization
+    }
+  })
+
+  return res.status === 200
 }
 
 // logs into the server at the specified url and returns a Maybe of the token
@@ -107,9 +185,23 @@ export async function newSession(url: string, username: string, password: string
   return None(`Failed to login: ${res.error}`)
 }
 
+// creates a new account at the specified url and returns a Maybe of the token
+export async function newAccount(url: string, username: string, password: string, code: string): Promise<Maybe<string>> {
+  const api: ReturnType<typeof treaty<App>> = treaty<App>(url)
+  const res = await api.auth.signup.post({
+    username,
+    password,
+    code,
+  })
+
+  if (res.data !== null) {
+    return Some(res.data.token)
+  }
+  return None(`Failed to create account (${res.status}): ${res.error}`)
+}
 
 // the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
-export type Maybe<T> = { some: T, error: null } | { some: null, error: string }
+export type Maybe<T> = { data: T, error: null } | { data: null, error: string }
 
 
 type SomeMaybeHandler<T, R> = (some: T) => R
@@ -118,8 +210,8 @@ type NoneMaybeHandler<R> = (error: string) => R
 
 // handles a maybe of type T
 export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T, Return>, none: NoneMaybeHandler<Return>) {
-  if (maybe.some) {
-    return some(maybe.some!)
+  if (maybe.data) {
+    return some(maybe.data!)
   } else {
     return none(maybe.error!)
   }
@@ -127,14 +219,14 @@ export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T
 
 function Some<T>(value: T): Maybe<T> {
   return {
-    some: value,
+    data: value,
     error: null,
   }
 }
 
 function None<T>(error: string): Maybe<T> {
   return {
-    some: null,
+    data: null,
     error: error,
   }
 }

@@ -1,13 +1,76 @@
 import type { InferSelectModel } from "drizzle-orm"
-import { messageTable } from "@/schema"
-
-
+import { messageTable } from "@/db/schema"
 
 export interface Message {
   kind: string
-  payload: object
+  payload: any
 }
 
+export class MessageKind<T> {
+  constructor(public name: string) {}
+  make(payload: T): string {
+    return makeMessage(this.name, payload)
+  }
+  parse(msg: string): T {
+    const message = parseMessage(msg)
+    return message.payload as T
+  }
+  payloadAs(msg: Message): T {
+    if (msg.kind !== this.name) {
+      throw Error(`Expected message kind ${this.name}, got ${msg.kind}`)
+    }
+
+    return msg.payload as T
+  }
+}
+
+export const serverMessages = {
+  newChat: new MessageKind<NewMessagePayload>("NEW_MESSAGE"),
+  userJoined: new MessageKind<UserJoinedPayload>("USER_JOINED"),
+  userLeft: new MessageKind<UserLeftPayload>("USER_LEFT"),
+
+  deleteChannel: new MessageKind<DeleteChannelPayload>("DELETE_CHANNEL"),
+  modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
+  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
+
+  error: new MessageKind<string>("ERROR"),
+}
+
+export const clientMessages = {
+  chat: new MessageKind<ChatPayload>("CHAT"),
+  connect: new MessageKind<ConnectPayload>("CONNECT"),
+
+  deleteChannel: new MessageKind<DeleteChannelPayload>("DELETE_CHANNEL"),
+  modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
+  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
+}
+
+export type DeleteChannelPayload = {
+  id: string
+}
+export type ModifyChannelPayload = {
+  id: string
+  name: string
+  description: string
+}
+export type CreateChannelPayload = {
+  name: string
+}
+
+export type NewMessagePayload = InferSelectModel<typeof messageTable>
+export type UserJoinedPayload = {
+  id: string
+}
+export type UserLeftPayload = {
+  id: string
+}
+export type ConnectPayload = {
+  authorization: string
+}
+export type ChatPayload = {
+  content: string
+  channelId: string
+}
 const separator = "|"
 
 export function makeMessage<PayloadType>(kind: string, payload: PayloadType): string {
@@ -28,60 +91,28 @@ export function parseMessage(msg: string): Message {
     kind: split[0],
     payload: JSON.parse(payload)
   }
-  // TODO - ensure that it satiesfies the interface
+
   return parsedMessage
 }
 
 export type MessageHandler = (msg: Message) => void | Promise<void>
-export async function doForMessage<Kind>(msg: Message, map: Map<Kind, MessageHandler>) {
-  if (!map.has("UNKOWN" as Kind)) {
-    throw Error("Passed map has to have a handler for an unkown message")
+
+export async function doForMessage(msg: Message, map: Map<string, MessageHandler>): Promise<boolean> {
+  let handler: MessageHandler
+  if (map.has(msg.kind)) {
+    handler = map.get(msg.kind)!
+  } else {
+    return false
   }
 
-  let handler: MessageHandler = map.get("UNKOWN" as Kind)!
-
-  if (map.has(msg.kind as Kind)) {
-    handler = map.get(msg.kind as Kind)!
-  }
   try {
     await handler(msg)
   } catch (e) {
     console.error(e)
   }
+
+  return true
 }
 
 
-export type ServerMessageKind = "NEW_MESSAGE" | "USER_JOINED" | "USER_LEFT" | "UNKOWN"  // types of messages that the server can send to the client
-export type NewMessagePayload = InferSelectModel<typeof messageTable>
-export function expectNewMessagePayload(msg: Message): NewMessagePayload {
-  return msg.payload as NewMessagePayload
-}
-export type UserJoinedPayload = {
-  id: string
-}
-export function expectUserJoinedPayload(msg: Message): UserJoinedPayload {
-  return msg.payload as UserJoinedPayload
-}
-export type UserLeftPayload = {
-  id: string
-}
-export function expectUserLeftPayload(msg: Message): UserLeftPayload {
-  return msg.payload as UserLeftPayload
-}
 
-
-export type ClientMessageKind = "CONNECT" | "CHAT" | "UNKOWN"  // types of messages that the client can send to the server
-export type ConnectPayload = {
-  token: string
-}
-export function expectConnectPayload(msg: Message): ConnectPayload {
-  return msg.payload as ConnectPayload
-}
-
-export type ChatPayload = {
-  content: string
-  channelId: string
-}
-export function expectChatPayload(msg: Message): ChatPayload {
-  return msg.payload as ChatPayload
-}
