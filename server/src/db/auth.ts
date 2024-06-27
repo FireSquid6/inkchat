@@ -1,9 +1,10 @@
 import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
 import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { Lucia, generateIdFromEntropySize } from "lucia"
-import { sessionTable, userTable } from "./schema";
+import { sessionTable, userTable, joincodeTable } from "./schema";
 import { hash, verify } from "@node-rs/argon2";
-import type { Kit } from "@/index";
+import { Some, None, type Kit, type Maybe } from "@/index";
+import { eq } from "drizzle-orm";
 
 
 export function getAuth(db: BunSQLiteDatabase) {
@@ -22,6 +23,42 @@ export function getAuth(db: BunSQLiteDatabase) {
   })
 }
 
+export async function deleteJoincode(kit: Kit, code: string): Promise<Maybe<boolean>> {
+  try {
+    await kit.db.delete(joincodeTable).where(eq(joincodeTable.id, code))
+    return Some(true)
+  } catch (e) {
+    return None(`database error while deleting joincode: ${e}`)
+  }
+}
+
+export async function makeJoincode(kit: Kit) {
+  try {
+    const joincode = Math.random().toString(36).substring(2, 8)
+
+    await kit.db.insert(joincodeTable).values({
+      id: joincode,
+      createdAt: Date.now()
+    })
+
+    return Some(joincode)
+  } catch (e) {
+    return None(`database error while creating joincode: ${e}`)
+  }
+}
+
+export async function validateJoincode(kit: Kit, code: string): Promise<Maybe<boolean>> {
+  try {
+    const joincodes = await kit.db.select().from(joincodeTable).where(eq(joincodeTable.id, code))
+    if (joincodes.length === 0) {
+      return Some(false)
+    }
+
+    return Some(true)
+  } catch (e) {
+    return None(`database error while validating joincode: ${e}`)
+  }
+}
 
 declare module "lucia" {
   interface Register {

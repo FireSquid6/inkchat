@@ -1,5 +1,6 @@
 import { treaty } from "@elysiajs/eden"
-import type { App } from "@/index"
+import type { App, Maybe } from "@/index"
+import { Some, None } from "@/index"
 import type { PublicUser } from "./api/users"
 import { clientMessages, parseMessage, serverMessages } from "@/protocol"
 import type { InferSelectModel } from "drizzle-orm"
@@ -200,36 +201,7 @@ export async function newAccount(url: string, username: string, password: string
   return None(`Failed to create account (${res.status}): ${res.error}`)
 }
 
-// the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
-export type Maybe<T> = { data: T, error: null } | { data: null, error: string }
 
-
-type SomeMaybeHandler<T, R> = (some: T) => R
-type NoneMaybeHandler<R> = (error: string) => R
-
-
-// handles a maybe of type T
-export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T, Return>, none: NoneMaybeHandler<Return>) {
-  if (maybe.data) {
-    return some(maybe.data!)
-  } else {
-    return none(maybe.error!)
-  }
-}
-
-function Some<T>(value: T): Maybe<T> {
-  return {
-    data: value,
-    error: null,
-  }
-}
-
-function None<T>(error: string): Maybe<T> {
-  return {
-    data: null,
-    error: error,
-  }
-}
 
 
 type PubsubListener<T> = (arg0: T) => void

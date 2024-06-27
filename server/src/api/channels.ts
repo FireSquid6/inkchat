@@ -1,52 +1,36 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { channelTable, messageTable } from "@/db/schema"
-import { eq, and, lte } from "drizzle-orm"
+import { type ChannelRow, type MessageRow } from "@/db/schema"
+import { None, type Maybe } from ".."
+import { getAllChannels, getChannel, getLastMessagesInChannel } from "@/db/channels"
 
 
 export const channelsApi = (app: Elysia) => app
   .use(kitPlugin)
-  .get("/channels/:id", async (ctx) => {
-    const { db } = ctx.store.kit
-    const channels = await db.select().from(channelTable).where(eq(channelTable.id, ctx.params.id))
-
-    if (channels.length === 0) {
-      ctx.set.status = 404
-      return null
-    }
-
-    return channels[0]
+  .get("/channels/:id", async (ctx): Promise<Maybe<ChannelRow>> => {
+    return getChannel(ctx.store.kit, ctx.params.id)
   }, {
     params: t.Object({
       id: t.String()
     })
   })
-  .get("/channels", async (ctx) => {
-    const { db } = ctx.store.kit
-    const channels = await db.select().from(channelTable)
-    return channels
+  .get("/channels", async (ctx): Promise<Maybe<ChannelRow[]>> => {
+    return getAllChannels(ctx.store.kit)
   })
-  .get("/channels/:id/messages", async (ctx) => {
-    const { db, config } = ctx.store.kit
+  .get("/channels/:id/messages", async (ctx): Promise<Maybe<MessageRow[]>> => {
+    const { config } = ctx.store.kit
     let last = parseInt(ctx.query.last)
     let before = parseInt(ctx.query.before)
 
     if (last > config.maxMessages()) {
       ctx.set.status = 400
-      return []
+      return None("last parameter is too large")
     }
 
     // TODO: this won't scale. We have to sort through the entire table to get the last N messages.
     // I don't actually know how sql really works
     // chaching is probably necessary
-    const messages = await db
-      .select()
-      .from(messageTable)
-      .where(and(eq(messageTable.channelId, ctx.params.id), lte(messageTable.createdAt, before)))
-      .orderBy(messageTable.createdAt)
-      .limit(last)
-
-    return messages
+    return await getLastMessagesInChannel(ctx.store.kit, ctx.params.id, last, before)
   }, {
     params: t.Object({
       id: t.String()

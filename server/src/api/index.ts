@@ -10,7 +10,6 @@ import { eq } from "drizzle-orm"
 import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
 import { channelsApi } from "@/api/channels";
 import { usersApi } from "@/api/users";
-import { filesApi } from "@/api/files";
 import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
 
@@ -116,7 +115,6 @@ export const app = new Elysia()
 
     .use(channelsApi)
     .use(usersApi)
-    .use(filesApi)
 
     .guard({
       async beforeHandle(ctx) {

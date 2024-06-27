@@ -116,6 +116,9 @@ export async function getResponse(kit: Kit, msg: Message, senderId: string): Pro
 
       response = serverMessages.newChat.make(message)
     }],
+    [clientMessages.createChannel.name, async (msg) => {
+
+    }],
   ]))
 
   return { response: response, error: error }

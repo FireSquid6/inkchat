@@ -84,15 +84,4 @@ async function hashPassword(password: string) {
 }
 
 
-export async function getUserWithUsername(kit: Kit, username: string) {
-  const users = await kit.db.select().from(userTable).where(eq(userTable.username, username))
-  if (users.length === 0) {
-    return null
-  }
 
-  if (users.length > 1) {
-    throw new Error("Multiple users with the same username. How'd you screw this up?")
-  }
-
-  return users[0]
-}

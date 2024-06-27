@@ -1,7 +1,8 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import { userTable } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import type { Maybe } from "@/index"
+import { Some, None } from "@/index"
+import { getAllUsers, getUserWithId } from "@/db/user";
 
 
 export interface PublicUser {
@@ -14,30 +15,35 @@ export interface PublicUser {
 // bio, display name, etc
 export const usersApi = (app: Elysia) => app
   .use(kitPlugin)
-  .get("/users/:id", async (ctx): Promise<PublicUser | null > => {
-    const { db } = ctx.store.kit
-    const users = await db.select().from(userTable).where(eq(userTable.id, ctx.params.id))
+  .get("/users/:id", async (ctx): Promise<Maybe<PublicUser>> => {
+    const res = await getUserWithId(ctx.store.kit, ctx.params.id)
 
-    if (users.length === 0) {
-      ctx.set.status = 404
-      return null
+    if (res.data === null) {
+      return res
     }
 
-    const user = users[0]
-    return {
-      id: user.id,
-      username: user.id,
-      isAdmin: user.isAdmin === 1
-    }
+    return Some({
+      id: res.data.id,
+      username: res.data.username,
+      isAdmin: res.data.isAdmin === 1
+    })
+
   }, {
     params: t.Object({
       id: t.String()
     })
   })
-  .get("/users", async (ctx): Promise<string[]> => {
-    const { db } = ctx.store.kit
-    const users = await db.select().from(userTable)
-    const userIds = users.map(user => user.id)
+  .get("/users", async (ctx): Promise<Maybe<PublicUser[]>> => {
+    const res = await getAllUsers(ctx.store.kit)
+    if (res.data === null) {
+      return None(res.error)
+    }
 
-    return userIds
+    const userIds = res.data.map(user => ({
+      id: user.id,
+      username: user.username,
+      isAdmin: user.isAdmin === 1
+    }))
+
+    return Some(userIds)
   })

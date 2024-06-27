@@ -15,13 +15,15 @@ test("signup and signin flow", async () => {
   const { session } = await getTestUser(db)
 
   // new code
-  const codeRes = await api.admin.joincode.post({}, {
+  const { data: codeRes } = await api.admin.joincode.post({}, {
     headers: {
       Authorization: `Bearer ${session.id}`
     }
   })
 
-  if (!codeRes.data?.code) {
+
+
+  if (!codeRes.code) {
     console.log(codeRes)
     throw new Error("No code returned")
   }
