@@ -142,7 +142,6 @@ export class InkchatClient {
       return Some(channelsResponse.data)
     }
 
-    console.log(channelsResponse)
     return None(`Failed to get channels: ${channelsResponse.error}`)
   }
 
@@ -163,9 +162,15 @@ export class InkchatClient {
 
 
 // checks if a session is valid or not
-export async function sessionValid(url: string, authorization: string): Promise<Maybe<boolean>> {
-  return Promise.resolve(None<boolean>("not implemented"))
+export async function sessionValid(url: string, authorization: string): Promise<boolean> {
+  const api = treaty<App>(url)
+  const res = await api.auth.validate.post({}, {
+    headers: {
+      Authorization: authorization
+    }
+  })
 
+  return res.status === 200
 }
 
 // logs into the server at the specified url and returns a Maybe of the token
@@ -180,9 +185,19 @@ export async function newSession(url: string, username: string, password: string
   return None(`Failed to login: ${res.error}`)
 }
 
-// TODO: should create a new account on the server
-export function newAccount(url: string, username: string, passsword: string, code: string): Promise<Maybe<string>> {
-  return Promise.resolve(None<string>("not implemented"))
+// creates a new account at the specified url and returns a Maybe of the token
+export async function newAccount(url: string, username: string, password: string, code: string): Promise<Maybe<string>> {
+  const api: ReturnType<typeof treaty<App>> = treaty<App>(url)
+  const res = await api.auth.signup.post({
+    username,
+    password,
+    code,
+  })
+
+  if (res.data !== null) {
+    return Some(res.data.token)
+  }
+  return None(`Failed to create account (${res.status}): ${res.error}`)
 }
 
 // the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
