@@ -1,8 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
-import type { Maybe } from "@/index"
-import { Some, None } from "@/index"
 import { getAllUsers, getUserWithId } from "@/db/user";
+import { isNone } from "@/index"
 
 
 export interface PublicUser {
@@ -15,28 +14,27 @@ export interface PublicUser {
 // bio, display name, etc
 export const usersApi = (app: Elysia) => app
   .use(kitPlugin)
-  .get("/users/:id", async (ctx): Promise<Maybe<PublicUser>> => {
+  .get("/users/:id", async (ctx): Promise<PublicUser | null> => {
     const res = await getUserWithId(ctx.store.kit, ctx.params.id)
 
-    if (res.data === null) {
-      return res
+    if (isNone(res)) {
+      return null
     }
 
-    return Some({
+    return {
       id: res.data.id,
       username: res.data.username,
       isAdmin: res.data.isAdmin === 1
-    })
-
+    }
   }, {
     params: t.Object({
       id: t.String()
     })
   })
-  .get("/users", async (ctx): Promise<Maybe<PublicUser[]>> => {
+  .get("/users", async (ctx): Promise<PublicUser[]> => {
     const res = await getAllUsers(ctx.store.kit)
-    if (res.data === null) {
-      return None(res.error)
+    if (isNone(res)) {
+      return []
     }
 
     const userIds = res.data.map(user => ({
@@ -45,5 +43,5 @@ export const usersApi = (app: Elysia) => app
       isAdmin: user.isAdmin === 1
     }))
 
-    return Some(userIds)
+    return userIds
   })

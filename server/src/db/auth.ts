@@ -32,7 +32,7 @@ export async function deleteJoincode(kit: Kit, code: string): Promise<Maybe<bool
   }
 }
 
-export async function makeJoincode(kit: Kit) {
+export async function makeJoincode(kit: Kit): Promise<Maybe<string>> {
   try {
     const joincode = Math.random().toString(36).substring(2, 8)
 

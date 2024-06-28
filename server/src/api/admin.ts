@@ -1,9 +1,8 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "."
 import { joincodeTable } from "@/db/schema"
-import { eq } from "drizzle-orm"
 import { promoteUser } from "@/db/user"
-import { None, Some, isNone } from "@/index"
+import { isNone } from "@/index"
 import { deleteJoincode, makeJoincode } from "@/db/auth"
 
 
@@ -16,25 +15,31 @@ export const adminApi = (app: Elysia) => app
 
     if (error) {
       ctx.set.status = 400
-      return None(error)
+      return { message: "user not found"}
     }
 
-    return Some(undefined)
+    return {}
   }, {
     body: t.Object({
       userId: t.String()
     })
   })
   .post("/admin/joincode", async (ctx) => {
-    const { data: joincode, error } = await makeJoincode(ctx.store.kit)
+    const joincodeRes = await makeJoincode(ctx.store.kit)
 
-    if (error) {
+    if (isNone(joincodeRes)) {
       ctx.set.status = 500
-      return None(error)
+      return {
+        message: "Failed to create joincode",
+        code: "",
+      }
     }
 
     ctx.set.status = 201
-    return Some(joincode)
+    return {
+      code: joincodeRes.data,
+      message: "Joincode created"
+    }
   })
   .delete("/admin/joincode", async (ctx) => {
     const { code } = ctx.body
