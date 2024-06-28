@@ -12,6 +12,7 @@ import { channelsApi } from "@/api/channels";
 import { usersApi } from "@/api/users";
 import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
+import { filesApi } from "@/api/files"
 
 
 export const kitPlugin = (app: Elysia) => app
@@ -112,7 +113,7 @@ export const app = new Elysia()
   }, (app) => app
     // anything down here is protected
     .use(protectedAuthApi)
-
+    .use(filesApi)
     .use(channelsApi)
     .use(usersApi)
 
