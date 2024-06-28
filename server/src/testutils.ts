@@ -16,7 +16,7 @@ export interface TestKit {
 }
 
 export function testApp(): TestKit {
-  const stdKit = startEphemeralApp()
+  const stdKit = startEphemeralApp(false)
   const api = treaty<App>("http://localhost:3001")
 
   return {
