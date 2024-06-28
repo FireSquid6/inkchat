@@ -38,5 +38,6 @@ test("files api", async () => {
   }
   expect(attachment.status).toBe(200)
   // @ts-ignore for some reason the file is a string
+  // probably a bug in elysia
   expect(file).toBe("foo")
 })
