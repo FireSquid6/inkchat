@@ -1,9 +1,11 @@
-import { InkchatClient } from "@/sdk"
 import * as Protocol from "@/protocol"
-export type { App } from "@/index"
+import type { App } from "@/index"
+import { treaty } from "@elysiajs/eden"
 
 export {
-  InkchatClient,
   Protocol,
 }
 
+export function getTreaty(url: string) {
+  return treaty<App>(url)
+}
