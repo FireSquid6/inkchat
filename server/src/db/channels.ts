@@ -23,6 +23,7 @@ export async function getLastMessagesInChannel(kit: Kit, channelId: string, last
       .select()
       .from(messageTable)
       .where(and(eq(messageTable.channelId, channelId), lte(messageTable.createdAt, before)))
+      .orderBy(messageTable.createdAt)
       .limit(last)
     return Some(messsages)
   } catch (e) {

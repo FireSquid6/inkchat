@@ -45,6 +45,7 @@ export const channelsApi = (app: Elysia) => app
     // TODO: this won't scale. We have to sort through the entire table to get the last N messages.
     // I don't actually know how sql really works
     // chaching is probably necessary
+    console.log(ctx.params.id)
     const messageRes = await getLastMessagesInChannel(ctx.store.kit, ctx.params.id, last, before)
     if (isNone(messageRes)) {
       ctx.set.status = 500
