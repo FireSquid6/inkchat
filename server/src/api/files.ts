@@ -27,7 +27,6 @@ export const filesApi = (app: Elysia) => app
     const newFilepath = path.join(ctx.store.kit.config.storeDir(), "attachments", newFilename)
 
     try {
-      console.log("writing file")
       fs.writeFileSync(newFilepath, await ctx.body.file.text())
     } catch (e) {
       console.error(e)

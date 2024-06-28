@@ -19,7 +19,24 @@ test("files api", async () => {
     }
   })
 
-  console.log(res.data)
   expect(res.status).toBe(201)
   expect(res.data).toBeDefined()
+
+  const attachment = await api.attachments({ filename: res.data || "" }).get({
+    headers: {
+      Authorization: `Bearer ${session.id}`
+    }
+  })
+  console.log(attachment)
+  
+  const file = attachment.data
+  console.log(typeof file)
+  console.log("file: ", file)
+
+  if (file === null) {
+    return expect(file).not.toBe(null)
+  }
+  expect(attachment.status).toBe(200)
+  // @ts-ignore for some reason the file is a string
+  expect(file).toBe("foo")
 })
