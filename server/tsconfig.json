@@ -1,4 +1,5 @@
 {
+  "include": ["src/**/*", "test/**/*", "public.ts"],
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable", "dom"],
     "target": "ES2020",
@@ -13,13 +14,16 @@
     "verbatimModuleSyntax": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
 
     /* Linting */
     "skipLibCheck": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
+
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "types",
 
     "paths": {
       "@/*": ["./src/*"]

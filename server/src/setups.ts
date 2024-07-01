@@ -3,7 +3,6 @@ import type { AppConfig } from "@/config"
 import { getDb, migrateDb, seed } from "@/db"
 import fs from "fs"
 
-
 export function startEphemeralApp(doSeed: boolean = false) {
   deleteDirectoryIfExists("store/ephemeral")
   ensureDirectoryExists("store/ephemeral")

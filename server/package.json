@@ -1,8 +1,9 @@
 {
   "name": "inkchat-server",
-  "module": "public.ts",
-  "version": "1.0.0",
-  "main": "public.ts",
+  "module": "dist/public.js",
+  "main": "dist/public.ts",
+  "types": "types/public.d.ts",
+  "version": "2.1.0",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
@@ -14,7 +15,7 @@
     "ephemeral": "bun run scripts/ephemeral.ts",
     "prod": "bun run scripts/prod.ts",
     "generate": "bunx drizzle-kit generate",
-    "build": "bun run scripts/build.ts"
+    "build": "bun run scripts/build.ts && bunx tsc"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
