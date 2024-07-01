@@ -15,7 +15,8 @@
     "ephemeral": "bun run scripts/ephemeral.ts",
     "prod": "bun run scripts/prod.ts",
     "generate": "bunx drizzle-kit generate",
-    "build": "bun run scripts/build.ts && bunx tsc"
+    "build": "bun run scripts/build.ts && bunx tsc",
+    "studio": "bunx drizzle-kit studio"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
