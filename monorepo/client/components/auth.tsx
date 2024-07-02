@@ -1,5 +1,5 @@
 "use client"
-import { FieldGroup, Fieldset, Legend, Field, Label, Description } from "@/components/fieldset"
+import { FieldGroup, Fieldset, Legend, Field, Label, Description } from "@/client/components/fieldset"
 import { Input } from "@/components/input"
 import { Text } from "@/components/text"
 import { Button } from "@/components/button"

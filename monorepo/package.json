@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "cd client && next dev",
+    "build": "cd client && next build",
+    "start": "cd client && next start",
+    "lint": "cd client && next lint"
   },
   "dependencies": {
     "@elysiajs/eden": "^1.0.14",

@@ -1,4 +1,4 @@
-import { Avatar } from '@/components/avatar'
+import { Avatar } from '@client/components/avatar'
 import {
   Dropdown,
   DropdownButton,
@@ -6,7 +6,7 @@ import {
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
-} from '@/components/dropdown'
+} from '@client/components/dropdown'
 import { Navbar, NavbarSpacer } from '@/components/navbar'
 import {
   Sidebar,
@@ -16,7 +16,7 @@ import {
   SidebarItem,
   SidebarLabel,
   SidebarSection,
-} from '@/components/sidebar'
+} from '@client/components/sidebar'
 import { SidebarLayout } from '@/components/sidebar-layout'
 import {
   ChevronDownIcon,
