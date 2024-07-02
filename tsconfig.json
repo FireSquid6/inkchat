@@ -26,7 +26,8 @@
     "outDir": "types",
 
     "paths": {
-      "@/*": ["./server/*"]
+      "@/*": ["./server/*"],
+      "@client/*": ["./client/*"]
     }
   }
 }
