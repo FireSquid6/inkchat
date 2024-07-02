@@ -1,5 +1,4 @@
 {
-  "include": ["src/**/*", "test/**/*", "public.ts"],
   "compilerOptions": {
     "lib": ["ESNext", "DOM", "DOM.Iterable", "dom"],
     "target": "ES2020",
