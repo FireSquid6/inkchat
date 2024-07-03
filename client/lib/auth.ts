@@ -1,4 +1,4 @@
-import { urlFromAddress } from "./server"
+import { urlFromAddress } from "./address"
 import { treaty } from "@elysiajs/eden"
 import { None, Some, type App, type Maybe } from "@/index"
 
