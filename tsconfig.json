@@ -21,10 +21,6 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
 
-    "declaration": true,
-    "emitDeclarationOnly": true,
-    "outDir": "types",
-
     "paths": {
       "@/*": ["./server/*"],
       "@client/*": ["./client/*"]

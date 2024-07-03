@@ -1,12 +1,9 @@
-import { configureStore} from "@reduxjs/toolkit"
-import { addressSlice } from "./address"
+import { configureStore } from "@reduxjs/toolkit"
+import { serverSlice } from "./server"
 
 
 export const store = configureStore({
   reducer: {
-    server: addressSlice.reducer
+    server: serverSlice.reducer,
   }
 })
-
-
-
