@@ -3,8 +3,6 @@ import type { App } from "@/index"
 import { socketFromAddress, urlFromAddress } from "./address"
 import { createContext, useContext, useState } from "react"
 import { connectSignal, disconnectSignal } from "./signals"
-import type { PublicUser } from "@/api/users"
-import type { MessageRow, ChannelRow } from "@/db/schema"
 
 
 export type ConnectionState = {
@@ -13,15 +11,11 @@ export type ConnectionState = {
   socketUrl: string
   token: string
 
-  active: boolean 
+  active: boolean
   error: string
 
   socket: WebSocket | null
   api: ReturnType<typeof treaty<App>> | null
-
-  users: PublicUser[]
-  messages: Map<string, MessageRow[]>
-  channels: ChannelRow[]
 }
 
 const initialState: ConnectionState = {
@@ -33,14 +27,9 @@ const initialState: ConnectionState = {
   active: false,
   error: "",
 
-  socket: null, 
+  socket: null,
   api: null,
-
-  users: [],
-  messages: new Map(),
-  channels: []
 }
-
 
 
 const ConnectionContext = createContext<ConnectionState>(initialState)
