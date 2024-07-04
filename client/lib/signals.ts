@@ -25,6 +25,8 @@ export class Pubsub<T> {
   }
 }
 
+
+// whenever the client needs to connect, a signal is sent that is processed in the ConnectionState context
 export const connectSignal = new Pubsub<{ address: string, token: string }>()
 export const disconnectSignal =  new Pubsub<undefined>()
 
