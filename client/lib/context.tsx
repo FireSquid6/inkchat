@@ -79,6 +79,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
   })
   disconnectSignal.subscribe(() => {
+    state.socket?.close()
     setState(initialState)
   })
 
