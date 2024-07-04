@@ -1,8 +1,9 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
-import { socketFromAddress, urlFromAddress } from "./address"
 import { createContext, useContext, useState } from "react"
 import { connectSignal, disconnectSignal } from "./signals"
+import { socketFromAddress, urlFromAddress } from "./address"
+import { clientMessages } from "@/protocol"
 
 
 export type ConnectionState = {
@@ -37,6 +38,44 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
   const [state, setState] = useState<ConnectionState>(initialState)
 
   connectSignal.subscribe(({ address, token }) => {
+    const url = urlFromAddress(address)
+    const socketUrl = socketFromAddress(address)
+
+    const api = treaty<App>(url)
+    const socket = new WebSocket(socketUrl)
+    
+
+    socket.on("open", () => {
+      setState({ ...state, active: true })
+
+      socket.send(clientMessages.connect.make({
+        authorization: `Bearer ${token}`,
+      }))
+    })
+    socket.on("close", () => {
+      setState({ ...state, socket: null, active: false })
+    })
+    socket.on("error", () => {
+      setState({ ...state, error: "Socket error" })
+    })
+    socket.on("message", (message) => {
+      // do something
+      console.log(message.toString())
+
+    })
+
+    setState({
+      address,
+      url,
+      socketUrl,
+
+      active: false,
+      error: "",
+      token,
+
+      api,
+      socket,
+    })
 
   })
   disconnectSignal.subscribe(() => {
