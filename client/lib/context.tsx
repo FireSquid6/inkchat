@@ -88,3 +88,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
 
 
+
+export function useConnection() {
+  return useContext(ConnectionContext)
+}

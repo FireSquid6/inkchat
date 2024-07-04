@@ -1,3 +1,5 @@
+import { useState } from "react"
+
 type PubsubListener<T> = (data: T) => void
 export class Pubsub<T> {
   private listeners: PubsubListener<T>[] = []
@@ -33,4 +35,16 @@ export function connect(address: string, token: string) {
 
 export function disconnect() {
   disconnectSignal.publish(undefined)
+}
+
+
+export function usePubsub<T>(pubsub: Pubsub<T>, initial: T) {
+  const [state, setState] = useState<T>(initial)
+
+  pubsub.subscribe((data: T) => {
+    setState(data)
+  })
+
+
+  return state
 }
