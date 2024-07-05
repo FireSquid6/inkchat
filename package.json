@@ -42,6 +42,7 @@
     "@node-rs/argon2": "^1.8.3",
     "autoprefixer": "^10.4.19",
     "clsx": "^2.1.1",
+    "daisyui": "^4.12.10",
     "drizzle": "^1.4.0",
     "drizzle-orm": "^0.31.2",
     "elysia": "^1.0.23",

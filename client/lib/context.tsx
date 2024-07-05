@@ -19,6 +19,11 @@ export type ConnectionState = {
   api: ReturnType<typeof treaty<App>> | null
 }
 
+export type Session = {
+  address: string
+  token: string
+}
+
 const initialState: ConnectionState = {
   address: "",
   url: "",
