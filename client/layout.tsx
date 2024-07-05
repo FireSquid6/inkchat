@@ -1,5 +1,5 @@
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
-
+import { Link } from "react-router-dom";
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -82,9 +82,9 @@ interface IdentityProps {
 
 function Identity(props: IdentityProps) {
   return (
-    <div className="flex flex-row items-center">
+    <Link className="flex flex-row items-center" to={`/${props.address}/ldfjaskldfjasdlkfjas`}>
       <img src={props.image ?? "https://via.placeholder.com/150"} alt="server-icon" className="rounded-full w-8 h-8" />
       <p>{props.address}</p>
-    </div>
+    </Link>
   )
 }
