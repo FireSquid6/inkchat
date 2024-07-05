@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { createUser, isValidPassword, isValidUsername, verifyPassword, createSession, validateJoincode, deleteJoincode } from "@/db/auth";
 import { getUserWithUsername } from "@/db/user";
-import { isNone, type Maybe } from "@/index"
+import { isNone, type Maybe } from "@/maybe"
 
 export const unprotectedAuthApi = (app: Elysia) => app
   .use(kitPlugin)

@@ -1,6 +1,6 @@
 import type { Kit } from "..";
 import { channelTable, messageTable, type ChannelRow, type MessageRow } from "./schema";
-import { Some, None, type Maybe } from "@/index";
+import { Some, None, type Maybe } from "@/maybe";
 import { and, eq, lte } from "drizzle-orm";
 
 // export function addChannel(kit: Kit, channel: ) {

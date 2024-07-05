@@ -1,5 +1,4 @@
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
-import { getStoredSessions } from "./lib/auth";
 
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {

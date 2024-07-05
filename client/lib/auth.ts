@@ -1,6 +1,7 @@
 import { urlFromAddress } from "./address"
 import { treaty } from "@elysiajs/eden"
-import { None, Some, isNone, type App, type Maybe } from "@/index"
+import { type App } from "@/index"
+import { Some, None, type Maybe, isNone } from "@/maybe"
 
 export async function signIn(address: string, username: string, password: string): Promise<Maybe<string>> {
   const url = urlFromAddress(address)
@@ -64,27 +65,32 @@ export function getStoredSessions(): Maybe<Session[]> {
   }
 }
 
+export function storeSession(session: Session): Maybe<void> {
+  try {
+    const sessions = getStoredSessions()
+    if (isNone(sessions)) {
+      return None(sessions.error)
+    }
 
-export function storeSession(session: Session): Maybe<undefined> {
-  const res = getStoredSessions()
-  if (isNone(res)) {
-    return None(res.error)
+    const newSessions = [...sessions.data, session]
+    localStorage.setItem('sessions', JSON.stringify(newSessions))
+    return Some(undefined)
+  } catch (e) {
+    return None(e as string)
   }
-
-  const sessions = res.data
-  sessions.push(session)
-  localStorage.setItem('sessions', JSON.stringify(sessions))
-  return Some(undefined)
 }
 
-export function removeSession(session: Session): Maybe<undefined> {
-  const res = getStoredSessions()
-  if (isNone(res)) {
-    return None(res.error)
-  }
+export function removeSession(session: Session): Maybe<void> {
+  try {
+    const sessions = getStoredSessions()
+    if (isNone(sessions)) {
+      return None(sessions.error)
+    }
 
-  const sessions = res.data
-  const newSessions = sessions.filter(s => s.address !== session.address)
-  localStorage.setItem('sessions', JSON.stringify(newSessions))
-  return Some(undefined)
+    const newSessions = sessions.data.filter(s => s.address !== session.address)
+    localStorage.setItem('sessions', JSON.stringify(newSessions))
+    return Some(undefined)
+  } catch (e) {
+    return None(e as string)
+  }
 }
