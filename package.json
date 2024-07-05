@@ -23,7 +23,8 @@
     "ephemeral": "bun run scripts/ephemeral.ts",
     "prod": "bun run scripts/prod.ts",
     "generate": "bunx drizzle-kit generate",
-    "build": "bunx vite build",
+    "build-client": "bunx vite build",
+    "build-server": "bun run scripts/build.ts",
     "studio": "bunx drizzle-kit studio",
     "vite": "vite"
   },
