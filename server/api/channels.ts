@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { type ChannelRow, type MessageRow } from "@/db/schema"
-import { isNone } from ".."
+import { isNone } from "@/maybe"
 import { getAllChannels, getChannel, getLastMessagesInChannel } from "@/db/channels"
 
 

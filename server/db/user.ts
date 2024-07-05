@@ -1,7 +1,8 @@
 import { userTable, type UserRow } from "@/db/schema"
 import { eq } from "drizzle-orm"
-import type { Kit, Maybe } from "@/index"
-import { Some, None } from "@/index"
+import type { Maybe } from "@/maybe"
+import type { Kit } from "@/index"
+import { Some, None } from "@/maybe"
 
 export async function getUserWithUsername(kit: Kit, username: string): Promise<Maybe<UserRow>> {
   try {

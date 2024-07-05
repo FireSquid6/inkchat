@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia"
 import { kitPlugin } from "."
 import { joincodeTable } from "@/db/schema"
 import { promoteUser } from "@/db/user"
-import { isNone } from "@/index"
+import { isNone } from "@/maybe"
 import { deleteJoincode, makeJoincode } from "@/db/auth"
 
 

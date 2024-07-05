@@ -1,7 +1,7 @@
 import { Elysia, t } from "elysia"
 import { kitPlugin } from "@/api"
 import { getAllUsers, getUserWithId } from "@/db/user";
-import { isNone } from "@/index"
+import { isNone } from "@/maybe"
 
 
 export interface PublicUser {
