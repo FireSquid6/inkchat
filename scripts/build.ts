@@ -1,5 +1,5 @@
-const result = await Bun.build({
-  entrypoints: ['scripts/prod.ts', './public.ts'],
+await Bun.build({
+  entrypoints: ['scripts/prod.ts'],
   target: 'bun',
   outdir: 'dist',
 })
