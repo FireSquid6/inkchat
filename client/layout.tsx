@@ -1,5 +1,7 @@
+import { useCallback } from "react";
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
+import { useState } from "react"
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -52,13 +54,21 @@ function Sidebar() {
 
 
 function IdentitySwitcher() {
+  const onClick = useCallback(() => {
+    const elem = document.activeElement as HTMLElement
+    if (elem) {
+      elem.blur()
+    }
+  }, [])
+
   const identities: IdentityProps[] = [
-    { id: "1", address: "chat.inkdocs.dev", image: null },
-    { id: "2", address: "devs.inkchat.com", image: null },
-    { id: "3", address: "diplomacy.com", image: null },
+    { id: "1", address: "chat.inkdocs.dev", image: null, onClick },
+    { id: "2", address: "devs.inkchat.com", image: null, onClick },
+    { id: "3", address: "diplomacy.com", image: null, onClick },
   ]
+
   return (
-    <div className="dropdown dropdown-bottom w-full mr-2">
+    <div className={`dropdown dropdown-bottom w-full mr-2`}>
       <div tabIndex={0} role="button" className="btn btn-primary w-full my-2">Swap Server</div>
       <ul tabIndex={0} className="dropdown-content mx-auto menu bg-base-100 rounded-box z-[1] w-full p-2 shadow">
         {
@@ -78,11 +88,12 @@ interface IdentityProps {
   id: string;
   address: string;
   image: string | null;
+  onClick: () => void;
 }
 
 function Identity(props: IdentityProps) {
   return (
-    <Link className="flex flex-row items-center" to={`/${props.address}/ldfjaskldfjasdlkfjas`}>
+    <Link className="flex flex-row items-center" to={`/${props.address}/ldfjaskldfjasdlkfjas`} onClick={props.onClick}>
       <img src={props.image ?? "https://via.placeholder.com/150"} alt="server-icon" className="rounded-full w-8 h-8" />
       <p>{props.address}</p>
     </Link>
