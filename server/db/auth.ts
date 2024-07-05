@@ -3,8 +3,9 @@ import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
 import { Lucia, generateIdFromEntropySize } from "lucia"
 import { sessionTable, userTable, joincodeTable } from "./schema";
 import { hash, verify } from "@node-rs/argon2";
-import { Some, None, type Kit, type Maybe } from "@/index";
+import { type Kit } from "@/index";
 import { eq } from "drizzle-orm";
+import { Some, None, type Maybe } from "@/maybe";
 
 
 export function getAuth(db: BunSQLiteDatabase) {
