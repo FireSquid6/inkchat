@@ -25,12 +25,14 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
 
 
 
+// only shows up on small screens
 function Topbar() {
   return (
-    <div className="w-full flex flex-row bg-base-300">
-      <label htmlFor="my-drawer-2" className="m-2 btn btn-circle btn-outline drawer-button lg:hidden">
+    <div className="w-full flex flex-row bg-base-300 lg:hidden">
+      <label htmlFor="my-drawer-2" className="m-2 btn btn-circle btn-outline drawer-button">
         <RiMenuUnfold3Line size="1.5em" />
       </label>
+      <IdentitySwitcher className="ml-auto max-w-60"/>
 
     </div>
   )
@@ -40,7 +42,7 @@ function Sidebar() {
   return (
     <>
       <div className="flex flex-row">
-        <IdentitySwitcher />
+        <IdentitySwitcher className="hidden lg:block" />
         <label htmlFor="my-drawer-2" className="ml-auto m-2 btn btn-circle btn-outline drawer-button lg:hidden">
           <RiMenuFold3Line size="1.5em" />
         </label>
@@ -53,7 +55,7 @@ function Sidebar() {
 }
 
 
-function IdentitySwitcher() {
+function IdentitySwitcher(props: { className?: string }) {
   const onClick = useCallback(() => {
     const elem = document.activeElement as HTMLElement
     if (elem) {
@@ -68,7 +70,7 @@ function IdentitySwitcher() {
   ]
 
   return (
-    <div className={`dropdown dropdown-bottom w-full mr-2`}>
+    <div className={`dropdown dropdown-bottom w-full mr-2 ${props.className}`}>
       <div tabIndex={0} role="button" className="btn btn-primary w-full my-2">Swap Server</div>
       <ul tabIndex={0} className="dropdown-content mx-auto menu bg-base-100 rounded-box z-[1] w-full p-2 shadow">
         {

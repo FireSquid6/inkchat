@@ -5,7 +5,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Root } from './pages/root'
 import { ConnectionProvider } from "./lib/context";
 import { ErrorPage } from './error'
-import { Channel } from "./pages/channel";
+import { ChannelPage } from "./pages/channel";
 
 const router = createBrowserRouter([
   {
@@ -15,7 +15,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: ":address/:channelId",
-        element: <Channel />,
+        element: <ChannelPage />,
       },
       {
         path: "home",
