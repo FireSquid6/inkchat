@@ -12,12 +12,13 @@ export async function signIn(address: string, username: string, password: string
     password
   }) 
 
-  if (!res.data) {
-    return None(`No data from server`)
+  if (res.status !== 200) {
+    console.log(res)
+    return None(`Failed to sign in. Your address, username, or password may be incorrect.`)
   }
 
-  if (res.status !== 200) {
-    return None(`Failed to sign in: ${res.status} ${res.data.message}`)
+  if (!res.data) {
+    return None(`No data from server`)
   }
 
   return Some(res.data.token)
