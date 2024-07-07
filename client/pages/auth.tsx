@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "@/maybe"
-import { signIn, signUp } from "@client/lib/auth"
+import { signIn, signUp, storeSession } from "@client/lib/auth"
 
 export function AuthPage() {
   const [newAccount, setNewAccount] = useState(false)
@@ -20,6 +20,10 @@ export function AuthPage() {
 
     if (isSome(res)) {
       setError("")
+      storeSession({
+        token: res.data,
+        address: address,
+      })
     } else {
       setError(res.error)
     }
@@ -43,6 +47,7 @@ export function AuthPage() {
         <button className="btn btn-primary mx-auto m-4" onClick={handleSubmit
         } type="button">Submit</button>
       </form>
+      <p>TODO: list all sessions here and allow the user to delete them</p>
     </div>
   )
 }
