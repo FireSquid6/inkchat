@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { useState } from "react"
-import { FaHashtag, FaP, FaPlus } from "react-icons/fa6"
+import { FaHashtag, FaPlus } from "react-icons/fa6"
 import { useConnection } from "./lib/context";
 import { getStoredSessions } from "./lib/auth";
 import { isSome } from "@/maybe";
