@@ -16,10 +16,13 @@ export function ChannelPage() {
 function MesssageInput() {
   return (
     <div className="w-[90%] mx-auto my-4">
-      <input type="text" className="input w-full"/>
+      <input type="text" placeholder="Type here..." className="input w-full"/>
     </div>
   )
 }
+
+
+
 
 function Topbar() {
   return (
@@ -54,41 +57,44 @@ function Messages() {
       content: "Hello world!",
       createdAt: 123456,
       channelId: "doesn'tmatter",
-      userId: "soemthing",
+      userId: "firesquid",
     },
     {
       id: "sdkflsdjlf",
       content: "Hello world! 2",
       createdAt: 7812,
       channelId: "doesn'tmatter",
-      userId: "soemthing",
+      userId: "pokeyc",
     },
     {
       id: "sdkflsdjlf",
       content: "some other message",
       createdAt: 1234,
       channelId: "doesn'tmatter",
-      userId: "soemthing",
+      userId: "some edgy 8 year old",
     },
     {
       id: "sdkflsdjlf",
       content: "some other message 2",
       createdAt: 1123918245712,
       channelId: "doesn'tmatter",
-      userId: "soemthing",
+      userId: "someone",
     },
     {
       id: "12slkdg",
-      content: "this is a really long message. The person just kept going I guess with nothing better to do. Truly, the person who wrote this is a terrible writer and always writes way to many words despite not needing to. With all of these words the writer accomplishes absolutely nothing but wasting the reader's time. Maybe melville is in my chat app.",
+      content: "this is a really long message. The whahaha I'm doing an XSS attack: <script>console.log(\"hello world\")</script> person just kept going I guess with nothing better to do. Truly, the person who wrote this is a terrible writer and always writes way to many words despite not needing to. With all of these words the writer accomplishes absolutely nothing but wasting the reader's time. Maybe melville is in my chat app.",
       createdAt: 123456,
       channelId: "doesn'tmatter",
       userId: "soemthing",
     }
   ]
 
+  // duplicate messages twice
+  messages.push(...messages)
+  messages.push(...messages)
+
   return (
     <div className="h-full">
-      <span h-full />
       {messages.map((message, i) => (
         <Message key={i} message={message} />
       ))}
@@ -98,13 +104,15 @@ function Messages() {
 
 
 function Message({ message }: { message: MessageRow }) {
+  // TODO: render messages as markdown
+  // TODO: santize messages to prevent XSS attacks
   return (
     <div className="flex m-4">
       <div className="flex-none">
         <img src="https://avatars.dicebear.com/api/avataaars/1234.svg" alt="avatar" className="w-10 h-10 rounded-full" />
       </div>
       <div>
-        <p className="text-sm ml-2">
+        <p className="text-sm ml-4">
           <span className="font-bold">{message.userId}</span>
           <span className="ml-4 text-primary">06/12/2025 04:13</span>
         </p>
