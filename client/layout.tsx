@@ -1,8 +1,11 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { useState } from "react"
 import { FaHashtag } from "react-icons/fa6"
+import { useConnection } from "./lib/context";
+import { getStoredSessions } from "./lib/auth";
+import { isNone } from "@/maybe";
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -72,6 +75,7 @@ function Topbar() {
 }
 
 function Sidebar() {
+  const connection = useConnection()
   return (
     <>
       <div className="flex flex-row">
@@ -81,11 +85,17 @@ function Sidebar() {
         </label>
       </div>
 
-      { /* everything in here scrolls */}
-      <div className="overflow-y-auto h-full">
-        <ChannelList />
+      {connection.active ? (
+        <div className="overflow-y-auto h-full">
+          <ChannelList />
 
-      </div>
+        </div>) : (
+        <div className="flex flex-col items-center justify-center h-full">
+          <p>Not connected right now!</p>
+        </div>
+      )
+      }
+
 
     </>
   )
@@ -94,8 +104,37 @@ function Sidebar() {
 
 
 function IdentitySwitcher(props: { className?: string }) {
-  const [toggle, setToggle] = useState(false)
+  const connection = useConnection()
+  const [identities, setIdentities] = useState<IdentityProps[]>([])
+  const [selectedIdentity, setSelectedIdentity] = useState<IdentityProps | null>(null)
 
+  useEffect(() => {
+    const res = getStoredSessions()
+    const newIdentities: IdentityProps[] = []
+
+    if (isNone(res)) {
+      setSelectedIdentity(null)
+      setIdentities([])
+      return
+    }
+
+    for (const session of res.data) {
+      if (session.address === connection.address) {
+        setSelectedIdentity({
+          id: session.token,
+          address: session.address,
+          image: null,
+        })
+      } else {
+
+      }
+    }
+
+
+  }, [connection, identities, setIdentities, setSelectedIdentity])
+
+  // Handles some UI stuff
+  const [toggle, setToggle] = useState(false)
   const onClick = useCallback(() => {
     const elem = document.activeElement as HTMLElement
     if (elem) {
@@ -115,23 +154,23 @@ function IdentitySwitcher(props: { className?: string }) {
     }
   }, [toggle, setToggle])
 
-  const identities: IdentityProps[] = [
-    { id: "1", address: "chat.inkdocs.dev", image: null, onClick },
-    { id: "2", address: "devs.inkchat.com", image: null, onClick },
-    { id: "3", address: "diplomacy.com", image: null, onClick },
-  ]
-  const notSeletecdIdentities = identities.slice(1)
 
   return (
     <div className={`dropdown dropdown-bottom w-full mr-2 ${props.className}`}>
       <div tabIndex={0} role="button" onClick={onMainButtonClicked} className="btn btn-primary flex w-full my-2">
-        <Identity {...identities[0]} onClick={() => { }} />
+        {
+          selectedIdentity === null ? (
+            <p>Not logged in!</p>
+          ) : (
+            <Identity {...selectedIdentity} onClick={() => { }} />
+          )
+        }
       </div>
       <ul tabIndex={0} className="dropdown-content mx-auto menu bg-base-100 rounded-box z-[1] w-full p-2 shadow">
         {
-          notSeletecdIdentities.map((identity) => (
+          identities.map((identity) => (
             <li key={identity.id} className="p-2">
-              <Identity {...identity} />
+              <Identity {...identity} onClick={onClick} />
             </li>
           ))
         }
@@ -145,7 +184,7 @@ interface IdentityProps {
   id: string;
   address: string;
   image: string | null;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 function Identity(props: IdentityProps) {

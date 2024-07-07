@@ -1,6 +1,6 @@
 import { urlFromAddress } from "./address"
 import { treaty } from "@elysiajs/eden"
-import { type App } from "@/index"
+import type { App } from "@/index"
 import { Some, None, type Maybe, isNone } from "@/maybe"
 
 export async function signIn(address: string, username: string, password: string): Promise<Maybe<string>> {
@@ -50,7 +50,6 @@ export type Session = {
   address: string,
   token: string,
 }
-
 export function getStoredSessions(): Maybe<Session[]> {
   try {
     const sessionsString = localStorage.getItem('sessions')
