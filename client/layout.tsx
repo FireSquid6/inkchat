@@ -1,11 +1,11 @@
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import { useState } from "react"
-import { FaHashtag } from "react-icons/fa6"
+import { FaHashtag, FaP, FaPlus } from "react-icons/fa6"
 import { useConnection } from "./lib/context";
 import { getStoredSessions } from "./lib/auth";
-import { isNone } from "@/maybe";
+import { isSome } from "@/maybe";
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -105,33 +105,29 @@ function Sidebar() {
 
 function IdentitySwitcher(props: { className?: string }) {
   const connection = useConnection()
-  const [identities, setIdentities] = useState<IdentityProps[]>([])
-  const [selectedIdentity, setSelectedIdentity] = useState<IdentityProps | null>(null)
+  const identities: IdentityProps[] = []
+  let selectedIdentity: IdentityProps | null = null
 
-  useEffect(() => {
-    const res = getStoredSessions()
-    const newIdentities: IdentityProps[] = []
+  const res = getStoredSessions()
 
-    if (isNone(res)) {
-      setSelectedIdentity(null)
-      setIdentities([])
-      return
-    }
-
+  if (isSome(res)) {
     for (const session of res.data) {
       if (session.address === connection.address) {
-        setSelectedIdentity({
+        selectedIdentity = {
+          id: session.token,
+          address: session.address,
+          image: null,
+        }
+      } else {
+        identities.push({
           id: session.token,
           address: session.address,
           image: null,
         })
-      } else {
-
       }
     }
+  }
 
-
-  }, [connection, identities, setIdentities, setSelectedIdentity])
 
   // Handles some UI stuff
   const [toggle, setToggle] = useState(false)
@@ -174,6 +170,12 @@ function IdentitySwitcher(props: { className?: string }) {
             </li>
           ))
         }
+        <li>
+          <Link className="flex flex-row items-center w-full" to="/auth" onClick={onClick}>
+            <FaPlus />
+            <p>New identity</p>
+          </Link>
+        </li>
       </ul>
     </div>
   )
