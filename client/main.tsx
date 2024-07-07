@@ -6,6 +6,7 @@ import { Root } from './pages/root'
 import { ConnectionProvider } from "./lib/context";
 import { ErrorPage } from './error'
 import { ChannelPage } from "./pages/channel";
+import { AuthPage } from './pages/auth'
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "home",
         element: <p>Hello world!</p>,
+      },
+      {
+        path: "auth",
+        element: <AuthPage />
       }
     ]
   },
