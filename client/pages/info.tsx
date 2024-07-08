@@ -10,7 +10,6 @@ export async function InfoPage() {
     return (
       <>
         <div>Connection is active!</div>
-        <ServerInfo connection={connection} />
       </>
 
     )
@@ -26,29 +25,29 @@ type ServerInfoProps = {
   connection: ConnectionState
 }
 
-async function ServerInfo(props: ServerInfoProps) {
-  const res = await props.connection.api?.index.get()
-  const [info, setInfo] = useState<ServerInfo | null>(null)
-
-  if (res === undefined) {
-    return (
-      <p>Something went wrong...</p>
-    )
-  }
-
-
-  if (info === null) {
-    return (
-      <p>Something went wrong...</p>
-    )
-  }
-
-  return (
-    <div>
-      <h1>Server Information</h1>
-      <p>Name: {info.name}</p>
-    </div>
-
-  )
-
-}
+// async function ServerInfo(props: ServerInfoProps) {
+//   const res = await props.connection.api?.index.get()
+//   const [info, setInfo] = useState<ServerInfo | null>(null)
+//
+//   if (res === undefined) {
+//     return (
+//       <p>Something went wrong...</p>
+//     )
+//   }
+//
+//
+//   if (info === null) {
+//     return (
+//       <p>Something went wrong...</p>
+//     )
+//   }
+//
+//   return (
+//     <div>
+//       <h1>Server Information</h1>
+//       <p>Name: {info.name}</p>
+//     </div>
+//
+//   )
+//
+// }
