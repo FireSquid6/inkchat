@@ -3,6 +3,7 @@ export type Maybe<T> = { data: T, error: null } | { data: null, error: string }
 export type SomeMaybeHandler<T, R> = (some: T) => R
 export type NoneMaybeHandler<R> = (error: string) => R
 
+export type AsyncMaybe<T> = Promise<Maybe<T>>
 
 // handles a maybe of type T
 export function handleMaybe<T, Return>(maybe: Maybe<T>, some: SomeMaybeHandler<T, Return>, none: NoneMaybeHandler<Return>) {

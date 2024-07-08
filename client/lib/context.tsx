@@ -48,7 +48,7 @@ export function ConnectionProvider({ children }: { children: React.ReactNode }) 
 
     const api = treaty<App>(url)
     const socket = new WebSocket(socketUrl)
-    
+    console.log(socket) 
 
     socket.on("open", () => {
       setState({ ...state, active: true })

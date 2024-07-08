@@ -22,8 +22,6 @@ function MesssageInput() {
 }
 
 
-
-
 function Topbar() {
   return (
     <div className="navbar bg-base-200">

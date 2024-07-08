@@ -13,7 +13,6 @@ export async function signIn(address: string, username: string, password: string
   }) 
 
   if (res.status !== 200) {
-    console.log(res)
     return None(`Failed to sign in. Your address, username, or password may be incorrect.`)
   }
 
