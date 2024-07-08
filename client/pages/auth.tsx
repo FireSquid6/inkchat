@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "@/maybe"
 import { signIn, signUp, storeSession } from "@client/lib/auth"
+import { connect } from "@client/lib/signals"
 
 export function AuthPage() {
   const [newAccount, setNewAccount] = useState(false)
@@ -24,6 +25,7 @@ export function AuthPage() {
         token: res.data,
         address: address,
       })
+      connect(address, res.data) 
     } else {
       setError(res.error)
     }
