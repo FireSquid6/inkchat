@@ -1,3 +1,6 @@
+import yaml from "yaml"
+import fs from "fs"
+
 export interface AppConfig {
   port?: number  // the port to serve the app on. Default 3000
   storeDir?: string  // the directory to store files and the database in. Default ./store
@@ -36,4 +39,16 @@ export class Config {
       iconPath: ""
     }
   }
+}
+
+
+export function configFromFile(filepath: string): AppConfig {
+  if (!fs.existsSync(filepath)) {
+    return {}
+  }
+  
+  const text = fs.readFileSync(filepath, "utf-8")
+  const config: AppConfig = yaml.parse(text)
+
+  return config
 }

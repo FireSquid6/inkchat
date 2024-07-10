@@ -1,5 +1,5 @@
 import { startApp } from "@/index"
-import type { AppConfig } from "@/config"
+import { configFromFile, type AppConfig } from "@/config"
 import { getDb, migrateDb, seed } from "@/db"
 import fs from "fs"
 
@@ -24,11 +24,10 @@ export function startEphemeralApp(doSeed: boolean = false) {
 
 export function startProductionApp() {
   ensureDirectoryExists("store/prod")
+  const config = configFromFile("store/prod/config.yaml")
 
-  const config: AppConfig = {
-    storeDir: "store/prod",
-    port: 3000,
-  }
+  config.storeDir = "store/prod"
+  config.port = 3000
 
 
   const db = getDb("store/prod/db.sqlite")

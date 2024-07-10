@@ -79,7 +79,6 @@ export const app = new Elysia()
   .use(kitPlugin)
   .use(unprotectedAuthApi)
   .get("/", (ctx) => {
-    ctx.set.redirect = "/client"
     return {
       info: ctx.store.kit.config.serverInformation(),
       version: 1,  // this is in case we make breaking changes to the api and clients have to distinguish between multiple versions
