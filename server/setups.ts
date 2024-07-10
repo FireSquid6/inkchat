@@ -27,7 +27,7 @@ export function startProductionApp() {
 
   const config: AppConfig = {
     storeDir: "store/prod",
-    port: 80,
+    port: 3000,
   }
 
 
