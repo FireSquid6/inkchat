@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import './index.css'
 import { createBrowserRouter, RouterProvider } from "react-router-dom"
 import { Root } from './pages/root'
-import { ConnectionProvider } from "./lib/context";
 import { ErrorPage } from './error'
 import { ChannelPage } from "./pages/channel";
 import { AuthPage } from './pages/auth'
@@ -38,8 +37,6 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ConnectionProvider>
-      <RouterProvider router={router} />
-    </ConnectionProvider>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

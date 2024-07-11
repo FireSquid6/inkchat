@@ -56,6 +56,10 @@ export const connectionApi = (app: Elysia) => app
 
 async function processMessage(kit: Kit, wsId: string, socketIdToUserId: Map<string, string>, msg: Message): Promise<{ response: string, error: string }> {
   if (msg.kind === clientMessages.connect.name) {
+    if (socketIdToUserId.has(wsId)) {
+      return { response: "", error: "You're already connected. Chill out. Everything is fine." }
+    }
+
     const payload = clientMessages.connect.payloadAs(msg)
     const { auth } = kit
 

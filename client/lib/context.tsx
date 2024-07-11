@@ -1,9 +1,11 @@
 import { treaty } from "@elysiajs/eden"
 import type { App } from "@/index"
 import { createContext, useContext, useState } from "react"
-import { connectSignal, disconnectSignal } from "./signals"
 import { socketFromAddress, urlFromAddress } from "./address"
 import { clientMessages } from "@/protocol"
+import { useLocation } from "react-router-dom"
+import { getStoredSessions } from "./auth"
+import { isSome } from "@/maybe"
 
 
 export type ConnectionState = {
@@ -42,51 +44,59 @@ const ConnectionContext = createContext<ConnectionState>(initialState)
 export function ConnectionProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<ConnectionState>(initialState)
 
-  connectSignal.subscribe(({ address, token }) => {
+  const location = useLocation()
+  const address = location.pathname.split("/")[1]
+  const res = getStoredSessions()
+  let sessions: Session[] = []
+
+  if (isSome(res)) {
+    sessions = res.data
+  }
+
+  const session = sessions.find((session) => session.address === address)
+  if (!session) {
+    state.socket?.close()
+    setState(initialState)
+
+  } else {
+    const token = session.token
     const url = urlFromAddress(address)
     const socketUrl = socketFromAddress(address)
 
     const api = treaty<App>(url)
     const socket = new WebSocket(socketUrl)
-    console.log(socket) 
 
-    socket.on("open", () => {
-      setState({ ...state, active: true })
+    socket.onopen = () => {
+      setState({
+        address: address,
+        url: url,
+        socketUrl: socketUrl,
+
+        active: true,
+        error: "",
+        token: token,
+
+        api: api,
+        socket: socket,
+      })
 
       socket.send(clientMessages.connect.make({
         authorization: `Bearer ${token}`,
       }))
-    })
-    socket.on("close", () => {
+    }
+    socket.onclose = () => {
       setState({ ...state, socket: null, active: false })
-    })
-    socket.on("error", () => {
+    }
+    socket.onerror = () => {
       setState({ ...state, error: "Socket error" })
-    })
-    socket.on("message", (message) => {
+    }
+    socket.onmessage = (message) => {
       // do something
       console.log(message.toString())
 
-    })
-
-    setState({
-      address,
-      url,
-      socketUrl,
-
-      active: false,
-      error: "",
-      token,
-
-      api,
-      socket,
-    })
-
-  })
-  disconnectSignal.subscribe(() => {
-    state.socket?.close()
-    setState(initialState)
-  })
+    }
+    console.log(address)
+  }
 
   return <ConnectionContext.Provider value={state}>{children}</ConnectionContext.Provider>
 }

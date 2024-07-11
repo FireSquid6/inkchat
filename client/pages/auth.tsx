@@ -2,6 +2,7 @@ import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "@/maybe"
 import { signIn, signUp, storeSession } from "@client/lib/auth"
 import { connect } from "@client/lib/signals"
+import { useNavigate } from "react-router-dom"
 
 export function AuthPage() {
   const [newAccount, setNewAccount] = useState(false)
@@ -10,6 +11,7 @@ export function AuthPage() {
   const [password, setPassword] = useState("")
   const [joincode, setJoincode] = useState("")
   const [error, setError] = useState<string>("")
+  const navigate = useNavigate()
   const handleSubmit = useCallback(async () => {
     let res: Maybe<string> = None("Not done yet")
     
@@ -25,7 +27,7 @@ export function AuthPage() {
         token: res.data,
         address: address,
       })
-      connect(address, res.data) 
+      navigate(`/${address}`) 
     } else {
       setError(res.error)
     }

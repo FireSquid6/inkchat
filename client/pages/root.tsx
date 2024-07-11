@@ -1,6 +1,7 @@
 import Layout from "@client/layout"
 import { Outlet, useNavigate, useLocation } from "react-router-dom"
 import { useEffect } from "react"
+import { ConnectionProvider } from "@client/lib/context"
 
 
 export function Root() {
@@ -15,8 +16,10 @@ export function Root() {
   }, [])
 
   return (
-    <Layout>
-      <Outlet />
-    </Layout>
+    <ConnectionProvider>
+      <Layout>
+        <Outlet />
+      </Layout>
+    </ConnectionProvider>
   )
 }

@@ -153,7 +153,6 @@ function IdentitySwitcher(props: { className?: string }) {
   const res = getStoredSessions()
 
   if (isSome(res)) {
-    console.log(connection)
     for (const session of res.data) {
       if (session.address === connection.address) {
         selectedIdentity = {
@@ -239,7 +238,6 @@ function Identity(props: IdentityProps) {
       props.onClick()
     }
     
-    connect(props.address, props.id)
     navigate(`/${props.address}`)
   }
   return (
