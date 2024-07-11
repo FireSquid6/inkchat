@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v3.3.0
+      - name: setup bun
+        uses: "oven-sh/setup-bun@v2"
+      - name: generate database
+        run: "bun install && bun run generate"
       - name: log in to docker hub
         uses: docker/login-action@v3
         with:

@@ -2,7 +2,7 @@
 
 VERSION=$1
 
-if [ -z "$TAG" ]; then
+if [ -z "$VERSION" ]; then
   echo "Usage: $0 <tag>"
   exit 1
 fi
