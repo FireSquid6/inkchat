@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "@/maybe"
 import { signIn, signUp, storeSession } from "@client/lib/auth"
-import { connect } from "@client/lib/signals"
 import { useNavigate } from "react-router-dom"
 
 export function AuthPage() {
