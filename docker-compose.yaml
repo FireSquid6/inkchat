@@ -1,0 +1,10 @@
+services:
+  inkchat:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - inkchat-store:/app/store
+volumes:
+  inkchat-store:
+    external: true
