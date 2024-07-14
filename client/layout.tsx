@@ -2,12 +2,7 @@ import { useCallback } from "react";
 import { RiMenuUnfold3Line, RiMenuFold3Line } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react"
-import { FaHashtag, FaHouse, FaPlus, FaLinkSlash, FaCircleInfo, FaGear } from "react-icons/fa6"
-import { useConnection } from "./lib/context";
-import { getStoredSessions } from "./lib/auth";
-import { isSome } from "@/maybe";
-import { MdPerson } from "react-icons/md"
-import { connect } from "@client/lib/signals";
+import { FaHashtag, FaHouse, FaPlus, FaLinkSlash } from "react-icons/fa6"
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -22,14 +17,14 @@ export default function Layout({ children }: Readonly<{ children: React.ReactNod
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
         <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
           <Sidebar />
-
         </div>
       </div>
-    </div>)
+    </div>
+  )
 }
 
 function Sidebar() {
-  const connection = useConnection()
+  // TODO: show the channel list if you're connected
   return (
     <>
       <div className="flex flex-row">
@@ -40,7 +35,7 @@ function Sidebar() {
       </div>
       <QuickLinks />
       <hr className="my-2" />
-      {connection.active ? (
+      {false ? (
         <div className="overflow-y-auto h-full">
           <ChannelList />
 
@@ -55,18 +50,17 @@ function Sidebar() {
 function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
-  const connection = useConnection()
   const quickLinks: QuickLinkProps[] = [
     { icon: <FaHouse />, text: "Home", to: "/home" },
   ]
   
-  if (connection.active) {
-    quickLinks.concat([
-      { icon: <MdPerson />, text: "Profile", to: `/${connection.address}/profile` }, 
-      { icon: <FaCircleInfo />, text: "About", to: `/${connection.address}/about` },
-      { icon: <FaGear />, text: "Settings", to: `/${connection.address}/settings`},
-    ])
-  }
+  // if (connection.active) {
+  //   quickLinks.concat([
+  //     { icon: <MdPerson />, text: "Profile", to: `/${connection.address}/profile` }, 
+  //     { icon: <FaCircleInfo />, text: "About", to: `/${connection.address}/about` },
+  //     { icon: <FaGear />, text: "Settings", to: `/${connection.address}/settings`},
+  //   ])
+  // }
 
   return (
     <ul className="flex flex-col">
@@ -146,29 +140,28 @@ function Topbar() {
 
 
 function IdentitySwitcher(props: { className?: string }) {
-  const connection = useConnection()
   const identities: IdentityProps[] = []
   let selectedIdentity: IdentityProps | null = null
 
-  const res = getStoredSessions()
+  // const res = getStoredSessions()
 
-  if (isSome(res)) {
-    for (const session of res.data) {
-      if (session.address === connection.address) {
-        selectedIdentity = {
-          id: session.token,
-          address: session.address,
-          image: null,
-        }
-      } else {
-        identities.push({
-          id: session.token,
-          address: session.address,
-          image: null,
-        })
-      }
-    }
-  }
+  // if (isSome(res)) {
+  //   for (const session of res.data) {
+  //     if (session.address === connection.address) {
+  //       selectedIdentity = {
+  //         id: session.token,
+  //         address: session.address,
+  //         image: null,
+  //       }
+  //     } else {
+  //       identities.push({
+  //         id: session.token,
+  //         address: session.address,
+  //         image: null,
+  //       })
+  //     }
+  //   }
+  // }
 
 
   // Handles some UI stuff
