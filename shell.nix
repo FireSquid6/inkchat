@@ -16,6 +16,9 @@ with nixpkgs; mkShell {
     nodejs_20
     flyctl
     libgcc
-    go
   ];
+  shellHook = ''
+    SCRIPTS_DIR=$(pwd)/scripts
+    export PATH=$PATH:$SCRIPTS_DIR
+  '';
 }

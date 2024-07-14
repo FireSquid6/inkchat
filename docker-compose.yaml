@@ -1,6 +1,6 @@
 services:
-  server:
-    build: .
+  inkchat:
+    build: ./apps/inkchat
     ports:
       - "3000:3000"
     volumes:

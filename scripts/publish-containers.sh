@@ -7,5 +7,5 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 
-docker build -t firesquid/inkchat:$VERSION .
+docker build -t firesquid/inkchat:$VERSION ./apps/inkchat
 docker push firesquid/inkchat:$VERSION
