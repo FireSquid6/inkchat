@@ -1,5 +1,6 @@
 import type { InferSelectModel } from "drizzle-orm"
-import type { Schema } from "api"
+import { Schema } from "inkchat"
+
 
 export interface Message {
   kind: string
