@@ -4,5 +4,8 @@
   "workspaces": [
     "packages/*",
     "apps/*"
-  ]
+  ],
+  "dependencies": {
+    "bun-types": "^1.0.1"
+  }
 }

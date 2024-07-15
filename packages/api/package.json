@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@elysiajs/eden": "^1.0.14",
-    "elysia": "^1.0.27"
+    "elysia": "^1.0.27",
+    "inkchat": "workspace:../../apps/inkchat"
   }
 }
