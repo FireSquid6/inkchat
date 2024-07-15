@@ -27,11 +27,8 @@ test("files api", async () => {
       Authorization: `Bearer ${session.id}`
     }
   })
-  console.log(attachment)
   
   const file = attachment.data
-  console.log(typeof file)
-  console.log("file: ", file)
 
   if (file === null) {
     return expect(file).not.toBe(null)
