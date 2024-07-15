@@ -50,8 +50,6 @@ test("channels routes", async () => {
     j += 1
   }
 
-  console.log(messages)
-
   await db.insert(channelTable).values(channels)
   await db.insert(messageTable).values(messages)
 
@@ -82,7 +80,6 @@ test("channels routes", async () => {
   expectedMessages.sort((a, b) => a.createdAt - b.createdAt)
 
 
-  console.log(channels[0].id)
   const messagesRes = await api.channels({ id: channels[0].id}).messages.get({
     headers: {
       Authorization: `Bearer ${session.id}`
