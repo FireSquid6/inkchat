@@ -12,6 +12,6 @@ jobs:
 
       # run any `bun` or `bunx` command
       - run: bun install
-      - run: bun run generate 
       - run: cd apps/inkchat
+      - run: bun run generate 
       - run: bun test
