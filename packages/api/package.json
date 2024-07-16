@@ -9,7 +9,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@elysiajs/eden": "^1.0.14",
+    "@elysiajs/eden": "1.1.0-rc.1",
     "elysia": "^1.0.27"
   }
 }

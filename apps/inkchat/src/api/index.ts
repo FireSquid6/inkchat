@@ -13,6 +13,7 @@ import { usersApi } from "@/api/users";
 import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
 import { filesApi } from "@/api/files"
+import type { ServerInformation } from "@/config";
 
 
 export const kitPlugin = (app: Elysia) => app
@@ -78,12 +79,8 @@ export const app = new Elysia()
   }))
   .use(kitPlugin)
   .use(unprotectedAuthApi)
-  .get("/", (ctx) => {
-    ctx.set.redirect = "/client"
-    return {
-      info: ctx.store.kit.config.serverInformation(),
-      version: 1,  // this is in case we make breaking changes to the api and clients have to distinguish between multiple versions
-    }
+  .get("/", (ctx): ServerInformation => {
+    return ctx.store.kit.config.serverInformation()
   })
   .use(connectionApi)
 
