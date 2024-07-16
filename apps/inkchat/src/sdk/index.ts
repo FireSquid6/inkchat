@@ -1,9 +1,7 @@
 import { treaty } from "@elysiajs/eden";
-import type { Treaty } from "@elysiajs/eden"
 import type { CustomTreatyResponse } from "@/sdk/types"
 import type { App } from "@/index";
-import { Some, None, type AsyncMaybe, type Maybe } from "maybe"
-import type { PublicUser } from "@/api/users";
+import { Some, None, type AsyncMaybe } from "maybe"
 import type { ServerInformation } from "@/config";
 
 export async function signIn(url: string, username: string, password: string): AsyncMaybe<string> {
