@@ -2,6 +2,8 @@ import { getDb } from "@/db";
 import { getAuth } from "@/db/auth";
 import { app } from "@/api";
 import { Config, type AppConfig } from "@/config";
+export * as Schema from "@/db/schema"
+export { InkchatConnection } from "@/sdk"
 
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
