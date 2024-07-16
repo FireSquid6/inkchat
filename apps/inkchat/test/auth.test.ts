@@ -22,7 +22,6 @@ test("signup and signin flow", async () => {
   })
 
   if (!codeRes.data?.code || codeRes.data?.code === "") {
-    console.log(codeRes)
     throw new Error("No code returned")
   }
 
@@ -33,7 +32,7 @@ test("signup and signin flow", async () => {
     code: codeRes.data?.code,
   });
 
-  expect(res.status).toBe(200)
+  expect(res.status).toBe(201)
   expect(res.data?.token).toBeDefined()
 
   const userResult = await db.select().from(userTable).where(eq(userTable.username, "testuser"))
@@ -55,6 +54,6 @@ test("signup and signin flow", async () => {
     password: "teStp@ssw0rd"
   })
 
-  expect(res3.status).toBe(200)
+  expect(res3.status).toBe(201)
   expect(res3.data?.token).toBeDefined()
 })
