@@ -1,3 +1,5 @@
+// this changes some unknown types to any types in eden treaty's response type
+// we need this because otherwise `wrapTreatyResponse` will not work
 export type CustomTreatyResponse<Res extends Record<number, unknown>> = {
     data: Res[200];
     error: null;
