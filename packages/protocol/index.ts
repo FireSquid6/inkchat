@@ -22,6 +22,9 @@ export class MessageKind<T> {
 
     return msg.payload as T
   }
+  is(msg: Message): boolean {
+    return msg.kind === this.name
+  }
 }
 
 export const serverMessages = {

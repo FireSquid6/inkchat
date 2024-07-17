@@ -6,7 +6,6 @@ import { Config } from "@/config";
 import { treaty } from "@elysiajs/eden";
 import { startEphemeralApp } from "./setups";
 import { sessionTable, userTable } from "@/db/schema";
-import type { EdenWS } from "@elysiajs/eden/treaty";
 
 export interface TestKit {
   db: ReturnType<typeof getDb>
@@ -49,7 +48,8 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   }
 }
 
-export async function converse(socket: EdenWS<any>, messages: string[], waitFirst: boolean = false): Promise<string[]> {
+// @ts-expect-error EdenWS is no longer exported from eden
+export async function converse(socket: Treaty.EdenWS<any>, messages: string[], waitFirst: boolean = false): Promise<string[]> {
   return new Promise(async (resolve) => {
     const responses: string[] = []
 
@@ -68,17 +68,22 @@ export async function converse(socket: EdenWS<any>, messages: string[], waitFirs
 
 }
 
+
+// @ts-expect-error EdenWS is no longer exported from eden
 export function waitForMessage(socket: EdenWS): Promise<string> {
   return new Promise((resolve) => {
+    // @ts-expect-error EdenWS is no longer exported from eden
     socket.on("message", (message) => {
       resolve(message.data as string)
     })
   })
 }
 
+// @ts-expect-error EdenWS is no longer exported from eden
 export function sendAndWait(socket: EdenWS, message: string): Promise<string> {
   return new Promise((resolve) => {
     socket.send(message)
+    // @ts-expect-error EdenWS is no longer exported from eden
     socket.on("message", (response) => {
       resolve(response.data as string)
     })

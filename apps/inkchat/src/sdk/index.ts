@@ -5,9 +5,10 @@ import { Some, None, type AsyncMaybe } from "maybe"
 import type { ServerInformation } from "@/config";
 import { PublicUser } from "@/api/users";
 import { ChannelRow, MessageRow } from "@/db/schema";
-import { Message, parseMessage } from "protocol";
+import { clientMessages, Message, parseMessage } from "protocol";
 
-export async function signIn(url: string, username: string, password: string): AsyncMaybe<string> {
+export async function signIn(address: string, username: string, password: string): AsyncMaybe<string> {
+  const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
   const res = await api.auth.signin.post({
@@ -27,7 +28,8 @@ export async function signIn(url: string, username: string, password: string): A
 }
 
 
-export async function signUp(url: string, username: string, password: string, joincode: string) {
+export async function signUp(address: string, username: string, password: string, joincode: string) {
+  const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
   const res = await api.auth.signup.post({
@@ -52,18 +54,21 @@ export async function signUp(url: string, username: string, password: string, jo
 export class Connection {
   private api: ReturnType<typeof getTreaty>
   private socket: WebSocket
+
   private connected: boolean = false
   private pending: boolean = true
   private error: string = ""
+
   url: string
   authorization: string
   stateChanged = new Pubsub<{ successfull: boolean, pending: boolean, error: string }>()
   newMessage = new Pubsub<Message>
 
-  constructor(url: string, socketUrl: string, token: string) {
-    this.api = getTreaty(url, token)
+  constructor(address: string, token: string) {
+    this.url = urlFromAddress(address)
+    this.api = getTreaty(this.url, token)
     this.authorization = `Bearer ${token}`
-    this.url = url
+    const socketUrl = socketFromAddress(address)
     this.socket = new WebSocket(socketUrl)
     this.setupSocket()
   }
@@ -73,6 +78,10 @@ export class Connection {
       this.connected = true
       this.pending = false
       this.publishState()
+
+      this.socket.send(clientMessages.connect.make({
+        authorization: this.authorization
+      }))
     }
 
     this.socket.onerror = () => {
@@ -143,6 +152,11 @@ export class Connection {
       },
     }))
   }
+
+  sendMessage(channelId: string, content: string) {
+    const message = clientMessages.chat.make({ channelId, content })
+    this.socket.send(message)
+  }
 }
 
 
@@ -192,4 +206,18 @@ class Pubsub<T> {
     }
     this.subscribe(wrapper)
   }
+}
+
+function urlFromAddress(address: string): string {
+  if (address.startsWith("localhost")) {
+    return `http://${address}`
+  }
+  return `https://${address}`
+}
+
+function socketFromAddress(address: string): string {
+  if (address.startsWith("localhost")) {
+    return `ws://${address}/socket`
+  }
+  return `wss://${address}/socket`
 }

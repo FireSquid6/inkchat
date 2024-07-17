@@ -1,4 +1,5 @@
 import { channelTable, messageTable } from "@/db/schema"
+import { Connection } from "@/sdk"
 import { getTestUser, testApp } from "@/testutils"
 import { test, expect } from "bun:test"
 
@@ -53,6 +54,7 @@ test("channels routes", async () => {
   await db.insert(channelTable).values(channels)
   await db.insert(messageTable).values(messages)
 
+
   const channelsRes = await api.channels.get({
     headers: {
       Authorization: `Bearer ${session.id}`
@@ -92,4 +94,48 @@ test("channels routes", async () => {
 
   expect(messagesRes.status).toBe(200)
   expect(messagesRes.data).toEqual(expectedMessages.slice(0, 5))
+})
+
+test("channel routes with sdk", async () => {
+  const { db } = testApp()
+  const { session } = await getTestUser(db)
+
+  const connection = new Connection("localhost:3001", session.id)
+  await new Promise<void>((resolve) => {
+    connection.stateChanged.subscribe((state) => {
+      if (state.successfull) {
+        resolve()
+      }
+      if (state.error) {
+        throw new Error(state.error)
+      }
+    })
+  })
+
+  // seed the database with channels
+  const channels = [{
+    id: "1",
+    name: "General",
+    description: "General chat",
+    createdAt: Date.now(),
+  }, {
+    id: "2",
+    name: "Random",
+    description: "Random chat",
+    createdAt: Date.now(),
+  }, {
+    id: "3",
+    name: "Secret",
+    description: "Secret chat",
+    createdAt: Date.now(),
+  }]
+  await db.insert(channelTable).values(channels)
+
+  const { data: foundChannels, error } = await connection.getAllChannels()
+
+  if (error) {
+    throw new Error(error)
+  }
+
+  expect(foundChannels).toEqual(channels)
 })
