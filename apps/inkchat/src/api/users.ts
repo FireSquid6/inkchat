@@ -18,9 +18,11 @@ export const usersApi = (app: Elysia) => app
     const res = await getUserWithId(ctx.store.kit, ctx.params.id)
 
     if (isNone(res)) {
+      ctx.set.status = 404
       return null
     }
 
+    ctx.set.status = 200
     return {
       id: res.data.id,
       username: res.data.username,

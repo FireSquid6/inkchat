@@ -3,8 +3,12 @@ import type { CustomTreatyResponse } from "@/sdk/types"
 import type { App } from "@/index";
 import { Some, None, type AsyncMaybe } from "maybe"
 import type { ServerInformation } from "@/config";
+import { PublicUser } from "@/api/users";
+import { ChannelRow, MessageRow } from "@/db/schema";
+import { clientMessages, Message, parseMessage } from "protocol";
 
-export async function signIn(url: string, username: string, password: string): AsyncMaybe<string> {
+export async function signIn(address: string, username: string, password: string): AsyncMaybe<string> {
+  const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
   const res = await api.auth.signin.post({
@@ -24,7 +28,8 @@ export async function signIn(url: string, username: string, password: string): A
 }
 
 
-export async function signUp(url: string, username: string, password: string, joincode: string) {
+export async function signUp(address: string, username: string, password: string, joincode: string) {
+  const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
   const res = await api.auth.signup.post({
@@ -49,14 +54,59 @@ export async function signUp(url: string, username: string, password: string, jo
 export class Connection {
   private api: ReturnType<typeof getTreaty>
   private socket: WebSocket
+
+  private connected: boolean = false
+  private pending: boolean = true
+  private error: string = ""
+
   url: string
   authorization: string
+  stateChanged = new Pubsub<{ successfull: boolean, pending: boolean, error: string }>()
+  newMessage = new Pubsub<Message>
 
-  constructor(url: string, socketUrl: string, token: string) {
-    this.api = getTreaty(url, token)
+  constructor(address: string, token: string) {
+    this.url = urlFromAddress(address)
+    this.api = getTreaty(this.url, token)
     this.authorization = `Bearer ${token}`
-    this.url = url
+    const socketUrl = socketFromAddress(address)
     this.socket = new WebSocket(socketUrl)
+    this.setupSocket()
+  }
+
+  private setupSocket() {
+    this.socket.onopen = () => {
+      this.connected = true
+      this.pending = false
+      this.publishState()
+
+      this.socket.send(clientMessages.connect.make({
+        authorization: this.authorization
+      }))
+    }
+
+    this.socket.onerror = () => {
+      this.connected = false
+      this.pending = false
+      this.error = "Something went wrong. Websocket error"
+      this.publishState()
+    }
+
+    this.socket.onclose = () => {
+      this.connected = false
+      this.pending = false
+      this.error = "Connection closed"
+      this.publishState()
+    }
+
+    this.socket.onmessage = (event) => {
+      const msg = event.data as string
+      const parsed = parseMessage(msg)
+      this.newMessage.publish(parsed)
+    }
+  }
+
+  private publishState() {
+    this.stateChanged.publish({ successfull: this.connected, pending: this.pending, error: this.error })
   }
 
   logout() {
@@ -68,23 +118,49 @@ export class Connection {
   }
 
   async info(): AsyncMaybe<ServerInformation> {
-    const res = await this.api.index.get()
-    const maybe = wrapTreatyResponse<ServerInformation>(res)
-
-    return maybe
+    return wrapTreatyResponse<ServerInformation>(await this.api.index.get())
   }
 
-  getUser(id: string) {
-
+  async getUser(id: string): AsyncMaybe<PublicUser> {
+    return wrapTreatyResponse<PublicUser>(await this.api.users({ id }).get())
   }
 
-  getAllUsers() {
+  async getAllUsers(): AsyncMaybe<PublicUser[]> {
+    return wrapTreatyResponse<PublicUser[]>(await this.api.users.get())
+  }
 
+  async uploadAttachment(filename: string, file: File): AsyncMaybe<string> {
+    return wrapTreatyResponse<string>(await this.api.attachments.post({
+      filename,
+      file,
+    }))
+  }
+
+  async getAllChannels(): AsyncMaybe<ChannelRow[]> {
+    return wrapTreatyResponse<ChannelRow[]>(await this.api.channels.get())
+  }
+
+  async getChannel(id: string): AsyncMaybe<ChannelRow> {
+    return wrapTreatyResponse<ChannelRow>(await this.api.channels({ id }).get())
+  }
+
+  async getMessagesInChannel(id: string, last: number, before: number): AsyncMaybe<MessageRow[]> {
+    return wrapTreatyResponse<MessageRow[]>(await this.api.channels({ id }).messages.get({
+      query: {
+        before: before.toString(),
+        last: last.toString(),
+      },
+    }))
+  }
+
+  sendMessage(channelId: string, content: string) {
+    const message = clientMessages.chat.make({ channelId, content })
+    this.socket.send(message)
   }
 }
 
 
-function wrapTreatyResponse<T>(res: CustomTreatyResponse<Record<any, T>> ): AsyncMaybe<T> {
+function wrapTreatyResponse<T>(res: CustomTreatyResponse<Record<any, T | null>>): AsyncMaybe<T> {
   if (res.data === null) {
     return Promise.resolve(None(`No data from server. Code ${res.status}`))
   }
@@ -107,4 +183,41 @@ function getTreaty(url: string, token: string) {
       "Authorization": `Bearer ${token}`
     }
   })
+}
+
+
+type PubsubListener<T> = (data: T) => void
+class Pubsub<T> {
+  listeners: PubsubListener<T>[] = []
+
+  subscribe(listener: PubsubListener<T>) {
+    this.listeners.push(listener)
+  }
+  unsubscribe(listener: PubsubListener<T>) {
+    this.listeners = this.listeners.filter(l => l !== listener)
+  }
+  publish(data: T) {
+    this.listeners.forEach(l => l(data))
+  }
+  once(listener: PubsubListener<T>) {
+    const wrapper = (data: T) => {
+      listener(data)
+      this.unsubscribe(wrapper)
+    }
+    this.subscribe(wrapper)
+  }
+}
+
+function urlFromAddress(address: string): string {
+  if (address.startsWith("localhost")) {
+    return `http://${address}`
+  }
+  return `https://${address}`
+}
+
+function socketFromAddress(address: string): string {
+  if (address.startsWith("localhost")) {
+    return `ws://${address}/socket`
+  }
+  return `wss://${address}/socket`
 }
