@@ -1,16 +1,4 @@
-import { urlFromAddress } from "./address"
 import { Some, None, type Maybe, isNone } from "maybe"
-
-export async function signIn(address: string, username: string, password: string): Promise<Maybe<string>> {
-  const url = urlFromAddress(address)
-  return None("something went wrong")
-}
-
-
-export async function signUp(address: string, username: string, password: string, joincode: string): Promise<Maybe<string>> {
-  return None("something went wrong")
-}
-
 
 export type Session = {
   address: string,

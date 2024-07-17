@@ -2,8 +2,11 @@
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useCallback } from "react";
+import { usePathname } from "next/navigation"
 import Link from "next/link";
 import { FaPlus } from "react-icons/fa"
+import { getStoredSessions } from "@/lib/auth"
+import { isSome } from "maybe"
 
 export function IdentitySwitcher(props: { className?: string }) {
   const identities: IdentityProps[] = []
@@ -14,25 +17,29 @@ export function IdentitySwitcher(props: { className?: string }) {
     image: null,
   }
 
-  // const res = getStoredSessions()
+  const res = getStoredSessions()
+  const path = usePathname()
+  let currentAddress = ""
+  console.log(path)
 
-  // if (isSome(res)) {
-  //   for (const session of res.data) {
-  //     if (session.address === connection.address) {
-  //       selectedIdentity = {
-  //         id: session.token,
-  //         address: session.address,
-  //         image: null,
-  //       }
-  //     } else {
-  //       identities.push({
-  //         id: session.token,
-  //         address: session.address,
-  //         image: null,
-  //       })
-  //     }
-  //   }
-  // }
+
+  if (isSome(res)) {
+    for (const session of res.data) {
+      if (session.address === currentAddress) {
+        selectedIdentity = {
+          id: session.token,
+          address: session.address,
+          image: null,
+        }
+      } else {
+        identities.push({
+          id: session.token,
+          address: session.address,
+          image: null,
+        })
+      }
+    }
+  }
 
 
   // Handles some UI stuff

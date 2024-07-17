@@ -1,21 +1,26 @@
-import { Sidebar } from "@/components/sidebar"
-import { Topbar } from "@/components/topbar"
+"use client"
+import { SidebarLayout } from "@/components/sidebar-layout"
+import { getStoredSessions } from "@/lib/auth"
+import { sdk } from "api"
+import { isSome, isNone } from "maybe"
+import { resetStores } from "@/lib/store"
+import { usePathname, useRouter } from "next/navigation"
 
 export default function Layout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <div className="drawer lg:drawer-open">
-      <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <main className="drawer-content h-screen">
-        <Topbar />
+  const res = getStoredSessions()
+  const router = useRouter()
+  const pathname = usePathname()
+  console.log(pathname)
 
-        {children}
-      </main>
-      <div className="drawer-side">
-        <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
-        <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-          <Sidebar />
-        </div>
-      </div>
-    </div>
+  if (isNone(res)) {
+    // TODO: include a query for the address when redirecting back to auth
+    router.push("/auth")
+  }
+
+
+  return (
+    <SidebarLayout>
+      {children}
+    </SidebarLayout>
   )
 }

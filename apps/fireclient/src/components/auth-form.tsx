@@ -1,7 +1,8 @@
 "use client"
 import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "maybe"
-import { signIn, signUp, storeSession } from "@/lib/auth"
+import { sdk } from "api"
+import { storeSession } from "@/lib/auth"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export function AuthForm() {
@@ -17,9 +18,9 @@ export function AuthForm() {
     let res: Maybe<string> = None("Not done yet")
     
     if (newAccount) {
-      res = await signUp(address, username, password, joincode)
+      res = await sdk.signUp(address, username, password, joincode)
     } else {
-      res = await signIn(address, username, password)
+      res = await sdk.signIn(address, username, password)
     }
 
     if (isSome(res)) {
