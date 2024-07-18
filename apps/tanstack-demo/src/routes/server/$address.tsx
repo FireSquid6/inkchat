@@ -1,6 +1,8 @@
 import { getStoredSessions } from '@/lib/auth'
-import { createFileRoute, redirect } from '@tanstack/react-router'
+import { createFileRoute, redirect, Outlet } from '@tanstack/react-router'
 import { isNone } from 'maybe'
+import { connectionStore, connectTo } from "@/lib/store"
+import { SidebarLayout } from '@/components/sidebar'
 
 export const Route = createFileRoute('/server/$address')({
   beforeLoad: ({ location }) => {
@@ -18,7 +20,8 @@ export const Route = createFileRoute('/server/$address')({
 
     const { data: sessions } = maybe
 
-    if (sessions.find((session) => session.address === address) === undefined) {
+    const session = sessions.find((session) => session.address === address)
+    if (session === undefined) {
       throw redirect({
         to: "/auth",
         search: {
@@ -27,9 +30,20 @@ export const Route = createFileRoute('/server/$address')({
       })
     }
 
+    const connectionMaybe = connectionStore.state
+
+    if (isNone(connectionMaybe) || connectionMaybe.data.address !== address) {
+      connectTo(session.address, session.token)
+    }
+
   },
-  component: () => <div>Hello /server/$address!</div>
-})
+  component: () => {
+    return (
+      <SidebarLayout>
+        <Outlet />
+      </SidebarLayout>
+    )
+  }})
 
 function getAddressFromPathname(pathname: string): string | undefined {
   const split = pathname.split('/')

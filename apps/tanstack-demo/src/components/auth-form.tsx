@@ -20,6 +20,7 @@ export function AuthForm(props: AuthFormProps) {
   const [error, setError] = useState<string>("")
   const navigate = useNavigate()
 
+  // TODO - make this not the worst code ever
   const handleSubmit = useCallback(async () => {
     let res: Maybe<string> = None("Not done yet")
 
@@ -59,7 +60,6 @@ export function AuthForm(props: AuthFormProps) {
         <button className="btn btn-primary mx-auto m-4" onClick={handleSubmit
         } type="button">Submit</button>
       </form>
-      <p>TODO: list all sessions here and allow the user to delete them</p>
     </div>
   )
 }
