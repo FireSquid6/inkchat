@@ -1,14 +1,11 @@
-"use client"
-import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useCallback } from "react";
-import { usePathname } from "next/navigation"
-import Link from "next/link";
+import { Link } from "@tanstack/react-router"
 import { FaPlus } from "react-icons/fa"
 import { getStoredSessions } from "@/lib/auth"
 import { isSome } from "maybe"
 
-export function IdentitySwitcher(props: { className?: string }) {
+export function IdentitySwitcher(props: { className?: string, address: string }) {
   const identities: IdentityProps[] = []
   let selectedIdentity: IdentityProps | null = null
   selectedIdentity = {
@@ -18,14 +15,10 @@ export function IdentitySwitcher(props: { className?: string }) {
   }
 
   const res = getStoredSessions()
-  const path = usePathname()
-  let currentAddress = ""
-  console.log(path)
-
 
   if (isSome(res)) {
     for (const session of res.data) {
-      if (session.address === currentAddress) {
+      if (session.address === props.address ) {
         selectedIdentity = {
           id: session.token,
           address: session.address,
@@ -41,7 +34,7 @@ export function IdentitySwitcher(props: { className?: string }) {
     }
   }
 
-
+  // TODO: make this not terrible
   // Handles some UI stuff
   const [toggle, setToggle] = useState(false)
   const onClick = useCallback(() => {
@@ -103,18 +96,15 @@ interface IdentityProps {
 }
 
 function Identity(props: IdentityProps) {
-  const router = useRouter()
   const onClick = () => {
     if (props.onClick) {
       props.onClick()
     }
-    
-    router.push(`/${props.address}`)
   }
   return (
-    <button className="flex flex-row items-center w-full" onClick={onClick}>
+    <Link className="flex flex-row items-center w-full" to={`/server/${props.address}`} onClick={onClick}>
       <img src={props.image ?? "https://via.placeholder.com/150"} alt="server-icon" className="rounded-full w-8 h-8 mr-2" />
       <p>{props.address}</p>
-    </button>
+    </Link>
   )
 }
