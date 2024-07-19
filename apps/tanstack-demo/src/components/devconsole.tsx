@@ -1,4 +1,5 @@
 import { getStoredSessions } from "@/lib/auth"
+import { channelStore, messagesStore, usersStore, connectionStore } from "@/lib/store"
 
 export function DevConsole() {
   // we don't want this to show up in production
@@ -21,6 +22,24 @@ export function DevConsole() {
 
     } else {
       console.log("getStoredSessions returned null")
+    }
+
+    const connection = connectionStore.state
+    console.log("Connection State:")
+    console.log(connection.data)
+
+    const users = usersStore.state
+    console.log("Users State:")
+    console.table(users)
+
+    const channels = channelStore.state
+    console.log("Channels State:")
+    console.table(channels)
+
+    const messages = messagesStore.state
+    for (const channel in messages) {
+      console.log(`Messages for channel ${channel}:`)
+      console.table(messages.get(channel))
     }
   }
 
