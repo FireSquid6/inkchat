@@ -34,3 +34,20 @@ export function isSome<T>(maybe: Maybe<T>): maybe is { data: T, error: null } {
 export function isNone<T>(maybe: Maybe<T>): maybe is { data: null, error: string } {
   return maybe.data === null
 }
+
+
+export function unwrapOrDefault<T>(maybe: Maybe<T>, fallback: T): T {
+  if (isSome(maybe)) {
+    return maybe.data
+  } else {
+    return fallback
+  }
+}
+
+export function unwrapOrThrow<T>(maybe: Maybe<T>): T {
+  if (isSome(maybe)) {
+    return maybe.data
+  } else {
+    throw new Error(maybe.error)
+  }
+}

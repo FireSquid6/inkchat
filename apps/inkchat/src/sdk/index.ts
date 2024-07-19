@@ -63,10 +63,12 @@ export class Connection {
   authorization: string
   stateChanged = new Pubsub<{ successfull: boolean, pending: boolean, error: string }>()
   newMessage = new Pubsub<Message>
+  address: string
 
   constructor(address: string, token: string) {
     this.url = urlFromAddress(address)
     this.api = getTreaty(this.url, token)
+    this.address = address
     this.authorization = `Bearer ${token}`
     const socketUrl = socketFromAddress(address)
     this.socket = new WebSocket(socketUrl)

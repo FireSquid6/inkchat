@@ -1,7 +1,8 @@
-import type { ChannelRow, PublicUser, MessageRow, sdk } from "api"
+import type { ChannelRow, PublicUser, MessageRow } from "api"
+import { sdk } from "api"
 import type { Maybe } from "maybe"
 import { Store } from "@tanstack/store"
-import { None } from "maybe"
+import { None, Some, unwrapOrThrow } from "maybe"
 
 
 export const channelStore = new Store<ChannelRow[]>([])
@@ -17,3 +18,30 @@ export function resetStores() {
   connectionStore.setState(() => None("Not initialized"))
 }
 
+
+export function connectTo(address: string, token: string) {
+  resetStores()
+  const connection = new sdk.Connection(address, token)
+  connectionStore.setState(() => Some(connection))
+
+  connection.stateChanged.once(async (state) => {
+    if (!state.successfull) {
+      console.error("Connection failed:", state.error)
+      // TODO: handle this better
+    }
+
+
+    await Promise.all([
+      new Promise<void>(async (resolve) => {
+        const channels = unwrapOrThrow(await connection.getAllChannels())
+        channelStore.setState(() => channels)
+        resolve()
+      }),
+      new Promise<void>(async (resolve) => {
+        const users = unwrapOrThrow(await connection.getAllUsers())
+        usersStore.setState(() => users)
+        resolve()
+      }),
+    ])
+  })
+}

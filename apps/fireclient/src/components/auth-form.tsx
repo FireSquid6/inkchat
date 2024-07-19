@@ -1,22 +1,29 @@
-"use client"
 import { useCallback, useState } from "react"
 import { None, isSome, type Maybe } from "maybe"
 import { sdk } from "api"
 import { storeSession } from "@/lib/auth"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useNavigate } from "@tanstack/react-router"
 
-export function AuthForm() {
-  const queryParams = useSearchParams()
-  const [newAccount, setNewAccount] = useState(queryParams.get("signup") !== null ?? false)
-  const [address, setAddress] = useState(queryParams.get("address") ?? "")
+type AuthFormProps = {
+  signup?: boolean
+  address?: string
+  joincode?: string
+}
+
+export function AuthForm(props: AuthFormProps) {
+  // TODO - change this to using tanstack form
+  const [newAccount, setNewAccount] = useState(props.signup ?? false)
+  const [address, setAddress] = useState(props.address ?? "")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
-  const [joincode, setJoincode] = useState(queryParams.get("joincode") ?? "")
+  const [joincode, setJoincode] = useState(props.joincode ?? "")
   const [error, setError] = useState<string>("")
-  const router = useRouter()
+  const navigate = useNavigate()
+
+  // TODO - make this not the worst code ever
   const handleSubmit = useCallback(async () => {
     let res: Maybe<string> = None("Not done yet")
-    
+
     if (newAccount) {
       res = await sdk.signUp(address, username, password, joincode)
     } else {
@@ -29,7 +36,7 @@ export function AuthForm() {
         token: res.data,
         address: address,
       })
-      router.push(`/${address}`) 
+      navigate({ to: `/server/${address}` })
     } else {
       setError(res.error)
     }
@@ -53,7 +60,6 @@ export function AuthForm() {
         <button className="btn btn-primary mx-auto m-4" onClick={handleSubmit
         } type="button">Submit</button>
       </form>
-      <p>TODO: list all sessions here and allow the user to delete them</p>
     </div>
   )
 }
