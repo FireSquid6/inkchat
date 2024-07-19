@@ -25,3 +25,6 @@ dist-ssr
 .envrc
 
 src/routeTree.gen.ts
+
+android
+ios
