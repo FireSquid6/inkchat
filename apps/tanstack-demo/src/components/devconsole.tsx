@@ -1,6 +1,11 @@
 import { getStoredSessions } from "@/lib/auth"
 
 export function DevConsole() {
+  // we don't want this to show up in production
+  if (process.env.NODE_ENV === "production") {
+    return <></>
+  }
+
   const printInfo = () => {
     const { data: sessions } = getStoredSessions()
 
@@ -20,6 +25,6 @@ export function DevConsole() {
   }
 
   return (
-    <button className="fixed bottom-0 right-0 m-2 text-sm btn btn-secondary" onClick={printInfo}>Debug Print</button>
+    <button className="fixed bottom-0 right-0 m-2 text-sm btn btn-secondary" onClick={printInfo}>Application State</button>
   )
 }
