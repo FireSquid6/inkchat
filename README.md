@@ -6,7 +6,7 @@ The easiest way to run inkchat is with docker. This docker compose should work:
 ```
 services:
   inkchat:
-    build: ./apps/inkchat
+    image: firesquid/inkchat
     ports:
       - "3000:3000"
     volumes:
@@ -15,6 +15,8 @@ volumes:
   inkchat-store:
     external: true
 ```
+
+The `inkchat-store` volume is where all of your data is stored.
 
 # Packages
 There are two apps in this repo:
