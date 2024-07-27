@@ -21,6 +21,7 @@ export function AuthForm(props: AuthFormProps) {
   const navigate = useNavigate()
 
   // TODO - make this not the worst code ever
+  // TODO - do proper validation here to make sure the user is inputting the right stuff
   const handleSubmit = useCallback(async () => {
     let res: Maybe<string> = None("Not done yet")
 
@@ -43,9 +44,7 @@ export function AuthForm(props: AuthFormProps) {
   }, [address, username, password, joincode, newAccount, setError])
 
   return (
-    <div>
       <form className="my-8 mx-auto max-w-[36rem] flex flex-col p-2 bg-base-100 rounded-lg">
-        <h1 className="text-2xl font-bold text-center m-4">Register a New or Existing Identity</h1>
         <Input label="Address" value={address} onChange={setAddress} placeholder="chat.somewhere.org" id="address" />
         <Input label="Username" value={username} onChange={setUsername} placeholder="someone" id="username" />
         <Input label="Password" placeholder="something secret" value={password} onChange={setPassword} id="password" type="password" />
@@ -60,7 +59,6 @@ export function AuthForm(props: AuthFormProps) {
         <button className="btn btn-primary mx-auto m-4" onClick={handleSubmit
         } type="button">Submit</button>
       </form>
-    </div>
   )
 }
 
