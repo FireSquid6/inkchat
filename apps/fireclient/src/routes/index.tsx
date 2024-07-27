@@ -1,8 +1,8 @@
 import { getStoredSessions } from '@/lib/auth'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { unwrapOrDefault } from 'maybe'
-import { FaPlus } from "react-icons/fa"
-
+import { FaPlus, FaTrash } from "react-icons/fa"
+import { useState } from 'react'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -10,9 +10,10 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const sessions = unwrapOrDefault(getStoredSessions(), [])
+  const [deleting, setDeleting] = useState(false)
   const connections = sessions.map((session, i) => {
     return (
-      <Connection key={i} to={`/server/${session.address}`} text={session.address} />
+      <Connection key={i} deleting={deleting} to={`/server/${session.address}`} text={session.address} />
     )
   })
 
@@ -28,6 +29,14 @@ function Index() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto">
         {connections}
       </div>
+      <div className="mt-32 mx-auto border p-2 rounded-lg border-text">
+        <label className="label cursor-pointer">
+          <span className="label-text text-lg mr-4">Manange Saved Connections</span>
+          <input type="checkbox" onChange={(e) => {
+            setDeleting(e.target.checked)
+          }} className="toggle toggle-primary" />
+        </label>
+      </div>
     </main>
   )
 }
@@ -35,6 +44,7 @@ function Index() {
 
 type ConnectionProps = {
   to: string
+  deleting?: boolean
   text?: string
   children?: React.ReactNode
   className?: string
@@ -49,11 +59,18 @@ function Connection(props: ConnectionProps) {
   }
 
   return (
-    <Link className={`btn ${props.className}`} to={props.to}>
-      {
-        props.text ? <p>{text}</p> : null
-      }
-      {props.children}
-    </Link>
+    <div className="indicator">
+      <button className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error`}>
+        <FaTrash />
+      </button>
+      <Link className={`btn ${props.deleting ? "animate-shake" : ""} ${props.className}`} to={props.to}>
+        {
+          props.text ? <p>{text}</p> : null
+        }
+        {props.children}
+      </Link>
+
+    </div>
+
   )
 }
