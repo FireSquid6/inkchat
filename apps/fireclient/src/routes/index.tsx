@@ -69,8 +69,6 @@ function Connection(props: ConnectionProps) {
         }
         {props.children}
       </Link>
-
     </div>
-
   )
 }

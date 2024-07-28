@@ -1,6 +1,5 @@
 import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
 import { FaHashtag, FaHouse, FaLinkSlash } from "react-icons/fa6"
-import { IdentitySwitcher } from "@/components/identity-switcher"
 import { connectionStore } from "@/lib/store"
 import { useStore } from "@tanstack/react-store";
 import { handleMaybe } from "maybe";
@@ -18,7 +17,7 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
     <div className="drawer lg:drawer-open">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <main className="drawer-content h-screen">
-        <Topbar address={address} />
+        <Topbar />
 
         {children}
       </main>
@@ -35,24 +34,22 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
 
 
 // only shows up on small screens
-export function Topbar({ address }: { address: string}) {
+export function Topbar() {
   return (
     <div className="w-full flex flex-row bg-base-300 lg:hidden">
       <label htmlFor="my-drawer-2" className="m-2 btn btn-circle btn-outline drawer-button">
         <RiMenuUnfold3Line size="1.5em" />
       </label>
-      <IdentitySwitcher address={address} className="ml-auto max-w-60" />
     </div>
   )
 }
 
 
-export function Sidebar({ address }: { address: string }) {
+export function Sidebar() {
   // TODO: show the channel list if you're connected
   return (
     <>
       <div className="flex flex-row">
-        <IdentitySwitcher address={address} className="hidden lg:block" />
         <label htmlFor="my-drawer-2" className="ml-auto m-2 btn btn-circle btn-outline drawer-button lg:hidden">
           <RiMenuFold3Line size="1.5em" />
         </label>
