@@ -4,6 +4,7 @@ export type Session = {
   address: string,
   token: string,
 }
+
 export function getStoredSessions(): Maybe<Session[]> {
   try {
     const sessionsString = localStorage.getItem('sessions')

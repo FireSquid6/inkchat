@@ -2,14 +2,17 @@ import type { ChannelRow, PublicUser, MessageRow } from "api"
 import { sdk } from "api"
 import type { Maybe } from "maybe"
 import { Store } from "@tanstack/store"
-import { None, Some, unwrapOrThrow } from "maybe"
+import { None, Some, unwrapOrThrow, unwrapOrDefault } from "maybe"
+import { getStoredSessions, Session } from "./auth"
 
 
 export const channelStore = new Store<ChannelRow[]>([])
 export const messagesStore = new Store<Map<string, MessageRow[]>>(new Map())
 export const usersStore = new Store<PublicUser[]>([])
 export const connectionStore = new Store<Maybe<sdk.Connection>>(None("Not initialized"))
-
+export const sessionsStore = new Store<Session[]>(
+  unwrapOrDefault(getStoredSessions(), [])
+)
 
 export function resetStores() {
   channelStore.setState(() => [])

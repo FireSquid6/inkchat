@@ -3,13 +3,12 @@ WORKDIR /app
 
 
 FROM base AS build
-RUN mkdir -p /temp/prod
-WORKDIR /temp/prod
-
-COPY . /temp/prod/
-RUN bun install --frozen-lockfile --production 
+COPY . .
+RUN bun install --frozen-lockfile 
+RUN bun run build
+RUN bun run generate
 
 FROM base AS production
-COPY --from=build /app /app
-CMD ["bun", "run", "prod.js"]
-
+COPY --from=build /app/dist /app/dist
+COPY --from=build /app/drizzle /app/drizzle
+CMD ["bun", "run", "./dist/prod.js"]

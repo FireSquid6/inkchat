@@ -24,7 +24,7 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
       <div className="drawer-side">
         <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
         <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
-          <Sidebar address={address} />
+          <Sidebar />
         </div>
       </div>
     </div>
