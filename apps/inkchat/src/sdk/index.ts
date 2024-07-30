@@ -27,6 +27,18 @@ export async function signIn(address: string, username: string, password: string
   return Some(res.data.token)
 }
 
+export async function validateSession(address: string, token: string): Promise<number> {
+  const url = urlFromAddress(address)
+  const api = getTreaty(url, token)
+
+  const res = await api.auth.validate.post({}, {
+    headers: {
+      "Authorization": `Bearer ${token}`,
+    }
+  })
+
+  return res.status
+}
 
 export async function signUp(address: string, username: string, password: string, joincode: string) {
   const url = urlFromAddress(address)

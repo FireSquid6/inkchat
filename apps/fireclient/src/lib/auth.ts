@@ -1,6 +1,7 @@
 import { Some, None, type Maybe, isNone, unwrapOrDefault } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
+import { sdk } from "api"
 
 // sessions store is a bit different
 // we need a store here to listen for changes, but it also needs to be persisted in localstorage
@@ -10,7 +11,10 @@ const sessionsStore = new Store<Session[]>(
 
 export type Session = {
   address: string,
+  username: string,
   token: string,
+  found: boolean,
+  valid: boolean,
 }
 
 export function useSessions() {
@@ -29,6 +33,29 @@ export function getStoredSessions(): Maybe<Session[]> {
   } catch (e) {
     return None(e as string)
   }
+}
+
+export async function revalidateSessions() {
+  const sessions = unwrapOrDefault(getStoredSessions(), [])
+  const promises = sessions.map(revalidateSession)
+  await Promise.all(promises)
+}
+
+async function revalidateSession(session: Session) {
+  const code = await sdk.validateSession(session.address, session.token)
+
+  if (code === 200) {
+    return
+  }
+
+  removeSession(session)
+
+  session.valid = false
+  if (code === 404) {
+    session.found = false
+  }
+
+  storeSession(session)
 }
 
 export function storeSession(session: Session): Maybe<void> {

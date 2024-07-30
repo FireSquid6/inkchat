@@ -30,13 +30,14 @@ function Index() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mx-auto">
         {connections}
       </div>
-      <div className="mt-32 mx-auto border p-2 rounded-lg border-text">
-        <label className="label cursor-pointer">
+      <div className="flex flex-col mt-32 mx-auto border p-4 rounded-lg border-text">
+        <label className="label cursor-pointer mb-4">
           <span className="label-text text-lg mr-4">Manange Saved Connections</span>
           <input type="checkbox" onChange={(e) => {
             setDeleting(e.target.checked)
           }} className="toggle toggle-primary" />
         </label>
+        <button className="btn mx-auto">Revalidate Sessions</button>
       </div>
     </main>
   )

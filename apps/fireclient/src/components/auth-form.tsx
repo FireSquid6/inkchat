@@ -36,6 +36,9 @@ export function AuthForm(props: AuthFormProps) {
       storeSession({
         token: res.data,
         address: address,
+        username: username,
+        found: true,
+        valid: true,
       })
       navigate({ to: `/server/${address}` })
     } else {
