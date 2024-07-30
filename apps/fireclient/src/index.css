@@ -13,3 +13,7 @@
 .animate-shake {
   animation: tilt-shaking 0.4s infinite;
 }
+
+.lighter-hover:hover {
+  filter: brightness(120%);
+}

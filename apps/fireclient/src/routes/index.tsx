@@ -1,6 +1,5 @@
-import { getStoredSessions } from '@/lib/auth'
+import { removeSession, useSessions } from '@/lib/auth'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { unwrapOrDefault } from 'maybe'
 import { FaPlus, FaTrash } from "react-icons/fa"
 import { useState } from 'react'
 
@@ -9,11 +8,13 @@ export const Route = createFileRoute('/')({
 })
 
 function Index() {
-  const sessions = unwrapOrDefault(getStoredSessions(), [])
+  const sessions = useSessions()
   const [deleting, setDeleting] = useState(false)
   const connections = sessions.map((session, i) => {
     return (
-      <Connection key={i} deleting={deleting} to={`/server/${session.address}`} text={session.address} />
+      <Connection key={i} deleting={deleting} onDelete={() => {
+        removeSession(session)
+      }} to={`/server/${session.address}`} text={session.address} />
     )
   })
 
@@ -48,6 +49,7 @@ type ConnectionProps = {
   text?: string
   children?: React.ReactNode
   className?: string
+  onDelete?: () => void
 }
 
 function Connection(props: ConnectionProps) {
@@ -60,7 +62,7 @@ function Connection(props: ConnectionProps) {
 
   return (
     <div className="indicator">
-      <button className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error`}>
+      <button onClick={props.onDelete} className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error lighter-hover`}>
         <FaTrash />
       </button>
       <Link className={`btn ${props.deleting ? "animate-shake" : ""} ${props.className}`} to={props.to}>
