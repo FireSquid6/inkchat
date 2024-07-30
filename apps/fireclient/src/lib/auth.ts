@@ -43,16 +43,21 @@ export async function revalidateSessions() {
 
 async function revalidateSession(session: Session) {
   const code = await sdk.validateSession(session.address, session.token)
-
-  if (code === 200) {
-    return
-  }
-
   removeSession(session)
 
-  session.valid = false
-  if (code === 404) {
-    session.found = false
+
+  // TODO: if it is found and invalid, we should remove the session
+  switch (code) {
+    case 200:
+      session.valid = true
+      session.found = true
+      break
+    case 404:
+      session.found = false
+      break
+    default:
+      session.valid = false
+      break
   }
 
   storeSession(session)

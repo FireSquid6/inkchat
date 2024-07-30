@@ -17,7 +17,10 @@ export function DevConsole() {
       console.log("Stored Sessions:")
       console.table(sessions.map((session) => ({
         address: session.address,
+        username: session.username,
         token: session.token,
+        valid: session.valid,
+        found: session.found,
       })))
 
     } else {

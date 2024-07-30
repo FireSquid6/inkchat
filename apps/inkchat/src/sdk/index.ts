@@ -31,11 +31,7 @@ export async function validateSession(address: string, token: string): Promise<n
   const url = urlFromAddress(address)
   const api = getTreaty(url, token)
 
-  const res = await api.auth.validate.post({}, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    }
-  })
+  const res = await api.auth.validate.post({})
 
   return res.status
 }
@@ -126,7 +122,7 @@ export class Connection {
   logout() {
     this.api.auth.signout.post({}, {
       headers: {
-        authorization: this.authorization,
+        Authorization: this.authorization,
       }
     })
   }
@@ -194,7 +190,7 @@ function isOk(code: number) {
 function getTreaty(url: string, token: string) {
   return treaty<App>(url, {
     headers: {
-      "Authorization": `Bearer ${token}`
+      Authorization: `Bearer ${token}`
     }
   })
 }

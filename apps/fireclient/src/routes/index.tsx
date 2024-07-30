@@ -1,4 +1,4 @@
-import { removeSession, useSessions } from '@/lib/auth'
+import { removeSession, revalidateSessions, useSessions } from '@/lib/auth'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { FaPlus, FaTrash } from "react-icons/fa"
 import { useState } from 'react'
@@ -11,10 +11,18 @@ function Index() {
   const sessions = useSessions()
   const [deleting, setDeleting] = useState(false)
   const connections = sessions.map((session, i) => {
+    let errMessage = undefined 
+
+    if (!session.found) {
+      errMessage = "Server not found. Is it online?"
+    } else if (!session.valid) {
+      errMessage = "Session is invalid. You probably want to delete this session and create a new one."
+    }
+
     return (
-      <Connection key={i} deleting={deleting} onDelete={() => {
+      <Connection key={i} deleting={deleting} disabled={!session.valid || !session.found} errMessage={errMessage} onDelete={() => {
         removeSession(session)
-      }} to={`/server/${session.address}`} text={session.address} />
+      }} to={`/server/${session.address}`} text={`${session.username}@${session.address}`} />
     )
   })
 
@@ -37,12 +45,25 @@ function Index() {
             setDeleting(e.target.checked)
           }} className="toggle toggle-primary" />
         </label>
-        <button className="btn mx-auto">Revalidate Sessions</button>
+        <RevalidateButton />
+
       </div>
     </main>
   )
 }
 
+function RevalidateButton() {
+  const [revalidating, setRevalidating] = useState(false)
+  const onClick = async () => {
+    setRevalidating(true)
+    await revalidateSessions()
+    setRevalidating(false)
+  }
+
+  return (
+    <button disabled={revalidating} onClick={onClick} className="btn mx-auto">Refresh Sessions</button>
+  )
+}
 
 type ConnectionProps = {
   to: string
@@ -50,6 +71,8 @@ type ConnectionProps = {
   text?: string
   children?: React.ReactNode
   className?: string
+  disabled?: boolean
+  errMessage?: string
   onDelete?: () => void
 }
 
@@ -62,11 +85,11 @@ function Connection(props: ConnectionProps) {
   }
 
   return (
-    <div className="indicator">
+    <div className="indicator tooltip mx-auto" data-tip={props.errMessage}>
       <button onClick={props.onDelete} className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error lighter-hover`}>
         <FaTrash />
       </button>
-      <Link className={`btn ${props.deleting ? "animate-shake" : ""} ${props.className}`} to={props.to}>
+      <Link disabled={props.disabled ?? false} className={`btn ${props.disabled ? "btn-disabled" : ""} ${props.deleting ? "animate-shake" : ""} ${props.className}`} to={props.to}>
         {
           props.text ? <p>{text}</p> : null
         }

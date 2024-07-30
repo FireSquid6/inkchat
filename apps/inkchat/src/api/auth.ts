@@ -113,10 +113,6 @@ export const unprotectedAuthApi = (app: Elysia) => app
     } else {
       ctx.set.status = 401
     }
-  }, {
-    headers: t.Object({
-      Authorization: t.String()
-    })
   })
 
 export const protectedAuthApi = (app: Elysia) => app
