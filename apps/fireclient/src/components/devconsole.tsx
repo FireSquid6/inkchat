@@ -40,9 +40,9 @@ export function DevConsole() {
     console.table(channels)
 
     const messages = messagesStore.state
-    for (const channel in messages) {
-      console.log(`Messages for channel ${channel}:`)
-      console.table(messages.get(channel))
+    for (const channel of messages) {
+      console.log(`Messages for channel ${channel[0]}:`)
+      console.table(messages.get(channel[0]))
     }
   }
 

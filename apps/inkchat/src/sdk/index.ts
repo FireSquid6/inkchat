@@ -63,9 +63,9 @@ export class Connection {
   private api: ReturnType<typeof getTreaty>
   private socket: WebSocket
 
-  private connected: boolean = false
-  private pending: boolean = true
-  private error: string = ""
+  connected: boolean = false
+  pending: boolean = true
+  error: string = ""
 
   url: string
   authorization: string

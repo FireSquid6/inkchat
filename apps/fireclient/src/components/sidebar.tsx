@@ -71,7 +71,7 @@ function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
   const quickLinks: QuickLinkProps[] = [
-    { icon: <FaHouse />, text: "Server Home", to: "/home" },
+    { icon: <FaHouse />, text: "Back to Connections", to: "/" },
   ]
 
   // if (connection.active) {

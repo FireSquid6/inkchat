@@ -27,7 +27,7 @@ export function connectTo(address: string, token: string) {
   connectionStore.setState(() => Some(connection))
 
   connection.stateChanged.once(async (state) => {
-    if (!state.successfull) {
+    if (!state.successful) {
       console.error("Connection failed:", state.error)
       // TODO: handle this better
     }
@@ -48,15 +48,32 @@ export function connectTo(address: string, token: string) {
   })
 }
 
+export async function updateMessages(connection: sdk.Connection, channelId: string) {
+  const maybe = await connection.getMessagesInChannel(channelId, 200, Date.now())
+  let messages: MessageRow[] = []
+  if (isSome(maybe)) {
+    messages = maybe.data
+  }
 
+  messagesStore.setState((state) => {
+    state.set(channelId, messages)
+    return state
+  })
 
-export function useConnectionState	() {
+}
+
+export function useConnectionState() {
   const maybe = useStore(connectionStore)
-  const [connectionState, setConnectionState] = useState({
+  const startingState = isSome(maybe) ? {
+    successful: maybe.data.connected,
+    pending: maybe.data.pending,
+    error: maybe.data.error,
+  } : {
     successful: false,
     pending: true,
     error: "",
-  })
+  }
+  const [connectionState, setConnectionState] = useState(startingState)
 
   if (isSome(maybe)) {
     const connection = maybe.data
