@@ -1,8 +1,10 @@
 import type { ChannelRow, PublicUser, MessageRow } from "api"
+import { useState } from "react"
 import { sdk } from "api"
 import type { Maybe } from "maybe"
 import { Store } from "@tanstack/store"
-import { None, Some, unwrapOrThrow } from "maybe"
+import { useStore } from "@tanstack/react-store"
+import { None, Some, isSome, unwrapOrThrow } from "maybe"
 
 
 export const channelStore = new Store<ChannelRow[]>([])
@@ -47,3 +49,21 @@ export function connectTo(address: string, token: string) {
 }
 
 
+
+export function useConnecitonState() {
+  const maybe = useStore(connectionStore)
+  const [connectionState, setConnectionState] = useState({
+    successfull: false,
+    pending: true,
+    error: "",
+  })
+
+  if (isSome(maybe)) {
+    const connection = maybe.data
+    connection.stateChanged.subscribe((state) => {
+      setConnectionState(state)
+    })
+  }
+
+  return connectionState
+}

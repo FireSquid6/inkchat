@@ -2,7 +2,7 @@ import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
 import { FaHashtag, FaHouse, FaLinkSlash } from "react-icons/fa6"
 import { connectionStore } from "@/lib/store"
 import { useStore } from "@tanstack/react-store";
-import { handleMaybe } from "maybe";
+import { handleMaybe, isSome, unwrapOrDefault } from "maybe";
 import { Link } from "@tanstack/react-router"
 
 
@@ -11,7 +11,7 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
   let address = ""
   handleMaybe(connection, (conn) => {
     address = conn.address
-  }, () => {})
+  }, () => { })
 
   return (
     <div className="drawer lg:drawer-open">
@@ -46,7 +46,6 @@ export function Topbar() {
 
 
 export function Sidebar() {
-  // TODO: show the channel list if you're connected
   return (
     <>
       <div className="flex flex-row">
@@ -59,10 +58,9 @@ export function Sidebar() {
       {false ? (
         <div className="overflow-y-auto h-full">
           <ChannelList />
-
         </div>) : (
-        <NotConnected />
-      )
+          <NotConnected />
+        )
       }
     </>
   )
@@ -74,7 +72,7 @@ function QuickLinks() {
   const quickLinks: QuickLinkProps[] = [
     { icon: <FaHouse />, text: "Home", to: "/home" },
   ]
-  
+
   // if (connection.active) {
   //   quickLinks.concat([
   //     { icon: <MdPerson />, text: "Profile", to: `/${connection.address}/profile` }, 

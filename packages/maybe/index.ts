@@ -51,3 +51,8 @@ export function unwrapOrThrow<T>(maybe: Maybe<T>): T {
     throw new Error(maybe.error)
   }
 }
+
+
+export function isSomeUnwrapped<T>(data: T | null, error: string | null): data is T {
+  return data !== null
+}
