@@ -66,7 +66,13 @@ export const app = new Elysia()
   // up here is unprotected! No auth required
   .use(cors())
   .use(logger({
-    level: "info"
+    level: "info",
+    transport: {
+      target: "pino-pretty",
+      options: {
+        colorize: true,
+      },
+    },
   }))
   .use(swagger({
     documentation: {
