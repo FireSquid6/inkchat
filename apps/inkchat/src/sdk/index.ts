@@ -69,7 +69,7 @@ export class Connection {
 
   url: string
   authorization: string
-  stateChanged = new Pubsub<{ successfull: boolean, pending: boolean, error: string }>()
+  stateChanged = new Pubsub<{ successful: boolean, pending: boolean, error: string }>()
   newMessage = new Pubsub<Message>
   address: string
 
@@ -116,7 +116,7 @@ export class Connection {
   }
 
   private publishState() {
-    this.stateChanged.publish({ successfull: this.connected, pending: this.pending, error: this.error })
+    this.stateChanged.publish({ successful: this.connected, pending: this.pending, error: this.error })
   }
 
   logout() {

@@ -50,10 +50,10 @@ export function connectTo(address: string, token: string) {
 
 
 
-export function useConnecitonState() {
+export function useConnectionState	() {
   const maybe = useStore(connectionStore)
   const [connectionState, setConnectionState] = useState({
-    successfull: false,
+    successful: false,
     pending: true,
     error: "",
   })

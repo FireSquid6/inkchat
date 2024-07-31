@@ -1,8 +1,8 @@
 import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
 import { FaHashtag, FaHouse, FaLinkSlash } from "react-icons/fa6"
-import { connectionStore } from "@/lib/store"
+import { connectionStore, useConnectionState } from "@/lib/store"
 import { useStore } from "@tanstack/react-store";
-import { handleMaybe, isSome, unwrapOrDefault } from "maybe";
+import { handleMaybe } from "maybe";
 import { Link } from "@tanstack/react-router"
 
 
@@ -46,6 +46,7 @@ export function Topbar() {
 
 
 export function Sidebar() {
+  const connectionState = useConnectionState()
   return (
     <>
       <div className="flex flex-row">
@@ -55,13 +56,13 @@ export function Sidebar() {
       </div>
       <QuickLinks />
       <hr className="my-2" />
-      {false ? (
+      { connectionState.successful && !connectionState.pending ? (
         <div className="overflow-y-auto h-full">
           <ChannelList />
-        </div>) : (
-          <NotConnected />
-        )
-      }
+        </div>
+      ) : (
+        <NotConnected error={connectionState.error} />
+      )}
     </>
   )
 }
@@ -144,11 +145,15 @@ function Channel(props: ChannelProps) {
   )
 }
 
-function NotConnected() {
+type NotConnectedProps = {
+  error?: string
+}
+function NotConnected(props: NotConnectedProps) {
   return (
     <div className="flex flex-col items-center justify-center my-12 h-full">
       <FaLinkSlash size="8em" className="my-8" />
       <p className="text-xl">Not connected to any server</p>
+      <p className="text-error">{props.error}</p>
     </div>
   )
 }

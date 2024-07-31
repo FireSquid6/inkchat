@@ -103,7 +103,7 @@ test("channel routes with sdk", async () => {
   const connection = new Connection("localhost:3001", session.id)
   await new Promise<void>((resolve) => {
     connection.stateChanged.subscribe((state) => {
-      if (state.successfull) {
+      if (state.successful) {
         resolve()
       }
       if (state.error) {
