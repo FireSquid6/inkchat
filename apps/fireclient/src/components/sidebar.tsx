@@ -1,9 +1,9 @@
 import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
 import { FaHashtag, FaHouse, FaLinkSlash } from "react-icons/fa6"
-import { connectionStore, useConnectionState } from "@/lib/store"
+import { channelStore, connectionStore, useConnectionState } from "@/lib/store"
 import { useStore } from "@tanstack/react-store";
 import { handleMaybe } from "maybe";
-import { Link } from "@tanstack/react-router"
+import { Link, useLocation } from "@tanstack/react-router"
 
 
 export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -71,7 +71,7 @@ function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
   const quickLinks: QuickLinkProps[] = [
-    { icon: <FaHouse />, text: "Home", to: "/home" },
+    { icon: <FaHouse />, text: "Server Home", to: "/home" },
   ]
 
   // if (connection.active) {
@@ -112,11 +112,7 @@ function QuickLink(props: QuickLinkProps) {
 
 
 function ChannelList() {
-  const channels: ChannelProps[] = [
-    { id: "1", name: "general" },
-    { id: "2", name: "random" },
-    { id: "3", name: "off-topic" },
-  ]
+  const channels = useStore(channelStore)
 
   return (
     <ul className="flex flex-col">
@@ -135,9 +131,16 @@ type ChannelProps = {
 
 }
 function Channel(props: ChannelProps) {
+  let location = useLocation().pathname.split("/")
+  if (location.length > 3) {
+    // cut everything after the third slash
+    location = location.slice(0, 3)
+  }
+  location.push(props.id)
+
   return (
     <li>
-      <Link className="flex flex-row" to={`./${props.id}`}>
+      <Link className="flex flex-row" to={location.join("/")}>
         <FaHashtag />
         <p>{props.name}</p>
       </Link>
