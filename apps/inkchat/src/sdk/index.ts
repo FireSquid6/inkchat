@@ -65,7 +65,6 @@ export async function signOut(address: string, token: string) {
 }
 
 
-// TODO: write tests using this
 export class Connection {
   private api: ReturnType<typeof getTreaty>
   private socket: WebSocket

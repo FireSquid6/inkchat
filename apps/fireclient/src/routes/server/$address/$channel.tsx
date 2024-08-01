@@ -1,5 +1,5 @@
 import { printDebug } from '@/lib/debug'
-import { messagesStore, connectionStore, updateMessages } from '@/lib/store'
+import { messagesStore, connectionStore, updateMessages, usersStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { MessageRow } from 'api'
@@ -28,7 +28,7 @@ function ChannelComponent() {
   }
 
   return (
-    <div>
+    <div className="flex flex-col overflow-y-auto m-4">
       {messages.map((message, i) => (
         <Message key={i} {...message} />
       ))}
@@ -38,10 +38,20 @@ function ChannelComponent() {
 
 
 function Message(message: MessageRow) {
+  const users = useStore(usersStore)
+
+  const user = users.find((u) => u.id === message.userId)
+  const dateTime = new Date(message.createdAt).toLocaleString()
+  // TODO - render the message content using some sort of markdown system
+  // probably need a custom compiler for this to be honest.
   return (
-    <div>
-      {message.userId}
-      {message.content}
+    <div className="flex flex-col mt-6">
+      <div className="flxe flex-row">
+        <div>{user?.username ?? "Unknown User"}</div>
+        -
+        <div className="ml-auto">{dateTime}</div>
+      </div>
+      <p className="ml-2">{message.content}</p>
     </div>
   )
 }
