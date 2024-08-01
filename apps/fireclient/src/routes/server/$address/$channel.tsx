@@ -17,10 +17,10 @@ function ChannelComponent() {
   }
 
   const currentMessages = useStore(messagesStore)
-  const messages = currentMessages.get(channelId)
+  let messages = currentMessages.get(channelId)
 
   if (messages === undefined) {
-    return <div>Loading...</div>
+    messages = []
   }
 
   return (

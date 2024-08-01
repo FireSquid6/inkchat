@@ -57,6 +57,13 @@ export async function signUp(address: string, username: string, password: string
   return Some(res.data.token)
 }
 
+export async function signOut(address: string, token: string) {
+  const url = urlFromAddress(address)
+  const api = getTreaty(url, token)
+
+  await api.auth.signout.post({})
+}
+
 
 // TODO: write tests using this
 export class Connection {

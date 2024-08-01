@@ -88,6 +88,8 @@ export function removeSession(session: Session): Maybe<void> {
     }
 
     const newSessions = sessions.data.filter(s => s.address !== session.address)
+    sdk.signOut(session.address, session.token)
+
     localStorage.setItem('sessions', JSON.stringify(newSessions))
     sessionsStore.setState(() => newSessions)
     return Some(undefined)
