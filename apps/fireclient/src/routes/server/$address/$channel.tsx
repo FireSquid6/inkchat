@@ -1,3 +1,4 @@
+import { printDebug } from '@/lib/debug'
 import { messagesStore, connectionStore, updateMessages } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
@@ -9,10 +10,13 @@ export const Route = createFileRoute('/server/$address/$channel')({
 
 
 function ChannelComponent() {
+  printDebug()
   const channelId = Route.useParams().channel
   const { data: connection } = useStore(connectionStore)
 
+  
   if (connection !== null) {
+    console.log("updating messages")
     updateMessages(connection, channelId)
   }
 
