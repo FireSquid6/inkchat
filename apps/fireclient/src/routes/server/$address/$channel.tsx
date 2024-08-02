@@ -33,9 +33,7 @@ function ChannelComponent() {
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
   const currentMessages = useMessagesStore(() => {
-    console.log("running the extra function")
     if (dummyDiv.current !== null) {
-      console.log("dummy div is not null")
       dummyDiv.current.scrollIntoView({ behavior: "smooth" })
     }
   })
