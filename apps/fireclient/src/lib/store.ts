@@ -6,6 +6,7 @@ import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
 import { None, Some, isSome, unwrapOrThrow } from "maybe"
 import { serverMessages } from "protocol"
+import { useEffect } from "react"
 
 
 export const channelStore = new Store<ChannelRow[]>([])
@@ -21,6 +22,21 @@ export function resetStores() {
   connectionStore.setState(() => None("Not initialized"))
 }
 
+export function useMessagesStore() {
+  const [messages, setMessages] = useState(messagesStore.state)
+
+  useEffect(() => {
+    const unsubscribe = messagesStore.subscribe(() => {
+      setMessages(new Map(messagesStore.state))
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [setMessages])
+
+  return messages
+}
 
 export function connectTo(address: string, token: string) {
   resetStores()
@@ -72,7 +88,6 @@ export async function updateMessages(connection: sdk.Connection, channelId: stri
   }
 
   messagesStore.setState((state) => {
-    console.log("updating the messages in updateMessages")
     state.set(channelId, messages)
     return state
   })

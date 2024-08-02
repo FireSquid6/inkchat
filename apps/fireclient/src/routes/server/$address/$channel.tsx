@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react"
-import { messagesStore, connectionStore, updateMessages, usersStore } from '@/lib/store'
+import {  useRef, useState } from "react"
+import { connectionStore, updateMessages, usersStore, useMessagesStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 import { MessageRow } from 'api'
@@ -7,16 +7,10 @@ import { MessageRow } from 'api'
 export const Route = createFileRoute('/server/$address/$channel')({
   component: () => <ChannelComponent />,
   beforeLoad: ({ location }) => {
-    console.log("before load")
     const channelId = location.pathname.split("/").pop() || ""
     const {data: connection } = connectionStore.state
-    connectionStore.subscribe(() => {
-      console.log("Something changed in the connection store")
-
-    })
 
     if (connection !== null) {
-      console.log("updating messages")
       updateMessages(connection, channelId)
     }
   }
@@ -34,36 +28,10 @@ function ChannelComponent() {
   )
 }
 
-function useMessagesStore() {
-  const [messages, setMessages] = useState(messagesStore.state)
 
-  useEffect(() => {
-    const unsubscribe = messagesStore.subscribe(() => {
-      setMessages(new Map(messagesStore.state))
-    })
-
-    return () => {
-      unsubscribe()
-    }
-  }, [setMessages])
-
-  return messages
-}
 
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
-  // const [currentMessages, setCurrentMessages] = useState(messagesStore.state)
-  //
-  // useEffect(() => {
-  //   const unsubscribe = messagesStore.subscribe(() => {
-  //     const newMessages = new Map(messagesStore.state)
-  //     setCurrentMessages(newMessages)
-  //   })
-  //
-  //   return () => {
-  //     unsubscribe()
-  //   }
-  // }, [setCurrentMessages])
   const currentMessages = useMessagesStore()
 
   let messages = currentMessages.get(props.channelId)
