@@ -38,15 +38,11 @@ function useMessagesStore() {
   const [messages, setMessages] = useState(messagesStore.state)
 
   useEffect(() => {
-    console.log("effect is being run")
     const unsubscribe = messagesStore.subscribe(() => {
-      console.log("Messages store changed to:")
-      console.log(messagesStore.state)
-      setMessages(messagesStore.state)
+      setMessages(new Map(messagesStore.state))
     })
 
     return () => {
-      console.log("Unsubscribe function is being run")
       unsubscribe()
     }
   }, [setMessages])
@@ -56,24 +52,19 @@ function useMessagesStore() {
 
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
-  const [currentMessages, setCurrentMessages] = useState(messagesStore.state)
-  console.log("Rerendering with:")
-  console.log(currentMessages)
-
-  useEffect(() => {
-    console.log("Effect is being run")
-    const unsubscribe = messagesStore.subscribe(() => {
-      console.log("Messages store has changed to:")
-      console.log(messagesStore.state)
-      const newMessages = new Map(messagesStore.state)
-      setCurrentMessages(newMessages)
-    })
-
-    return () => {
-      console.log("Unsubscribing from messages store")
-      unsubscribe()
-    }
-  }, [setCurrentMessages])
+  // const [currentMessages, setCurrentMessages] = useState(messagesStore.state)
+  //
+  // useEffect(() => {
+  //   const unsubscribe = messagesStore.subscribe(() => {
+  //     const newMessages = new Map(messagesStore.state)
+  //     setCurrentMessages(newMessages)
+  //   })
+  //
+  //   return () => {
+  //     unsubscribe()
+  //   }
+  // }, [setCurrentMessages])
+  const currentMessages = useMessagesStore()
 
   let messages = currentMessages.get(props.channelId)
 
