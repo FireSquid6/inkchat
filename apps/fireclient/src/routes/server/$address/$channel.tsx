@@ -1,4 +1,4 @@
-import { useRef, useState, useSyncExternalStore } from "react"
+import { useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { messagesStore, connectionStore, updateMessages, usersStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
@@ -10,6 +10,10 @@ export const Route = createFileRoute('/server/$address/$channel')({
     console.log("before load")
     const channelId = location.pathname.split("/").pop() || ""
     const {data: connection } = connectionStore.state
+    connectionStore.subscribe(() => {
+      console.log("Something changed in the connection store")
+
+    })
 
     if (connection !== null) {
       console.log("updating messages")
@@ -31,27 +35,47 @@ function ChannelComponent() {
 }
 
 function useMessagesStore() {
-  // ugly callback hell
-  return useSyncExternalStore((listener) => { 
-    console.log("the function you passed to syncExternalStore is being called")
+  const [messages, setMessages] = useState(messagesStore.state)
+
+  useEffect(() => {
+    console.log("effect is being run")
     const unsubscribe = messagesStore.subscribe(() => {
-      console.log("wrapper around the listener is being called")
-      listener()
+      console.log("Messages store changed to:")
+      console.log(messagesStore.state)
+      setMessages(messagesStore.state)
     })
 
     return () => {
-      console.log("unsubscribe is being called")
+      console.log("Unsubscribe function is being run")
       unsubscribe()
     }
-  }, () => messagesStore.state)
+  }, [setMessages])
+
+  return messages
 }
 
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
-  const currentMessages = useMessagesStore()
+  const [currentMessages, setCurrentMessages] = useState(messagesStore.state)
+  console.log("Rerendering with:")
+  console.log(currentMessages)
+
+  useEffect(() => {
+    console.log("Effect is being run")
+    const unsubscribe = messagesStore.subscribe(() => {
+      console.log("Messages store has changed to:")
+      console.log(messagesStore.state)
+      const newMessages = new Map(messagesStore.state)
+      setCurrentMessages(newMessages)
+    })
+
+    return () => {
+      console.log("Unsubscribing from messages store")
+      unsubscribe()
+    }
+  }, [setCurrentMessages])
 
   let messages = currentMessages.get(props.channelId)
-  console.log(messages)
 
   if (messages === undefined) {
     messages = []

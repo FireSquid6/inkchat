@@ -72,6 +72,7 @@ export async function updateMessages(connection: sdk.Connection, channelId: stri
   }
 
   messagesStore.setState((state) => {
+    console.log("updating the messages in updateMessages")
     state.set(channelId, messages)
     return state
   })
