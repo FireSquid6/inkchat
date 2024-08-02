@@ -5,7 +5,17 @@ import { useStore } from '@tanstack/react-store'
 import { MessageRow } from 'api'
 
 export const Route = createFileRoute('/server/$address/$channel')({
-  component: () => <ChannelComponent />
+  component: () => <ChannelComponent />,
+  beforeLoad: ({ location }) => {
+    console.log("before load")
+    const channelId = location.pathname.split("/").pop() || ""
+    const {data: connection } = connectionStore.state
+
+    if (connection !== null) {
+      console.log("updating messages")
+      updateMessages(connection, channelId)
+    }
+  }
 })
 
 
@@ -37,7 +47,6 @@ function useMessagesStore() {
 }
 
 function Messages(props: { channelId: string }) {
-  const { data: connection } = useStore(connectionStore)
   const dummyDiv = useRef<HTMLDivElement | null>(null)
   const currentMessages = useMessagesStore()
 
@@ -45,9 +54,6 @@ function Messages(props: { channelId: string }) {
   console.log(messages)
 
   if (messages === undefined) {
-    if (connection !== null) {
-      updateMessages(connection, props.channelId)
-    }
     messages = []
   }
 
