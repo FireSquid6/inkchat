@@ -1,4 +1,3 @@
-import { printDebug } from '@/lib/debug'
 import { useState } from "react"
 import { messagesStore, connectionStore, updateMessages, usersStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
@@ -11,13 +10,11 @@ export const Route = createFileRoute('/server/$address/$channel')({
 
 
 function ChannelComponent() {
-  printDebug()
   const channelId = Route.useParams().channel
   const { data: connection } = useStore(connectionStore)
 
   
   if (connection !== null) {
-    console.log("updating messages")
     updateMessages(connection, channelId)
   }
 
@@ -35,7 +32,7 @@ function ChannelComponent() {
           <Message key={i} {...message} />
         ))}
       </div>
-      <ChatInput />
+      <ChatInput channelId={channelId} />
     </div>
   )
 }
@@ -62,13 +59,24 @@ function Message(message: MessageRow) {
 
 
 
-function ChatInput() {
+function ChatInput(props: { channelId: string }) {
   const [message, setMessage] = useState("")
+  const { data: connection, error } = useStore(connectionStore)
+  const onClick = () => {
+    if (connection === null) {
+      console.error(error)
+      return
+    }
+
+    connection.sendMessage(props.channelId, message)
+    setMessage("")
+  }
+
 
   return (
     <div className="flex flex-row m-2">
       <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className="input input-primary input-bordered w-full mr-2" />
-      <button className="btn btn-primary">Send</button>
+      <button disabled={connection === null} onClick={onClick} className="btn btn-primary">Send</button>
     </div>
   )
 }

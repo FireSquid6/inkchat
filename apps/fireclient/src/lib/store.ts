@@ -5,6 +5,7 @@ import type { Maybe } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
 import { None, Some, isSome, unwrapOrThrow } from "maybe"
+import { serverMessages } from "protocol"
 
 
 export const channelStore = new Store<ChannelRow[]>([])
@@ -32,7 +33,6 @@ export function connectTo(address: string, token: string) {
       // TODO: handle this better
     }
 
-
     await Promise.all([
       new Promise<void>(async (resolve) => {
         const channels = unwrapOrThrow(await connection.getAllChannels())
@@ -45,6 +45,22 @@ export function connectTo(address: string, token: string) {
         resolve()
       }),
     ])
+  })
+
+  connection.newMessage.subscribe((message) => {
+    switch (message.kind) {
+      case serverMessages.newChat.name:
+        const chat = serverMessages.newChat.payloadAs(message)
+        messagesStore.setState((state) => {
+          const messages = state.get(chat.channelId) ?? []
+          messages.push(chat)
+          state.set(chat.channelId, messages)
+          return state
+        })
+        break
+    }
+
+
   })
 }
 
