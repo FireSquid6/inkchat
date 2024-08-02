@@ -14,9 +14,9 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
   }, () => { })
 
   return (
-    <div className="drawer lg:drawer-open">
+    <div className="drawer lg:drawer-open h-screen">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <main className="drawer-content h-screen">
+      <main className="drawer-content h-screen overflow-y-auto">
         <Topbar />
 
         {children}

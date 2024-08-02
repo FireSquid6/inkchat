@@ -28,10 +28,13 @@ function ChannelComponent() {
   }
 
   return (
-    <div className="flex flex-col overflow-y-auto m-4">
-      {messages.map((message, i) => (
-        <Message key={i} {...message} />
-      ))}
+    <div className="h-full flex flex-col">
+      <div className="flex flex-col h-full overflow-y-auto m-4">
+        {messages.map((message, i) => (
+          <Message key={i} {...message} />
+        ))}
+      </div>
+      <ChatInput />
     </div>
   )
 }
@@ -47,9 +50,9 @@ function Message(message: MessageRow) {
   return (
     <div className="flex flex-col mt-6">
       <div className="flxe flex-row">
-        <div>{user?.username ?? "Unknown User"}</div>
-        -
-        <div className="ml-auto">{dateTime}</div>
+        <span className="text-primary">{user?.username ?? "Unknown User"}</span>
+        <span className="mx-2">-</span>
+        <span className="ml-auto text-neutral">{dateTime}</span>
       </div>
       <p className="ml-2">{message.content}</p>
     </div>
@@ -58,3 +61,11 @@ function Message(message: MessageRow) {
 
 
 
+function ChatInput() {
+  return (
+    <div className="flex flex-row m-2">
+      <input type="text" className="input input-primary input-bordered w-full mr-2" />
+      <button className="btn btn-primary">Send</button>
+    </div>
+  )
+}
