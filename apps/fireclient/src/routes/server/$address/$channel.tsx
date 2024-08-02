@@ -33,9 +33,12 @@ function ChannelComponent() {
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
   const currentMessages = useMessagesStore(() => {
-    if (dummyDiv.current !== null) {
-      dummyDiv.current.scrollIntoView({ behavior: "smooth" })
-    }
+    // we want to wait some time before scrolling to the bottom of the chat since it looks nicer
+    setTimeout(() => {
+      if (dummyDiv.current !== null) {
+        dummyDiv.current.scrollIntoView({ behavior: "smooth" })
+      }
+    }, 100)
   })
 
   let messages = currentMessages.get(props.channelId)
