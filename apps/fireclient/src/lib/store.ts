@@ -22,11 +22,14 @@ export function resetStores() {
   connectionStore.setState(() => None("Not initialized"))
 }
 
-export function useMessagesStore() {
+export function useMessagesStore(extraFunction?: () => void) {
   const [messages, setMessages] = useState(messagesStore.state)
 
   useEffect(() => {
     const unsubscribe = messagesStore.subscribe(() => {
+      if (extraFunction) {
+        extraFunction()
+      }
       setMessages(new Map(messagesStore.state))
     })
 
