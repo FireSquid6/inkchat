@@ -1,4 +1,5 @@
 import { printDebug } from '@/lib/debug'
+import { useState } from "react"
 import { messagesStore, connectionStore, updateMessages, usersStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
@@ -62,9 +63,11 @@ function Message(message: MessageRow) {
 
 
 function ChatInput() {
+  const [message, setMessage] = useState("")
+
   return (
     <div className="flex flex-row m-2">
-      <input type="text" className="input input-primary input-bordered w-full mr-2" />
+      <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className="input input-primary input-bordered w-full mr-2" />
       <button className="btn btn-primary">Send</button>
     </div>
   )
