@@ -1,9 +1,11 @@
 import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
-import { FaHashtag, FaHouse, FaLinkSlash } from "react-icons/fa6"
+import { FaHashtag, FaHouse, FaLinkSlash, FaCircleInfo, FaGear } from "react-icons/fa6"
+import { MdPerson } from "react-icons/md"
 import { channelStore, connectionStore, useConnectionState } from "@/lib/store"
 import { useStore } from "@tanstack/react-store";
 import { handleMaybe } from "maybe";
 import { Link, useLocation } from "@tanstack/react-router"
+import useSWR from "swr"
 
 
 export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -70,17 +72,18 @@ export function Sidebar() {
 function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
-  const quickLinks: QuickLinkProps[] = [
+  const { data: connection }= useStore(connectionStore)
+  let quickLinks: QuickLinkProps[] = [
     { icon: <FaHouse />, text: "Back to Connections", to: "/" },
   ]
 
-  // if (connection.active) {
-  //   quickLinks.concat([
-  //     { icon: <MdPerson />, text: "Profile", to: `/${connection.address}/profile` }, 
-  //     { icon: <FaCircleInfo />, text: "About", to: `/${connection.address}/about` },
-  //     { icon: <FaGear />, text: "Settings", to: `/${connection.address}/settings`},
-  //   ])
-  // }
+  if (connection !== null) {
+    quickLinks = quickLinks.concat([
+      { icon: <MdPerson />, text: "Profile", to: `/server/${connection.address}/profile` }, 
+      { icon: <FaCircleInfo />, text: "About", to: `/server/${connection.address}/` },
+      { icon: <FaGear />, text: "Settings", to: `/sever/${connection.address}/settings`},
+    ])
+  }
 
   return (
     <ul className="flex flex-col">
