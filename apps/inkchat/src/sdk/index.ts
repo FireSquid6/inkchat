@@ -169,7 +169,7 @@ export class Connection {
     }))
   }
 
-  async whoAmiI(): AsyncMaybe<PublicUser> {
+  async whoAmI(): AsyncMaybe<PublicUser> {
     return wrapTreatyResponse<PublicUser>(await this.api.whoami.get())
   }
 
