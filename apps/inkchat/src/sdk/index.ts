@@ -169,6 +169,10 @@ export class Connection {
     }))
   }
 
+  async whoAmiI(): AsyncMaybe<PublicUser> {
+    return wrapTreatyResponse<PublicUser>(await this.api.whoami.get())
+  }
+
   sendMessage(channelId: string, content: string) {
     const message = clientMessages.chat.make({ channelId, content })
     this.socket.send(message)
