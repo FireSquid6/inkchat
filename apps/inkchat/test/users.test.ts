@@ -42,5 +42,20 @@ test("users route", async () => {
   })
   expect(userRes.status).toBe(200)
   expect(userRes.data).toEqual(publicUsers)
+
+
+  // test whoami
+  const res = await api.whoami.get({
+    headers: {
+      Authorization: `Bearer ${session.id}`
+    }
+  })
+
+  expect(res.status).toBe(200)
+  expect(res.data).toEqual({
+    id: user.id,
+    username: "testuser",
+    isAdmin: true,
+  })
 })
 

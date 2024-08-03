@@ -47,3 +47,20 @@ export const usersApi = (app: Elysia) => app
 
     return userIds
   })
+  .get("/whoami", async (ctx): Promise<PublicUser | null> => {
+    if (ctx.user === null) {
+      return null
+    }
+
+    const user = await getUserWithId(ctx.store.kit, ctx.user.id)
+    if (isNone(user)) {
+      ctx.set.status = 404
+      return null
+    }
+
+    return {
+      username: user.data.username,
+      id: user.data.id,
+      isAdmin: user.data.isAdmin === 1
+    }
+  })
