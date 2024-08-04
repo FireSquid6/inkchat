@@ -6,6 +6,7 @@ export interface AppConfig {
   storeDir?: string  // the directory to store files and the database in. Default ./store
   maxMessages?: number  // the maximum amount of messages a client can request at once. Default 200
   serverInformation?: ServerInformation  // information on the server presented to the public
+  
 }
 
 export interface ServerInformation {

@@ -2,6 +2,7 @@ import { getDb } from "@/db";
 import { getAuth } from "@/db/auth";
 import { app } from "@/api";
 import { Config, type AppConfig } from "@/config";
+import { createInitialJoincode } from "./forced-joincode";
 
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
@@ -27,6 +28,9 @@ export function startApp(appConfig: AppConfig, db: ReturnType<typeof getDb>): Ki
   app.listen(config.port(), () => {
     console.log(`🚀 Server launched at ${config.port()}`)
   })
+
+  // will create a new joincode and print it to the console if there are no users
+  createInitialJoincode(kit)
   return kit
 }
 

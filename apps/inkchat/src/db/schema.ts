@@ -36,6 +36,7 @@ export type ChannelRow = InferSelectModel<typeof channelTable>
 
 export const joincodeTable = sqliteTable("joincode", {
   id: text("id").notNull().primaryKey().unique(),
+  isAdmin: integer("is_admin").notNull().default(0),
   createdAt: integer("created_at").notNull(),
 })
 export type JoincodeRow = InferSelectModel<typeof joincodeTable>

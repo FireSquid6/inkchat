@@ -33,13 +33,14 @@ export async function deleteJoincode(kit: Kit, code: string): Promise<Maybe<bool
   }
 }
 
-export async function makeJoincode(kit: Kit): Promise<Maybe<string>> {
+export async function makeJoincode(kit: Kit, asAdmin: boolean = false): Promise<Maybe<string>> {
   try {
     const joincode = Math.random().toString(36).substring(2, 8)
 
     await kit.db.insert(joincodeTable).values({
       id: joincode,
-      createdAt: Date.now()
+      createdAt: Date.now(),
+      isAdmin: asAdmin ? 1 : 0,
     })
 
     return Some(joincode)

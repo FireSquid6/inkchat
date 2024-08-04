@@ -6,6 +6,7 @@ import { isNone } from "maybe"
 import { deleteJoincode, makeJoincode } from "@/db/auth"
 
 
+// TODO - allow the user to create joincodes that are admin
 export const adminApi = (app: Elysia) => app
   .use(kitPlugin)
   .post("/admin/promote", async (ctx) => {
