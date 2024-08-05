@@ -55,3 +55,7 @@ export const filesApi = (app: Elysia) => app
     ctx.set.status = 200
     return file
   })
+  .get("/avatars/:username", async (ctx) => {
+    ctx.set.status = 501
+    return "Not implemented"
+  })

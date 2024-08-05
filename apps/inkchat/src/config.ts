@@ -6,7 +6,7 @@ export interface AppConfig {
   storeDir?: string  // the directory to store files and the database in. Default ./store
   maxMessages?: number  // the maximum amount of messages a client can request at once. Default 200
   serverInformation?: ServerInformation  // information on the server presented to the public
-  
+  doInitialization?: boolean  // whether to create a default channel and joincode if no users or channels exist 
 }
 
 export interface ServerInformation {
@@ -39,6 +39,10 @@ export class Config {
       name: "A cool server",
       iconPath: ""
     }
+  }
+
+  doInitialization(): boolean {
+    return this.givenConfig.doInitialization || false
   }
 }
 
