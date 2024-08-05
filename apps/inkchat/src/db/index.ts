@@ -37,6 +37,7 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
     id: faker.string.uuid(),
     username: "grock",
     password: await hashPassword("lumberandlogs"),
+    isAdmin: 1,
   })
 
 
