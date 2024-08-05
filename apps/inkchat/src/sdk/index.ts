@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden";
 import type { CustomTreatyResponse } from "@/sdk/types"
 import type { App } from "@/index";
-import { Some, None, type AsyncMaybe } from "maybe"
+import { Some, None, type AsyncMaybe, isSome } from "maybe"
 import type { ServerInformation } from "@/config";
 import { PublicUser } from "@/api/users";
 import { ChannelRow, MessageRow } from "@/db/schema";
@@ -124,7 +124,7 @@ export class Connection {
   private publishState() {
     this.stateChanged.publish({ successful: this.connected, pending: this.pending, error: this.error })
   }
-
+  
   logout() {
     this.api.auth.signout.post({}, {
       headers: {

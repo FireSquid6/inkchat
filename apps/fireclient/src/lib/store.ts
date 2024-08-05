@@ -13,12 +13,14 @@ export const channelStore = new Store<ChannelRow[]>([])
 export const messagesStore = new Store<Map<string, MessageRow[]>>(new Map())
 export const usersStore = new Store<PublicUser[]>([])
 export const connectionStore = new Store<Maybe<sdk.Connection>>(None("Not initialized"))
+export const currentUserStore = new Store<PublicUser | null>(null)
 
 
 export function resetStores() {
   channelStore.setState(() => [])
   messagesStore.setState(() => new Map())
   usersStore.setState(() => [])
+  currentUserStore.setState(() => null)
   connectionStore.setState(() => None("Not initialized"))
 }
 
@@ -63,6 +65,11 @@ export function connectTo(address: string, token: string) {
         usersStore.setState(() => users)
         resolve()
       }),
+      new Promise<void>(async (resolve) => {
+        const currentUser = unwrapOrThrow(await connection.whoAmI())
+        currentUserStore.setState(() => currentUser)
+        resolve()
+      })
     ])
   })
 
@@ -81,6 +88,17 @@ export function connectTo(address: string, token: string) {
 
 
   })
+}
+
+export async function useUser(id: string | null) {
+  if (id === null) {
+    return null
+  }
+
+  const users = useStore(usersStore)
+  const user = users.find((user) => user.id === id)
+
+  return user || null
 }
 
 export async function updateMessages(connection: sdk.Connection, channelId: string) {
