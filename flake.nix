@@ -6,18 +6,13 @@
   let 
     pkgs = nixpkgs.legacyPackages.x86_64-linux; 
   in { 
-    devShell.x86_64-linux.default = pkgs.mkShell {
-      DOCKER_BUILDKIT = "1";
-      buildInputs = with self.pkgs [
+    devShells.x86_64-linux.default = pkgs.mkShell {
+      buildInputs = with pkgs; [
         bun
         nodejs_20
         flyctl
         libgcc
       ];
-      shellHook = ''
-        SCRIPTS_DIR=$(pwd)/scripts
-        export PATH=$SCRIPTS_DIR:$PATH
-      '';
     };
   };
 }
