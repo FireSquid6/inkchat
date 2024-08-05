@@ -20,6 +20,7 @@ export class Config {
 
   constructor(config: AppConfig) {
     this.givenConfig = config
+    console.log(this.givenConfig.doInitialization)
   }
   
   port(): number {
