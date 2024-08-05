@@ -37,12 +37,13 @@ export function startProductionApp() {
 }
 
 
-export function startDevApp(reset: boolean = false) {
+export async function startDevApp(reset: boolean = false) {
   ensureDirectoryExists("store/dev")
 
   const config: AppConfig = {
     storeDir: "store/dev",
     port: 3000,
+    doInitialization: false,
   }
 
   if (reset) {
@@ -54,7 +55,7 @@ export function startDevApp(reset: boolean = false) {
   const db = getDb("store/dev/db.sqlite")
   migrateDb(db)
   if (reset) {
-    seed(db)
+    await seed(db)
   }
 
   return startApp(config, db)

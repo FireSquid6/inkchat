@@ -42,7 +42,7 @@ export class Config {
   }
 
   doInitialization(): boolean {
-    return this.givenConfig.doInitialization || false
+    return this.givenConfig.doInitialization || true
   }
 }
 

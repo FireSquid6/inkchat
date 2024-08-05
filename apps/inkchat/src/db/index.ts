@@ -30,6 +30,7 @@ export async function seed(db: ReturnType<typeof getDb>, options: SeedOptions = 
   channels: 4,
   messagesPerChannel: 25,
 }) {
+  console.log("🌱 Seeding...")
   const userIds = []
 
   await db.insert(userTable).values({

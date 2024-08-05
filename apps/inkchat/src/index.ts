@@ -30,8 +30,11 @@ export function startApp(appConfig: AppConfig, db: ReturnType<typeof getDb>): Ki
   })
 
   // will create a new joincode and print it to the console if there are no users
-  createInitialJoincode(kit)
-  createInitialChannel(kit)
+  if (config.doInitialization()) {
+    createInitialJoincode(kit)
+    createInitialChannel(kit)
+  }
+
   return kit
 }
 
