@@ -1,19 +1,21 @@
-import { Elysia } from "elysia";
-import { cors } from "@elysiajs/cors";
-import type { Kit } from "@/index";
-import type { User } from "lucia";
-import { swagger } from "@elysiajs/swagger";
-import { logger } from "@bogeychan/elysia-logger";
+import { Elysia } from "elysia"
+import { cors } from "@elysiajs/cors"
+import type { Kit } from "@/index"
+import type { User } from "lucia"
+import { swagger } from "@elysiajs/swagger"
+import { logger } from "@bogeychan/elysia-logger"
+import { ip } from "elysia-ip"
 import { userTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 import { protectedAuthApi, unprotectedAuthApi } from "@/api/auth"
-import { channelsApi } from "@/api/channels";
-import { usersApi } from "@/api/users";
+import { channelsApi } from "@/api/channels"
+import { usersApi } from "@/api/users"
 import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
 import { filesApi } from "@/api/files"
-import type { ServerInformation } from "@/config";
+import type { ServerInformation } from "@/config"
+import { type InferContext } from "@bogeychan/elysia-logger"
 
 
 export const kitPlugin = (app: Elysia) => app
@@ -65,8 +67,15 @@ export const kitPlugin = (app: Elysia) => app
 export const app = new Elysia()
   // up here is unprotected! No auth required
   .use(cors())
+  .use(ip())
   .use(logger({
     level: "info",
+    customProps(ctx) {
+      return {
+        ip: ctx.ip
+      }
+
+    },
     transport: {
       target: "pino-pretty",
       options: {
