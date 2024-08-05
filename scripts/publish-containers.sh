@@ -9,4 +9,6 @@ if [ -z "$VERSION" ]; then
 fi
 
 docker build -t firesquid/inkchat:$VERSION ./apps/inkchat
+docker build -t firesquid/inkchat:latest ./apps/inkchat
 docker push firesquid/inkchat:$VERSION
+docker push firesquid/inkchat:latest
