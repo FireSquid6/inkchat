@@ -1,5 +1,6 @@
 import { Elysia } from "elysia"
 import { cors } from "@elysiajs/cors"
+import fs from "fs"
 import type { Kit } from "@/index"
 import type { User } from "lucia"
 import { swagger } from "@elysiajs/swagger"
@@ -65,6 +66,21 @@ export const kitPlugin = (app: Elysia) => app
   })
 
 export const app = new Elysia()
+  .use(kitPlugin)
+  .onBeforeHandle((ctx) => {
+    const { config } = ctx.store.kit
+    
+    if (config.allowedOrigins().length === 0) {
+      return
+    }
+
+    const url = new URL(ctx.request.url)
+    console.log(url.host)
+
+    if (!config.allowedOrigins().includes(url.host)) {
+      return ctx.redirect(config.redirectForDisallowed(), 301)
+    }
+  })
   // up here is unprotected! No auth required
   .use(cors())
   .use(ip())
@@ -92,13 +108,11 @@ export const app = new Elysia()
       }
     }
   }))
-  .use(kitPlugin)
   .use(unprotectedAuthApi)
   .get("/", (ctx): ServerInformation => {
     return ctx.store.kit.config.serverInformation()
   })
   .use(connectionApi)
-
   .guard({
     async beforeHandle(ctx) {
       if (!ctx.authorization) {
