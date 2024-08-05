@@ -75,9 +75,9 @@ export const app = new Elysia()
     }
 
     const url = new URL(ctx.request.url)
-    console.log(url.host)
 
     if (!config.allowedOrigins().includes(url.host)) {
+      console.log(ctx.request)
       return ctx.redirect(config.redirectForDisallowed(), 301)
     }
   })
