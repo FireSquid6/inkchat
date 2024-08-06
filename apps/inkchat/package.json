@@ -16,7 +16,6 @@
     "ephemeral": "bun run entrypoints/ephemeral.ts",
     "prod": "bun run entrypoints/prod.ts",
     "generate": "bunx drizzle-kit generate",
-    "build": "bun run entrypoints/build.ts",
     "studio": "bunx drizzle-kit studio"
   },
   "dependencies": {
