@@ -210,6 +210,16 @@ export class Connection {
     this.socket.send(message)
   }
 
+  createChannel(name: string, description: string) {
+    const message = clientMessages.createChannel.make({ name, description })
+    this.socket.send(message)
+  }
+
+  deleteChannel(id: string) {
+    const message = clientMessages.deleteChannel.make({ id })
+    this.socket.send(message)
+  }
+
   async makeJoincode(): AsyncMaybe<string> {
     const res = await this.api.admin.joincode.post({})
 

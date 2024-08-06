@@ -1,6 +1,7 @@
-import { connectionStore, currentUserStore } from "@/lib/store"
+import { connectionStore, currentUserStore, channelStore } from "@/lib/store"
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
+import { ChannelRow } from "api"
 import { useCallback, useRef, useState } from "react"
 import { FaCopy } from "react-icons/fa"
 
@@ -83,4 +84,39 @@ function JoincodeGenerator() {
       </dialog>
     </>
   )
+}
+
+
+function ChannelCreator() {
+  const channels = useStore(channelStore)
+  const { data: connection } = useStore(connectionStore)
+
+  const onDelete = useCallback((channel: ChannelRow) => {
+    connection?.sendMessage
+
+  }, [connection])
+
+  
+  return (
+    <div>
+
+    </div>
+  )
+}
+
+type ChannelProps = {
+  channel: ChannelRow
+  onDelete?: (channel: ChannelRow) => void
+}
+function Channel(props: ChannelProps) {
+  const [editing, setEditing] = useState<boolean>(false)
+  const [channelName, setChannelName] = useState<string>(props.channel.name)
+
+  return (
+    <div className="flex flex-row">
+      <input className="" />
+
+    </div>
+  )
+
 }
