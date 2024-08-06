@@ -1,11 +1,13 @@
 console.log("building...")
 
-await Bun.build({
+const result = await Bun.build({
   entrypoints: ['entrypoints/prod.ts'],
   target: 'bun',
   minify: true,
   outdir: 'dist',
-  sourcemap: "inline",
+  sourcemap: "external",
 })
+
+console.log(result)
 
 export {}
