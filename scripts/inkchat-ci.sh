@@ -10,4 +10,6 @@ if [ -z "$VERSION" ]; then
 fi
 
 ./scripts/git-tag.sh $VERSION
-./scripts/publish-containers.sh $VERSION
+# docker is broken
+# ./scripts/publish-containers.sh $VERSION
+./scripts/build-all.sh
