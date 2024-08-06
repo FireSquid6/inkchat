@@ -1,6 +1,6 @@
 services:
   inkchat:
-    build: ./apps/inkchat
+    image: "firesquid/inkchat:latest"
     ports:
       - "3000:3000"
     volumes:

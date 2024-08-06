@@ -1,5 +1,5 @@
 import { getStoredSessions } from "@/lib/auth"
-import { channelStore, messagesStore, usersStore, connectionStore } from "@/lib/store"
+import { channelStore, messagesStore, usersStore, connectionStore, currentUserStore } from "@/lib/store"
 
 export function printDebug() {
   const { data: sessions } = getStoredSessions()
@@ -32,6 +32,10 @@ export function printDebug() {
   const channels = channelStore.state
   console.log("Channels State:")
   console.table(channels)
+
+  const user = currentUserStore.state
+  console.log("Current User State:")
+  console.table(user)
 
   const messages = messagesStore.state
   for (const channel of messages) {
