@@ -8,7 +8,7 @@ if [ -z "$VERSION" ]; then
     exit 1
 fi
 
-docker build -t firesquid/inkchat:$VERSION ./apps/inkchat
-docker build -t firesquid/inkchat:latest ./apps/inkchat
+docker build -t firesquid/inkchat:$VERSION --no-cache ./apps/inkchat
+docker build -t firesquid/inkchat:latest --no-cache ./apps/inkchat
 docker push firesquid/inkchat:$VERSION
 docker push firesquid/inkchat:latest
