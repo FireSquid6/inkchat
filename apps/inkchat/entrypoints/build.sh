@@ -3,7 +3,7 @@
 cd "$(dirname "$0")/.."
 cd ./apps/inkchat
 
-bun build ./entrypoints/prod.ts --outdir ./dist --target bun --sourcemap=linked --minify
+bun build ./entrypoints/prod.ts --entry-naming [dir]/inkchat.[ext] --outdir ./dist --target bun --sourcemap=linked --minify
 
 declare -a platforms=(
 [0]="linux-x64"

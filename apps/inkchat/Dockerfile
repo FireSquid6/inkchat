@@ -11,4 +11,4 @@ RUN bun run generate
 FROM base AS production
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/drizzle /app/drizzle
-CMD ["bun", "run", "./dist/prod.js"]
+CMD ["bun", "run", "./dist/inkchat.js"]
