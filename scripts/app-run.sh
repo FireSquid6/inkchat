@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")/.."
 APP=$1
 SCRIPT=$2
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")/.."
 VERSION=$1
 
 if [ -z "$VERSION" ]; then
