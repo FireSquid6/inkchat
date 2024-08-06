@@ -8,5 +8,8 @@
   "dependencies": {
     "bun-types": "^1.1.21",
     "elysia-ip": "^1.0.7"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
   }
 }
