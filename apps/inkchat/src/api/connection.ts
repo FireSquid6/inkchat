@@ -11,8 +11,8 @@ import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 import { kitPlugin } from "@/api"
 import type { Kit } from "@/index"
-import { canCreateChannel } from "@/permissions"
-import { makeChannel } from "@/db/channels"
+import { canModifyChannels } from "@/permissions"
+import { deleteChannel, makeChannel, modifyChannel } from "@/db/channels"
 import { isNone } from "maybe"
 
 export const SOCKET_PATH = "/socket"
@@ -170,7 +170,7 @@ export async function getResponse(
         async (msg) => {
           const payload = clientMessages.createChannel.payloadAs(msg)
           
-          if (!canCreateChannel(kit, senderId)) {
+          if (!canModifyChannels(kit, senderId)) {
             error = "User doesn't have permission to create a channel"
             return
           }
@@ -185,7 +185,50 @@ export async function getResponse(
             return
           }
           
-          response = serverMessages.createChannel.make(result.data)
+          response = serverMessages.channelCreated.make(result.data)
+        }
+      ],
+      [
+        clientMessages.deleteChannel.name,
+        async (msg) => {
+          const payload = clientMessages.deleteChannel.payloadAs(msg)
+
+          if (!canModifyChannels(kit, senderId)) {
+            error = "User doesn't have permission to delete a channel"
+            return
+          }
+
+          // TODO - validate inputs
+
+          const result = await deleteChannel(kit, payload.id)
+          if (!result) {
+            error = "Failed to delete channel"
+            return
+          }
+          
+          response = serverMessages.channelDeleted.make({ id: payload.id })
+        }
+      ],
+      [
+        clientMessages.modifyChannel.name,
+        async (msg) => {
+          const payload = clientMessages.modifyChannel.payloadAs(msg)
+
+          if (!canModifyChannels(kit, senderId)) {
+            error = "User doesn't have permission to modify a channel"
+          }
+
+          // TODO - validate inputs
+
+          const result = await modifyChannel(kit, payload.id, {
+            name: payload.name,
+            description: payload.description
+          })
+
+          if (!result) {
+            error = "Failed to modify channel"
+            return
+          }
         }
       ]
     ])

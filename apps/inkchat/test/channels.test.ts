@@ -2,6 +2,9 @@ import { channelTable, messageTable } from "@/db/schema"
 import { Connection } from "@/sdk"
 import { getTestUser, testApp } from "@/testutils"
 import { test, expect } from "bun:test"
+import { clientMessages, parseMessage, serverMessages } from "protocol"
+import { converse } from "@/testutils"
+import { eq } from "drizzle-orm"
 
 test("channels routes", async () => {
   const { api, db } = testApp()
@@ -140,4 +143,65 @@ test("channel routes with sdk", async () => {
   }
 
   expect(foundChannels).toEqual(channels)
+})
+
+
+test("create, modify, and delete channels", async () => {
+  const { api, db } = testApp()
+  const { user, session } = await getTestUser(db)
+  // initialize a channel
+
+  let doneEverything = false
+  await new Promise<void>((resolve) => {
+    const socket = api.socket.subscribe()
+
+    socket.on("error", (err) => {
+      console.error(err)
+      // if the test is failing here it's because the socket is erroring for some reason
+      socket.close()
+      resolve()
+    })
+    socket.on("close", () => {
+      resolve()
+    })
+    socket.on("open", async () => {
+      const messages: string[] = [
+        clientMessages.connect.make({
+          authorization: `Bearer ${session.id}`
+        }),
+        clientMessages.createChannel.make({
+          name: "testchannel",
+          description: "Test Channel"
+        })
+      ]
+      const responses = await converse(socket, messages)
+
+      const connectResponse = parseMessage(responses[0])
+      expect(connectResponse.kind).toBe("USER_JOINED")
+      const connectPayload =
+        serverMessages.userJoined.payloadAs(connectResponse)
+
+      expect(connectPayload.id).toBe(user.id)
+
+      const newChannel = parseMessage(responses[1])
+      expect(newChannel.kind).toBe(serverMessages.channelCreated.name)
+      const newChannelPayload = serverMessages.channelCreated.payloadAs(newChannel)
+
+      expect(newChannelPayload.name).toBe("testchannel")
+      expect(newChannelPayload.description).toBe("Test Channel")
+
+      const channels = await db
+        .select()
+        .from(channelTable)
+        .where(eq(channelTable.name, "testchannel"))
+
+      expect(channels.length).toBe(1)
+
+      doneEverything = true
+      socket.close()
+    })
+  })
+
+  // if the test is failing here it's because the socket is being shut down
+  expect(doneEverything).toBe(true)
 })

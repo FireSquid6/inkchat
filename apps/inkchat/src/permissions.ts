@@ -4,7 +4,7 @@ import { isNone } from "maybe"
 
 
 // TODO - make this a failable function
-export async function canCreateChannel(kit: Kit, userId: string): Promise<boolean> {
+export async function canModifyChannels(kit: Kit, userId: string): Promise<boolean> {
   const maybe = await getUserWithId(kit, userId)
 
   if (isNone(maybe)) {

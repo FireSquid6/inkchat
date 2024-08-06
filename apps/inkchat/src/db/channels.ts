@@ -81,3 +81,30 @@ export async function makeChannel(
     return None(`database error while creating channel: ${e}`)
   }
 }
+
+
+export async function deleteChannel(
+  kit: Kit,
+  id: string,
+): Promise<boolean> {
+  try {
+    const result = await kit.db.delete(channelTable).where(eq(channelTable.id, id)).returning()
+    return result.length > 0
+  } catch (e) {
+    return false
+  }
+}
+
+
+export async function modifyChannel(
+  kit: Kit,
+  id: string,
+  newChannel: Omit<ChannelRow, "createdAt" | "id">
+): Promise<boolean> {
+  try {
+    const result = await kit.db.update(channelTable).set(newChannel).where(eq(channelTable.id, id)).returning()
+    return result.length > 0
+  } catch (e) {
+    return false
+  }
+}
