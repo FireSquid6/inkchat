@@ -11,7 +11,9 @@ import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 import { kitPlugin } from "@/api"
 import type { Kit } from "@/index"
-import { ElysiaWS } from "elysia/dist/ws"
+import { canCreateChannel } from "@/permissions"
+import { makeChannel } from "@/db/channels"
+import { isNone } from "maybe"
 
 export const SOCKET_PATH = "/socket"
 
@@ -163,7 +165,29 @@ export async function getResponse(
           response = serverMessages.newChat.make(message)
         }
       ],
-      [clientMessages.createChannel.name, async (msg) => {}]
+      [
+        clientMessages.createChannel.name,
+        async (msg) => {
+          const payload = clientMessages.createChannel.payloadAs(msg)
+          
+          if (!canCreateChannel(kit, senderId)) {
+            error = "User doesn't have permission to create a channel"
+            return
+          }
+
+          // TODO - validate inputs
+          
+
+          const result = await makeChannel(kit, payload.name, payload.description)
+
+          if (isNone(result)) {
+            error = "Failed to create channel"
+            return
+          }
+          
+          response = serverMessages.createChannel.make(result.data)
+        }
+      ]
     ])
   )
 
