@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm"
 import { generateIdFromEntropySize } from "lucia"
 import { kitPlugin } from "@/api"
 import type { Kit } from "@/index"
+import { ElysiaWS } from "elysia/dist/ws"
 
 
 export const SOCKET_PATH = "/socket"
@@ -29,6 +30,10 @@ export const connectionApi = (app: Elysia) => app
 
         response = res.response
         error = res.error
+
+        if (res.subscribe) {
+          ws.subscribe(wsChannelName)
+        }
       } catch (e) {
         response = ""
         error = `Caught message processing error: ${e as string}`
@@ -40,24 +45,26 @@ export const connectionApi = (app: Elysia) => app
         ws.send(response)
         ws.publish(wsChannelName, response)
       }
+
       if (error != "") {
         console.log(`Sending error: ${response}`)
         ws.send(serverMessages.error.make(error))
       }
+
+
     },
 
     close: (ws) => {
       ws.data.store.socketIdToUserId.delete(ws.id)
-      // not sure if this is necessary but it can't hurt
       ws.unsubscribe(wsChannelName)
     }
   })
 
-
-async function processMessage(kit: Kit, wsId: string, socketIdToUserId: Map<string, string>, msg: Message): Promise<{ response: string, error: string }> {
+// we just let ws be any because we don't care that much
+async function processMessage(kit: Kit, wsId: string, socketIdToUserId: Map<string, string>, msg: Message): Promise<{ response: string, error: string, subscribe: boolean }> {
   if (msg.kind === clientMessages.connect.name) {
     if (socketIdToUserId.has(wsId)) {
-      return { response: "", error: "You're already connected. Chill out. Everything is fine." }
+      return { response: "", error: "You're already connected. Chill out. Everything is fine.", subscribe: false }
     }
 
     const payload = clientMessages.connect.payloadAs(msg)
@@ -66,27 +73,32 @@ async function processMessage(kit: Kit, wsId: string, socketIdToUserId: Map<stri
     const session = auth.readBearerToken(payload.authorization)
 
     if (!session) {
-      return { response: "", error: "Invalid authorization" }
+      return { response: "", error: "Invalid authorization", subscribe: false }
     }
 
     const { user } = await auth.validateSession(session)
 
     if (!user) {
-      return { response: "", error: "Invalid authorization" }
+      return { response: "", error: "Invalid authorization", subscribe: false }
     }
 
     socketIdToUserId.set(wsId, user.id)
-    return { response: serverMessages.userJoined.make({ id: user.id }), error: "" }
+    // TODO: make the client subscribe
+    return { response: serverMessages.userJoined.make({ id: user.id }), error: "", subscribe: true }
   }
 
   const userId = socketIdToUserId.get(wsId)
 
   if (!userId) {
-    return { response: "", error: "User not authenticated" }
+    return { response: "", error: "User not authenticated", subscribe: false }
   }
 
   const data = await getResponse(kit, msg, userId!)
-  return data
+  return {
+    response: data.response,
+    error: data.error,
+    subscribe: false
+  } 
 }
 
 
