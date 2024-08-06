@@ -14,5 +14,8 @@
         libgcc
       ];
     };
+    shellHook = ''
+      export PATH=$PATH:./scripts
+    '';
   };
 }

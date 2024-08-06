@@ -1,13 +1,25 @@
 console.log("building...")
 
-const result = await Bun.build({
+await Bun.build({
   entrypoints: ["entrypoints/prod.ts"],
   target: "bun",
   minify: true,
-  outdir: "dist",
+  outdir: "js-dist",
   sourcemap: "external"
 })
 
-console.log(result)
+
+const platforms: string[] = []
+
+for (const platform of platforms) {
+  await Bun.build({
+    entrypoints: ["entrypoints/prod.ts"],
+    target: "bun", 
+    outdir: "bin",
+    naming: `[dir]/inkchat-${platform}.[ext]`,
+  })
+
+}
+
 
 export {}
