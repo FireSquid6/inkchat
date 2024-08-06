@@ -5,6 +5,7 @@ await Bun.build({
   target: 'bun',
   minify: true,
   outdir: 'dist',
+  sourcemap: "inline",
 })
 
 export {}
