@@ -177,6 +177,16 @@ export class Connection {
     const message = clientMessages.chat.make({ channelId, content })
     this.socket.send(message)
   }
+
+  async makeJoincode(): AsyncMaybe<string> {
+    const res = await this.api.admin.joincode.post({})
+
+    if (!res.data) {
+      return None("No data from server")
+    }
+
+    return Some(res.data.code)
+  }
 }
 
 

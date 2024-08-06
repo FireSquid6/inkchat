@@ -1,19 +1,18 @@
 import { connectionStore, currentUserStore } from '@/lib/store'
 import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
+import { useCallback, useRef, useState } from "react"
+import { FaCopy } from "react-icons/fa"
 
 export const Route = createFileRoute('/server/$address/admin')({
-  component: () => <p>Hello!</p>
+  component: () => <Admin />
 })
 
 
 function Admin() {
-  const { data: connection } = useStore(connectionStore)
   const user = useStore(currentUserStore)
 
-  if (connection === null || user === null) {
-    console.log(connection)
-    console.log(user)
+  if (user === null) {
     return <p>Not logged in</p>
   }
 
@@ -23,10 +22,68 @@ function Admin() {
 
 
   return (
-    <div>
-      <p>Hello world!</p>
-
+    <div className="m-4">
+      <JoincodeGenerator />
     </div>
   )
 
+}
+
+
+function JoincodeGenerator() {
+  const { data: connection } = useStore(connectionStore)
+  const [joincode, setJoincode] = useState<string>("")
+  const [error, setError] = useState<string>("")
+  const [disabled, setDisabled] = useState<boolean>(false)
+  const modalRef = useRef<HTMLDialogElement>(null)
+
+  const onClick = async () => {
+    setDisabled(true)
+    const joincode = await connection?.makeJoincode()
+
+    if (joincode === undefined) {
+      console.error("Failed to make joincode")
+      return
+    }
+
+    setJoincode(joincode.data ?? "")
+    setError(joincode.error ?? "")
+    setDisabled(false)
+
+    modalRef.current?.showModal()
+  }
+
+  const onCopy = useCallback(() => {
+    navigator.clipboard.writeText(joincode)
+  }, [joincode])
+
+
+  return (
+    <>
+      <div className="tooltip" data-tip="users need this to join">
+        <button className="btn" disabled={disabled} onClick={onClick}>Generate Joincode</button>
+      </div>
+      <dialog ref={modalRef} className="modal">
+        <div className="modal-box">
+          <h3 className="text-lg font-bold">New Joincode</h3>
+          <div className="flex flex-row my-8">
+            <p className="text-3xl my-auto mr-6">{joincode}</p>
+            <button className="btn rounded-full" onClick={onCopy}>
+              <FaCopy />
+            </button>
+          </div>
+
+          <p>Copy and send this to whoever needs to join. One time use.</p>
+          <p className="text-error">{error}</p>
+          <div className="modal-action">
+            <form method="dialog">
+              <button className="btn" type="submit">Close</button>
+            </form>
+          </div>
+        </div>
+
+      </dialog>
+    </>
+
+  )
 }

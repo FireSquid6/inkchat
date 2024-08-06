@@ -8,6 +8,9 @@ export const Route = createFileRoute('/auth')({
 
 
 function AuthComponent() {
+  const query = Route.useSearch()
+  console.log(query)
+
   return (
     <main className="m-2 flex flex-col">
       <h1 className="text-4xl text-center mb-16 mt-64">Register a New or Existing Identity</h1>
