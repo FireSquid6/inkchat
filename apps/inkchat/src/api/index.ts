@@ -1,6 +1,5 @@
 import { Elysia } from "elysia"
 import { cors } from "@elysiajs/cors"
-import fs from "fs"
 import type { Kit } from "@/index"
 import type { User } from "lucia"
 import { swagger } from "@elysiajs/swagger"
@@ -16,7 +15,6 @@ import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
 import { filesApi } from "@/api/files"
 import type { ServerInformation } from "@/config"
-import { type InferContext } from "@bogeychan/elysia-logger"
 
 export const kitPlugin = (app: Elysia) =>
   app
