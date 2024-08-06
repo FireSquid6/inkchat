@@ -1,19 +1,30 @@
-import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri";
-import { FaHashtag, FaHouse, FaLinkSlash, FaCircleInfo, FaGear } from "react-icons/fa6"
+import { RiMenuFold3Line, RiMenuUnfold3Line } from "react-icons/ri"
+import {
+  FaHashtag,
+  FaHouse,
+  FaLinkSlash,
+  FaCircleInfo,
+  FaGear
+} from "react-icons/fa6"
 import { MdPerson } from "react-icons/md"
 import { channelStore, connectionStore, useConnectionState } from "@/lib/store"
-import { useStore } from "@tanstack/react-store";
-import { handleMaybe } from "maybe";
+import { useStore } from "@tanstack/react-store"
+import { handleMaybe } from "maybe"
 import { Link, useLocation } from "@tanstack/react-router"
 import useSWR from "swr"
 
-
-export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export function SidebarLayout({
+  children
+}: Readonly<{ children: React.ReactNode }>) {
   const connection = useStore(connectionStore)
   let address = ""
-  handleMaybe(connection, (conn) => {
-    address = conn.address
-  }, () => { })
+  handleMaybe(
+    connection,
+    (conn) => {
+      address = conn.address
+    },
+    () => {}
+  )
 
   return (
     <div className="drawer lg:drawer-open h-screen">
@@ -24,7 +35,11 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
         {children}
       </main>
       <div className="drawer-side">
-        <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
+        <label
+          htmlFor="my-drawer-2"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
         <div className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
           <Sidebar />
         </div>
@@ -33,32 +48,35 @@ export function SidebarLayout({ children }: Readonly<{ children: React.ReactNode
   )
 }
 
-
-
 // only shows up on small screens
 export function Topbar() {
   return (
     <div className="w-full flex flex-row bg-base-300 lg:hidden">
-      <label htmlFor="my-drawer-2" className="m-2 btn btn-circle btn-outline drawer-button">
+      <label
+        htmlFor="my-drawer-2"
+        className="m-2 btn btn-circle btn-outline drawer-button"
+      >
         <RiMenuUnfold3Line size="1.5em" />
       </label>
     </div>
   )
 }
 
-
 export function Sidebar() {
   const connectionState = useConnectionState()
   return (
     <>
       <div className="flex flex-row">
-        <label htmlFor="my-drawer-2" className="ml-auto m-2 btn btn-circle btn-outline drawer-button lg:hidden">
+        <label
+          htmlFor="my-drawer-2"
+          className="ml-auto m-2 btn btn-circle btn-outline drawer-button lg:hidden"
+        >
           <RiMenuFold3Line size="1.5em" />
         </label>
       </div>
       <QuickLinks />
       <hr className="my-2" />
-      { connectionState.successful && !connectionState.pending ? (
+      {connectionState.successful && !connectionState.pending ? (
         <div className="overflow-y-auto h-full">
           <ChannelList />
         </div>
@@ -72,26 +90,36 @@ export function Sidebar() {
 function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
-  const { data: connection }= useStore(connectionStore)
+  const { data: connection } = useStore(connectionStore)
   let quickLinks: QuickLinkProps[] = [
-    { icon: <FaHouse />, text: "Back to Connections", to: "/" },
+    { icon: <FaHouse />, text: "Back to Connections", to: "/" }
   ]
 
   if (connection !== null) {
     quickLinks = quickLinks.concat([
-      { icon: <MdPerson />, text: "Profile", to: `/server/${connection.address}/profile` }, 
-      { icon: <FaCircleInfo />, text: "About", to: `/server/${connection.address}/` },
-      { icon: <FaGear />, text: "Settings", to: `/server/${connection.address}/admin`},
+      {
+        icon: <MdPerson />,
+        text: "Profile",
+        to: `/server/${connection.address}/profile`
+      },
+      {
+        icon: <FaCircleInfo />,
+        text: "About",
+        to: `/server/${connection.address}/`
+      },
+      {
+        icon: <FaGear />,
+        text: "Settings",
+        to: `/server/${connection.address}/admin`
+      }
     ])
   }
 
   return (
     <ul className="flex flex-col">
-      {
-        quickLinks.map((quickLink, i) => (
-          <QuickLink key={i} {...quickLink} />
-        ))
-      }
+      {quickLinks.map((quickLink, i) => (
+        <QuickLink key={i} {...quickLink} />
+      ))}
     </ul>
   )
 }
@@ -113,17 +141,14 @@ function QuickLink(props: QuickLinkProps) {
   )
 }
 
-
 function ChannelList() {
   const channels = useStore(channelStore)
 
   return (
     <ul className="flex flex-col">
-      {
-        channels.map((channel) => (
-          <Channel key={channel.id} {...channel} />
-        ))
-      }
+      {channels.map((channel) => (
+        <Channel key={channel.id} {...channel} />
+      ))}
     </ul>
   )
 }
@@ -131,7 +156,6 @@ function ChannelList() {
 type ChannelProps = {
   id: string
   name: string
-
 }
 function Channel(props: ChannelProps) {
   let location = useLocation().pathname.split("/")

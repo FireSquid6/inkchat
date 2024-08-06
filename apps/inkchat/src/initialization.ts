@@ -8,7 +8,7 @@ import { joincodeTable } from "./db/schema"
 export async function createInitialJoincode(kit: Kit) {
   const users = unwrapOrDefault(await getAllUsers(kit), [])
   const joincodes = await kit.db.select().from(joincodeTable)
-  
+
   if (users.length > 0) {
     return
   }
@@ -18,7 +18,9 @@ export async function createInitialJoincode(kit: Kit) {
   }
 
   const joincode = unwrapOrThrow(await makeJoincode(kit, true))
-  console.log(`No users or joincodes detected. Created initial joincode: ${joincode}`)
+  console.log(
+    `No users or joincodes detected. Created initial joincode: ${joincode}`
+  )
 }
 
 export async function createInitialChannel(kit: Kit) {
@@ -28,6 +30,10 @@ export async function createInitialChannel(kit: Kit) {
     return
   }
 
-  const channel = unwrapOrThrow(await makeChannel(kit, "general", "General chat"))
-  console.log(`No channels detected. Created initial channel "#${channel.name}"`)
+  const channel = unwrapOrThrow(
+    await makeChannel(kit, "general", "General chat")
+  )
+  console.log(
+    `No channels detected. Created initial channel "#${channel.name}"`
+  )
 }

@@ -4,10 +4,4 @@ import type { UserRow, MessageRow, ChannelRow } from "inkchat/src/db/schema"
 import type { PublicUser } from "inkchat/src/api/users"
 export * as sdk from "inkchat/src/sdk"
 
-
-export type {
-  UserRow,
-  MessageRow,
-  ChannelRow,
-  PublicUser,
-}
+export type { UserRow, MessageRow, ChannelRow, PublicUser }

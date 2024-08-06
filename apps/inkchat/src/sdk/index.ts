@@ -1,13 +1,17 @@
-import { treaty } from "@elysiajs/eden";
+import { treaty } from "@elysiajs/eden"
 import type { CustomTreatyResponse } from "@/sdk/types"
-import type { App } from "@/index";
+import type { App } from "@/index"
 import { Some, None, type AsyncMaybe, isSome } from "maybe"
-import type { ServerInformation } from "@/config";
-import { PublicUser } from "@/api/users";
-import { ChannelRow, MessageRow } from "@/db/schema";
-import { clientMessages, Message, parseMessage } from "protocol";
+import type { ServerInformation } from "@/config"
+import { PublicUser } from "@/api/users"
+import { ChannelRow, MessageRow } from "@/db/schema"
+import { clientMessages, Message, parseMessage } from "protocol"
 
-export async function signIn(address: string, username: string, password: string): AsyncMaybe<string> {
+export async function signIn(
+  address: string,
+  username: string,
+  password: string
+): AsyncMaybe<string> {
   const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
@@ -27,7 +31,10 @@ export async function signIn(address: string, username: string, password: string
   return Some(res.data.token)
 }
 
-export async function validateSession(address: string, token: string): Promise<number> {
+export async function validateSession(
+  address: string,
+  token: string
+): Promise<number> {
   const url = urlFromAddress(address)
   const api = getTreaty(url, token)
 
@@ -36,7 +43,12 @@ export async function validateSession(address: string, token: string): Promise<n
   return res.status
 }
 
-export async function signUp(address: string, username: string, password: string, joincode: string) {
+export async function signUp(
+  address: string,
+  username: string,
+  password: string,
+  joincode: string
+) {
   const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
@@ -64,7 +76,6 @@ export async function signOut(address: string, token: string) {
   await api.auth.signout.post({})
 }
 
-
 export class Connection {
   private api: ReturnType<typeof getTreaty>
   private socket: WebSocket
@@ -75,8 +86,12 @@ export class Connection {
 
   url: string
   authorization: string
-  stateChanged = new Pubsub<{ successful: boolean, pending: boolean, error: string }>()
-  newMessage = new Pubsub<Message>
+  stateChanged = new Pubsub<{
+    successful: boolean
+    pending: boolean
+    error: string
+  }>()
+  newMessage = new Pubsub<Message>()
   address: string
 
   constructor(address: string, token: string) {
@@ -95,9 +110,11 @@ export class Connection {
       this.pending = false
       this.publishState()
 
-      this.socket.send(clientMessages.connect.make({
-        authorization: this.authorization
-      }))
+      this.socket.send(
+        clientMessages.connect.make({
+          authorization: this.authorization
+        })
+      )
     }
 
     this.socket.onerror = () => {
@@ -122,15 +139,22 @@ export class Connection {
   }
 
   private publishState() {
-    this.stateChanged.publish({ successful: this.connected, pending: this.pending, error: this.error })
-  }
-  
-  logout() {
-    this.api.auth.signout.post({}, {
-      headers: {
-        Authorization: this.authorization,
-      }
+    this.stateChanged.publish({
+      successful: this.connected,
+      pending: this.pending,
+      error: this.error
     })
+  }
+
+  logout() {
+    this.api.auth.signout.post(
+      {},
+      {
+        headers: {
+          Authorization: this.authorization
+        }
+      }
+    )
   }
 
   async info(): AsyncMaybe<ServerInformation> {
@@ -146,10 +170,12 @@ export class Connection {
   }
 
   async uploadAttachment(filename: string, file: File): AsyncMaybe<string> {
-    return wrapTreatyResponse<string>(await this.api.attachments.post({
-      filename,
-      file,
-    }))
+    return wrapTreatyResponse<string>(
+      await this.api.attachments.post({
+        filename,
+        file
+      })
+    )
   }
 
   async getAllChannels(): AsyncMaybe<ChannelRow[]> {
@@ -160,13 +186,19 @@ export class Connection {
     return wrapTreatyResponse<ChannelRow>(await this.api.channels({ id }).get())
   }
 
-  async getMessagesInChannel(id: string, last: number, before: number): AsyncMaybe<MessageRow[]> {
-    return wrapTreatyResponse<MessageRow[]>(await this.api.channels({ id }).messages.get({
-      query: {
-        before: before.toString(),
-        last: last.toString(),
-      },
-    }))
+  async getMessagesInChannel(
+    id: string,
+    last: number,
+    before: number
+  ): AsyncMaybe<MessageRow[]> {
+    return wrapTreatyResponse<MessageRow[]>(
+      await this.api.channels({ id }).messages.get({
+        query: {
+          before: before.toString(),
+          last: last.toString()
+        }
+      })
+    )
   }
 
   async whoAmI(): AsyncMaybe<PublicUser> {
@@ -189,18 +221,20 @@ export class Connection {
   }
 }
 
-
-function wrapTreatyResponse<T>(res: CustomTreatyResponse<Record<any, T | null>>): AsyncMaybe<T> {
+function wrapTreatyResponse<T>(
+  res: CustomTreatyResponse<Record<any, T | null>>
+): AsyncMaybe<T> {
   if (res.data === null) {
     return Promise.resolve(None(`No data from server. Code ${res.status}`))
   }
 
   if (!isOk(res.status)) {
-    return Promise.resolve(None(`Status was not ok. Error was: ${res.error}. Data was: ${res.data}`))
+    return Promise.resolve(
+      None(`Status was not ok. Error was: ${res.error}. Data was: ${res.data}`)
+    )
   }
 
   return Promise.resolve(Some(res.data))
-
 }
 
 function isOk(code: number) {
@@ -215,7 +249,6 @@ function getTreaty(url: string, token: string) {
   })
 }
 
-
 type PubsubListener<T> = (data: T) => void
 class Pubsub<T> {
   listeners: PubsubListener<T>[] = []
@@ -224,10 +257,10 @@ class Pubsub<T> {
     this.listeners.push(listener)
   }
   unsubscribe(listener: PubsubListener<T>) {
-    this.listeners = this.listeners.filter(l => l !== listener)
+    this.listeners = this.listeners.filter((l) => l !== listener)
   }
   publish(data: T) {
-    this.listeners.forEach(l => l(data))
+    this.listeners.forEach((l) => l(data))
   }
   once(listener: PubsubListener<T>) {
     const wrapper = (data: T) => {

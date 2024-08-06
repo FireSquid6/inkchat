@@ -1,9 +1,8 @@
-import {serverMessages, clientMessages, parseMessage } from "protocol";
-import { channelTable, messageTable } from "@/db/schema";
-import { converse, testApp, getTestUser } from "@/testutils";
-import { test, expect } from "bun:test";
-import { eq } from "drizzle-orm";
-
+import { serverMessages, clientMessages, parseMessage } from "protocol"
+import { channelTable, messageTable } from "@/db/schema"
+import { converse, testApp, getTestUser } from "@/testutils"
+import { test, expect } from "bun:test"
+import { eq } from "drizzle-orm"
 
 test("chat flow", async () => {
   const { api, db } = testApp()
@@ -14,9 +13,8 @@ test("chat flow", async () => {
     id: "testchannel",
     name: "Test Channel",
     description: "Test channel",
-    createdAt: Date.now(),
+    createdAt: Date.now()
   })
-
 
   let doneEverything = false
   await new Promise<void>((resolve) => {
@@ -45,7 +43,8 @@ test("chat flow", async () => {
 
       const connectResponse = parseMessage(responses[0])
       expect(connectResponse.kind).toBe("USER_JOINED")
-      const connectPayload = serverMessages.userJoined.payloadAs(connectResponse)
+      const connectPayload =
+        serverMessages.userJoined.payloadAs(connectResponse)
 
       expect(connectPayload.id).toBe(user.id)
 
@@ -55,7 +54,10 @@ test("chat flow", async () => {
 
       expect(newMessagePayload.content).toBe("Hello, world!")
       expect(newMessagePayload.channelId).toBe("testchannel")
-      const chatMessages = await db.select().from(messageTable).where(eq(messageTable.channelId, "testchannel"))
+      const chatMessages = await db
+        .select()
+        .from(messageTable)
+        .where(eq(messageTable.channelId, "testchannel"))
       expect(chatMessages.length).toBe(1)
 
       doneEverything = true

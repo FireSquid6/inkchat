@@ -1,16 +1,12 @@
-import { MessageRow, sdk } from "api";
-
+import { MessageRow, sdk } from "api"
 
 export class MessagesCache {
-  messages: Map<string, MessageRow[]> = new Map()  // these will always stay sorted
+  messages: Map<string, MessageRow[]> = new Map() // these will always stay sorted
   listeners: Map<string, Listener[]> = new Map()
 
-  constructor(connection: sdk.Connection) {
+  constructor(connection: sdk.Connection) {}
 
-  }
-
-  async fetchMessages(channel: string, before: number, amount: number) {
-  }
+  async fetchMessages(channel: string, before: number, amount: number) {}
 
   subscribeTo(channel: string, listener: Listener): () => void {
     const listeners = this.listeners.get(channel) || []
@@ -18,7 +14,10 @@ export class MessagesCache {
     this.listeners.set(channel, listeners)
 
     const unsubscribe = () => {
-      this.listeners.set(channel, listeners.filter(l => l !== listener))
+      this.listeners.set(
+        channel,
+        listeners.filter((l) => l !== listener)
+      )
     }
 
     return unsubscribe
@@ -48,7 +47,9 @@ export class TimeSortedMessages {
   }
 
   push(message: MessageRow) {
-    const index = this.messages.findIndex(m => m.createdAt > message.createdAt)
+    const index = this.messages.findIndex(
+      (m) => m.createdAt > message.createdAt
+    )
     if (index === -1) {
       this.messages.push(message)
     } else {
@@ -65,7 +66,7 @@ export class TimeSortedMessages {
 
   get(before: number, amount: number) {
     // find the latest message that is before the given time
-    let index = this.messages.findIndex(m => m.createdAt >= before)
+    let index = this.messages.findIndex((m) => m.createdAt >= before)
 
     if (index === -1) {
       index = this.messages.length - 1

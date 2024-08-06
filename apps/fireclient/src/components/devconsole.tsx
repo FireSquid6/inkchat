@@ -7,6 +7,11 @@ export function DevConsole() {
   }
 
   return (
-    <button className="fixed top-0 right-0 m-2 text-sm btn btn-secondary" onClick={printDebug}>Application State</button>
+    <button
+      className="fixed top-0 right-0 m-2 text-sm btn btn-secondary"
+      onClick={printDebug}
+    >
+      Application State
+    </button>
   )
 }

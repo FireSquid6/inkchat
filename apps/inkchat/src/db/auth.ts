@@ -1,30 +1,32 @@
-import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
-import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle";
+import type { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite"
+import { DrizzleSQLiteAdapter } from "@lucia-auth/adapter-drizzle"
 import { Lucia, generateIdFromEntropySize } from "lucia"
-import { sessionTable, userTable, joincodeTable } from "./schema";
-import { hash, verify } from "@node-rs/argon2";
-import { type Kit } from "@/index";
-import { eq } from "drizzle-orm";
-import { Some, None, type Maybe } from "maybe";
-
+import { sessionTable, userTable, joincodeTable } from "./schema"
+import { hash, verify } from "@node-rs/argon2"
+import { type Kit } from "@/index"
+import { eq } from "drizzle-orm"
+import { Some, None, type Maybe } from "maybe"
 
 export function getAuth(db: BunSQLiteDatabase) {
   const adapter = new DrizzleSQLiteAdapter(db, sessionTable, userTable)
   return new Lucia(adapter, {
     sessionCookie: {
       attributes: {
-        secure: true,
-      },
+        secure: true
+      }
     },
     getUserAttributes: (attributes) => {
       return {
-        email: attributes.email,
+        email: attributes.email
       }
     }
   })
 }
 
-export async function deleteJoincode(kit: Kit, code: string): Promise<Maybe<boolean>> {
+export async function deleteJoincode(
+  kit: Kit,
+  code: string
+): Promise<Maybe<boolean>> {
   try {
     await kit.db.delete(joincodeTable).where(eq(joincodeTable.id, code))
     return Some(true)
@@ -33,14 +35,17 @@ export async function deleteJoincode(kit: Kit, code: string): Promise<Maybe<bool
   }
 }
 
-export async function makeJoincode(kit: Kit, asAdmin: boolean = false): Promise<Maybe<string>> {
+export async function makeJoincode(
+  kit: Kit,
+  asAdmin: boolean = false
+): Promise<Maybe<string>> {
   try {
     const joincode = Math.random().toString(36).substring(2, 8)
 
     await kit.db.insert(joincodeTable).values({
       id: joincode,
       createdAt: Date.now(),
-      isAdmin: asAdmin ? 1 : 0,
+      isAdmin: asAdmin ? 1 : 0
     })
 
     return Some(joincode)
@@ -49,9 +54,15 @@ export async function makeJoincode(kit: Kit, asAdmin: boolean = false): Promise<
   }
 }
 
-export async function validateJoincode(kit: Kit, code: string): Promise<Maybe<boolean>> {
+export async function validateJoincode(
+  kit: Kit,
+  code: string
+): Promise<Maybe<boolean>> {
   try {
-    const joincodes = await kit.db.select().from(joincodeTable).where(eq(joincodeTable.id, code))
+    const joincodes = await kit.db
+      .select()
+      .from(joincodeTable)
+      .where(eq(joincodeTable.id, code))
     if (joincodes.length === 0) {
       return Some(false)
     }
@@ -77,7 +88,7 @@ export async function verifyPassword(password: string, storedHash: string) {
     timeCost: 2,
     outputLen: 32,
     parallelism: 1
-  });
+  })
 
   return validPassword
 }
@@ -119,9 +130,12 @@ export function isValidPassword(password: string) {
   return true
 }
 
-
 // todo: define a "kit" interface with the db, auth, logger, etc
-export async function createUser(kit: Kit, username: string, password: string): Promise<string> {
+export async function createUser(
+  kit: Kit,
+  username: string,
+  password: string
+): Promise<string> {
   const { db } = kit
 
   const passwordHash = await hash(password, {
@@ -130,26 +144,33 @@ export async function createUser(kit: Kit, username: string, password: string): 
     timeCost: 2,
     outputLen: 32,
     parallelism: 1
-  });
+  })
   const userId = generateIdFromEntropySize(32)
 
   let token = ""
-  await db.insert(userTable).values([{
-    id: userId,
-    password: passwordHash,
-    username: username,
-  }])
+  await db.insert(userTable).values([
+    {
+      id: userId,
+      password: passwordHash,
+      username: username
+    }
+  ])
 
   // TODO: standardize how long sesions last
-  const session = await createSession(kit, userId, Date.now() + 1000 * 60 * 60 * 24 * 30)
+  const session = await createSession(
+    kit,
+    userId,
+    Date.now() + 1000 * 60 * 60 * 24 * 30
+  )
   token = session.id
-
 
   return token
 }
 
-
-export async function createSession({ auth }: Kit, userId: string, expiresAt: number) {
+export async function createSession(
+  { auth }: Kit,
+  userId: string,
+  expiresAt: number
+) {
   return await auth.createSession(userId, expiresAt)
 }
-

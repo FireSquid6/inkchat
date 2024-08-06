@@ -1,10 +1,15 @@
-import {  useRef, useState } from "react"
-import { connectionStore, updateMessages, usersStore, useMessagesStore } from '@/lib/store'
-import { createFileRoute } from '@tanstack/react-router'
-import { useStore } from '@tanstack/react-store'
-import { MessageRow } from 'api'
+import { useRef, useState } from "react"
+import {
+  connectionStore,
+  updateMessages,
+  usersStore,
+  useMessagesStore
+} from "@/lib/store"
+import { createFileRoute } from "@tanstack/react-router"
+import { useStore } from "@tanstack/react-store"
+import { MessageRow } from "api"
 
-export const Route = createFileRoute('/server/$address/$channel')({
+export const Route = createFileRoute("/server/$address/$channel")({
   component: () => <ChannelComponent />,
   beforeLoad: ({ location }) => {
     const channelId = location.pathname.split("/").pop() || ""
@@ -16,7 +21,6 @@ export const Route = createFileRoute('/server/$address/$channel')({
   }
 })
 
-
 function ChannelComponent() {
   const channelId = Route.useParams().channel
 
@@ -27,8 +31,6 @@ function ChannelComponent() {
     </div>
   )
 }
-
-
 
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
@@ -76,8 +78,6 @@ function Message(message: MessageRow) {
   )
 }
 
-
-
 function ChatInput(props: { channelId: string }) {
   const [message, setMessage] = useState("")
   const { data: connection, error } = useStore(connectionStore)
@@ -91,15 +91,26 @@ function ChatInput(props: { channelId: string }) {
     setMessage("")
   }
 
-
   return (
     <div className="flex flex-row m-2">
-      <input type="text" value={message} onKeyUp={(e) => {
-        if (e.key === "Enter") {
-          onClick()
-        }
-      }} onChange={(e) => setMessage(e.target.value)} className="input input-primary input-bordered w-full mr-2" />
-      <button disabled={connection === null} onClick={onClick} className="btn btn-primary">Send</button>
+      <input
+        type="text"
+        value={message}
+        onKeyUp={(e) => {
+          if (e.key === "Enter") {
+            onClick()
+          }
+        }}
+        onChange={(e) => setMessage(e.target.value)}
+        className="input input-primary input-bordered w-full mr-2"
+      />
+      <button
+        disabled={connection === null}
+        onClick={onClick}
+        className="btn btn-primary"
+      >
+        Send
+      </button>
     </div>
   )
 }

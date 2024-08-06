@@ -1,28 +1,37 @@
-import { removeSession, revalidateSessions, useSessions } from '@/lib/auth'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { removeSession, revalidateSessions, useSessions } from "@/lib/auth"
+import { createFileRoute, Link } from "@tanstack/react-router"
 import { FaPlus, FaTrash } from "react-icons/fa"
-import { useState } from 'react'
+import { useState } from "react"
 
-export const Route = createFileRoute('/')({
-  component: Index,
+export const Route = createFileRoute("/")({
+  component: Index
 })
 
 function Index() {
   const sessions = useSessions()
   const [deleting, setDeleting] = useState(false)
   const connections = sessions.map((session, i) => {
-    let errMessage = undefined 
+    let errMessage = undefined
 
     if (!session.found) {
       errMessage = "Server not found. Is it online?"
     } else if (!session.valid) {
-      errMessage = "Session is invalid. You probably want to delete this session and create a new one."
+      errMessage =
+        "Session is invalid. You probably want to delete this session and create a new one."
     }
 
     return (
-      <Connection key={i} deleting={deleting} disabled={!session.valid || !session.found} errMessage={errMessage} onDelete={() => {
-        removeSession(session)
-      }} to={`/server/${session.address}`} text={`${session.username}@${session.address}`} />
+      <Connection
+        key={i}
+        deleting={deleting}
+        disabled={!session.valid || !session.found}
+        errMessage={errMessage}
+        onDelete={() => {
+          removeSession(session)
+        }}
+        to={`/server/${session.address}`}
+        text={`${session.username}@${session.address}`}
+      />
     )
   })
 
@@ -40,13 +49,18 @@ function Index() {
       </div>
       <div className="flex flex-col mt-32 mx-auto border p-4 rounded-lg border-text">
         <label className="label cursor-pointer mb-4">
-          <span className="label-text text-lg mr-4">Manange Saved Connections</span>
-          <input type="checkbox" onChange={(e) => {
-            setDeleting(e.target.checked)
-          }} className="toggle toggle-primary" />
+          <span className="label-text text-lg mr-4">
+            Manange Saved Connections
+          </span>
+          <input
+            type="checkbox"
+            onChange={(e) => {
+              setDeleting(e.target.checked)
+            }}
+            className="toggle toggle-primary"
+          />
         </label>
         <RevalidateButton />
-
       </div>
     </main>
   )
@@ -61,7 +75,9 @@ function RevalidateButton() {
   }
 
   return (
-    <button disabled={revalidating} onClick={onClick} className="btn mx-auto">Refresh Sessions</button>
+    <button disabled={revalidating} onClick={onClick} className="btn mx-auto">
+      Refresh Sessions
+    </button>
   )
 }
 
@@ -81,18 +97,23 @@ function Connection(props: ConnectionProps) {
 
   let text = props.text
   if (props.text && props.text.length > max_length) {
-    text = props.text.substring(0, max_length - 3) + '...'
+    text = props.text.substring(0, max_length - 3) + "..."
   }
 
   return (
     <div className="indicator tooltip mx-auto" data-tip={props.errMessage}>
-      <button onClick={props.onDelete} className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error lighter-hover`}>
+      <button
+        onClick={props.onDelete}
+        className={`${props.deleting ? "" : "opacity-0"} indicator-item badge badge-error lighter-hover`}
+      >
         <FaTrash />
       </button>
-      <Link disabled={props.disabled ?? false} className={`btn ${props.disabled ? "btn-disabled" : ""} ${props.deleting ? "animate-shake" : ""} ${props.className}`} to={props.to}>
-        {
-          props.text ? <p>{text}</p> : null
-        }
+      <Link
+        disabled={props.disabled ?? false}
+        className={`btn ${props.disabled ? "btn-disabled" : ""} ${props.deleting ? "animate-shake" : ""} ${props.className}`}
+        to={props.to}
+      >
+        {props.text ? <p>{text}</p> : null}
         {props.children}
       </Link>
     </div>

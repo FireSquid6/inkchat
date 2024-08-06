@@ -4,10 +4,10 @@ This directory contains the main server code for inkchat. It is built to be self
 
 Readme is a WIP
 
-
 # Using Docker
 
 # Contributing
+
 ## Routes Overview
 
 ... more to come

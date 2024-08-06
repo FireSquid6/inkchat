@@ -1,5 +1,11 @@
 import { getStoredSessions } from "@/lib/auth"
-import { channelStore, messagesStore, usersStore, connectionStore, currentUserStore } from "@/lib/store"
+import {
+  channelStore,
+  messagesStore,
+  usersStore,
+  connectionStore,
+  currentUserStore
+} from "@/lib/store"
 
 export function printDebug() {
   const { data: sessions } = getStoredSessions()
@@ -9,14 +15,15 @@ export function printDebug() {
     console.log(`APPLICATION STATE AS OF ${new Date().toISOString()}`)
     console.log("===============================================")
     console.log("Stored Sessions:")
-    console.table(sessions.map((session) => ({
-      address: session.address,
-      username: session.username,
-      token: session.token,
-      valid: session.valid,
-      found: session.found,
-    })))
-
+    console.table(
+      sessions.map((session) => ({
+        address: session.address,
+        username: session.username,
+        token: session.token,
+        valid: session.valid,
+        found: session.found
+      }))
+    )
   } else {
     console.log("getStoredSessions returned null")
   }
@@ -42,5 +49,4 @@ export function printDebug() {
     console.log(`Messages for channel ${channel[0]}:`)
     console.table(messages.get(channel[0]))
   }
-
 }

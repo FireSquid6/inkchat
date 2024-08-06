@@ -6,21 +6,23 @@ test("users route", async () => {
   const { db, api } = testApp()
   const { session, user } = await getTestUser(db)
 
-  const users = [{
-    id: "1",
-    username: "testuser1",
-    password: "testpassword",
-  },
-  {
-    id: "2",
-    username: "testuser2",
-    password: "testpassword",
-  },
-  {
-    id: "3",
-    username: "testuser3",
-    password: "testpassword",
-  }]
+  const users = [
+    {
+      id: "1",
+      username: "testuser1",
+      password: "testpassword"
+    },
+    {
+      id: "2",
+      username: "testuser2",
+      password: "testpassword"
+    },
+    {
+      id: "3",
+      username: "testuser3",
+      password: "testpassword"
+    }
+  ]
 
   await db.insert(userTable).values(users)
   // add the test user
@@ -43,7 +45,6 @@ test("users route", async () => {
   expect(userRes.status).toBe(200)
   expect(userRes.data).toEqual(publicUsers)
 
-
   // test whoami
   const res = await api.whoami.get({
     headers: {
@@ -55,7 +56,6 @@ test("users route", async () => {
   expect(res.data).toEqual({
     id: user.id,
     username: "testuser",
-    isAdmin: true,
+    isAdmin: true
   })
 })
-

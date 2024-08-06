@@ -6,5 +6,5 @@ export default {
   singleQuote: false,
   quoteProps: "consistent",
   bracketSpacing: true,
-  bracketSameLine: false,
+  bracketSameLine: false
 }

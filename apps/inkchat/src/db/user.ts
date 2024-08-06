@@ -4,9 +4,15 @@ import type { Maybe } from "maybe"
 import type { Kit } from "@/index"
 import { Some, None } from "maybe"
 
-export async function getUserWithUsername(kit: Kit, username: string): Promise<Maybe<UserRow>> {
+export async function getUserWithUsername(
+  kit: Kit,
+  username: string
+): Promise<Maybe<UserRow>> {
   try {
-    const users = await kit.db.select().from(userTable).where(eq(userTable.username, username))
+    const users = await kit.db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.username, username))
     if (users.length === 0) {
       return None("No user found with that username")
     }
@@ -19,13 +25,17 @@ export async function getUserWithUsername(kit: Kit, username: string): Promise<M
   } catch (e) {
     return None(`database error while fetching user: ${e}`)
   }
-
 }
 
-
-export async function getUserWithId(kit: Kit, id: string): Promise<Maybe<UserRow>> {
+export async function getUserWithId(
+  kit: Kit,
+  id: string
+): Promise<Maybe<UserRow>> {
   try {
-    const users = await kit.db.select().from(userTable).where(eq(userTable.id, id))
+    const users = await kit.db
+      .select()
+      .from(userTable)
+      .where(eq(userTable.id, id))
     if (users.length === 0) {
       return None("No user found with that id")
     }
@@ -35,12 +45,10 @@ export async function getUserWithId(kit: Kit, id: string): Promise<Maybe<UserRow
     }
 
     return Some(users[0])
-
   } catch (e) {
     return None(`database error while fetching user: ${e}`)
   }
 }
-
 
 export async function getAllUsers(kit: Kit): Promise<Maybe<UserRow[]>> {
   try {
@@ -51,10 +59,15 @@ export async function getAllUsers(kit: Kit): Promise<Maybe<UserRow[]>> {
   }
 }
 
-
-export async function promoteUser(kit: Kit, userId: string): Promise<Maybe<void>> {
+export async function promoteUser(
+  kit: Kit,
+  userId: string
+): Promise<Maybe<void>> {
   try {
-    await kit.db.update(userTable).set({ isAdmin: 1 }).where(eq(userTable.id, userId))
+    await kit.db
+      .update(userTable)
+      .set({ isAdmin: 1 })
+      .where(eq(userTable.id, userId))
     return Some(undefined)
   } catch (e) {
     return None(`database error while promoting user: ${e}`)

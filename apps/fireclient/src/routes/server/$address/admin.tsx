@@ -1,13 +1,12 @@
-import { connectionStore, currentUserStore } from '@/lib/store'
-import { createFileRoute } from '@tanstack/react-router'
-import { useStore } from '@tanstack/react-store'
+import { connectionStore, currentUserStore } from "@/lib/store"
+import { createFileRoute } from "@tanstack/react-router"
+import { useStore } from "@tanstack/react-store"
 import { useCallback, useRef, useState } from "react"
 import { FaCopy } from "react-icons/fa"
 
-export const Route = createFileRoute('/server/$address/admin')({
+export const Route = createFileRoute("/server/$address/admin")({
   component: () => <Admin />
 })
-
 
 function Admin() {
   const user = useStore(currentUserStore)
@@ -20,15 +19,12 @@ function Admin() {
     return <p>Not an admin</p>
   }
 
-
   return (
     <div className="m-4">
       <JoincodeGenerator />
     </div>
   )
-
 }
-
 
 function JoincodeGenerator() {
   const { data: connection } = useStore(connectionStore)
@@ -57,11 +53,12 @@ function JoincodeGenerator() {
     navigator.clipboard.writeText(joincode)
   }, [joincode])
 
-
   return (
     <>
       <div className="tooltip" data-tip="users need this to join">
-        <button className="btn" disabled={disabled} onClick={onClick}>Generate Joincode</button>
+        <button className="btn" disabled={disabled} onClick={onClick}>
+          Generate Joincode
+        </button>
       </div>
       <dialog ref={modalRef} className="modal">
         <div className="modal-box">
@@ -77,13 +74,13 @@ function JoincodeGenerator() {
           <p className="text-error">{error}</p>
           <div className="modal-action">
             <form method="dialog">
-              <button className="btn" type="submit">Close</button>
+              <button className="btn" type="submit">
+                Close
+              </button>
             </form>
           </div>
         </div>
-
       </dialog>
     </>
-
   )
 }

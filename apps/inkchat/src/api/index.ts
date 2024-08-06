@@ -18,58 +18,62 @@ import { filesApi } from "@/api/files"
 import type { ServerInformation } from "@/config"
 import { type InferContext } from "@bogeychan/elysia-logger"
 
+export const kitPlugin = (app: Elysia) =>
+  app
+    // this is deliberately left empty. It is set whenever startApp() is called
+    .state("kit", {} as Kit)
 
-export const kitPlugin = (app: Elysia) => app
-  // this is deliberately left empty. It is set whenever startApp() is called
-  .state("kit", {} as Kit)
+    .derive(
+      async (
+        ctx
+      ): Promise<{
+        authorization: string | null
+        user: User | null
+        session: string | null
+      }> => {
+        // we always read and try to check for the token
+        const authorization = ctx.request.headers.get("Authorization")
+        const { auth } = ctx.store.kit
 
-  .derive(async (ctx): Promise<{
-    authorization: string | null
-    user: User | null
-    session: string | null
-  }> => {
-    // we always read and try to check for the token
-    const authorization = ctx.request.headers.get("Authorization")
-    const { auth } = ctx.store.kit
+        if (!authorization) {
+          return {
+            authorization: null,
+            user: null,
+            session: null
+          }
+        }
 
-    if (!authorization) {
-      return {
-        authorization: null,
-        user: null,
-        session: null,
+        const session = auth.readBearerToken(authorization)
+        if (!session) {
+          return {
+            authorization: authorization,
+            user: null,
+            session: null
+          }
+        }
+
+        const { user } = await auth.validateSession(session)
+        if (!user) {
+          return {
+            authorization: authorization,
+            user: null,
+            session: null
+          }
+        }
+
+        return {
+          authorization: authorization,
+          user,
+          session
+        }
       }
-    }
-
-    const session = auth.readBearerToken(authorization)
-    if (!session) {
-      return {
-        authorization: authorization,
-        user: null,
-        session: null,
-      }
-    }
-
-    const { user } = await auth.validateSession(session)
-    if (!user) {
-      return {
-        authorization: authorization,
-        user: null,
-        session: null,
-      }
-    }
-
-    return {
-      authorization: authorization,
-      user,
-      session,
-    }
-  })
+    )
 
 export const app = new Elysia()
   .use(kitPlugin)
   .onBeforeHandle((ctx) => {
     const { config } = ctx.store.kit
-    
+
     if (config.allowedOrigins().length === 0) {
       return
     }
@@ -84,86 +88,97 @@ export const app = new Elysia()
   // up here is unprotected! No auth required
   .use(cors())
   .use(ip())
-  .use(logger({
-    level: "info",
-    customProps(ctx) {
-      return {
-        ip: ctx.ip
-      }
-
-    },
-    transport: {
-      target: "pino-pretty",
-      options: {
-        colorize: true,
+  .use(
+    logger({
+      level: "info",
+      customProps(ctx) {
+        return {
+          ip: ctx.ip
+        }
       },
-    },
-  }))
-  .use(swagger({
-    documentation: {
-      info: {
-        title: "Inkchat API",
-        description: "The Inkchat API",
-        version: "0.1.0"
+      transport: {
+        target: "pino-pretty",
+        options: {
+          colorize: true
+        }
       }
-    }
-  }))
+    })
+  )
+  .use(
+    swagger({
+      documentation: {
+        info: {
+          title: "Inkchat API",
+          description: "The Inkchat API",
+          version: "0.1.0"
+        }
+      }
+    })
+  )
   .use(unprotectedAuthApi)
   .get("/", (ctx): ServerInformation => {
     return ctx.store.kit.config.serverInformation()
   })
   .use(connectionApi)
-  .guard({
-    async beforeHandle(ctx) {
-      if (!ctx.authorization) {
-        ctx.set.status = 401
-        return {
-          message: "No token provided"
-        }
-      }
-
-      if (!ctx.session) {
-        ctx.set.status = 401
-        return {
-          message: "Invalid token"
-        }
-      }
-
-      if (!ctx.user) {
-        ctx.set.status = 401
-        return {
-          message: "Invalid token"
-        }
-      }
-    }
-  }, (app) => app
-    // anything down here is protected
-    .use(protectedAuthApi)
-    .use(filesApi)
-    .use(channelsApi)
-    .use(usersApi)
-
-    .guard({
+  .guard(
+    {
       async beforeHandle(ctx) {
-        const { db } = ctx.store.kit
-        const users = await db.select().from(userTable).where(eq(userTable.id, ctx.user?.id ?? ""))
-
-        if (users.length === 0) {
-          ctx.set.status = 400
-          return { message: "User not found" }
-        }
-        const user = users[0]
-
-        if (user.isAdmin !== 1) {
+        if (!ctx.authorization) {
           ctx.set.status = 401
           return {
-            message: "User is not an admin"
+            message: "No token provided"
+          }
+        }
+
+        if (!ctx.session) {
+          ctx.set.status = 401
+          return {
+            message: "Invalid token"
+          }
+        }
+
+        if (!ctx.user) {
+          ctx.set.status = 401
+          return {
+            message: "Invalid token"
           }
         }
       }
-    }, (app) => app
-      // and here is super protected. Only admins can user it
-      .use(adminApi)
-    )
-  )
+    },
+    (app) =>
+      app
+        // anything down here is protected
+        .use(protectedAuthApi)
+        .use(filesApi)
+        .use(channelsApi)
+        .use(usersApi)
 
+        .guard(
+          {
+            async beforeHandle(ctx) {
+              const { db } = ctx.store.kit
+              const users = await db
+                .select()
+                .from(userTable)
+                .where(eq(userTable.id, ctx.user?.id ?? ""))
+
+              if (users.length === 0) {
+                ctx.set.status = 400
+                return { message: "User not found" }
+              }
+              const user = users[0]
+
+              if (user.isAdmin !== 1) {
+                ctx.set.status = 401
+                return {
+                  message: "User is not an admin"
+                }
+              }
+            }
+          },
+          (app) =>
+            app
+              // and here is super protected. Only admins can user it
+              .use(adminApi)
+        )
+  )

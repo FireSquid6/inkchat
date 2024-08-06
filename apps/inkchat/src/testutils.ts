@@ -1,11 +1,11 @@
 // contains frequently used functions for testing
-import { getDb } from "./db";
-import { getAuth } from "@/db/auth";
-import type { App } from "./index";
-import { Config } from "@/config";
-import { treaty } from "@elysiajs/eden";
-import { startEphemeralApp } from "./setups";
-import { sessionTable, userTable } from "@/db/schema";
+import { getDb } from "./db"
+import { getAuth } from "@/db/auth"
+import type { App } from "./index"
+import { Config } from "@/config"
+import { treaty } from "@elysiajs/eden"
+import { startEphemeralApp } from "./setups"
+import { sessionTable, userTable } from "@/db/schema"
 
 export interface TestKit {
   db: ReturnType<typeof getDb>
@@ -22,23 +22,22 @@ export function testApp(): TestKit {
     db: stdKit.db,
     auth: stdKit.auth,
     config: stdKit.config,
-    api,
+    api
   }
 }
-
 
 export async function getTestUser(db: ReturnType<typeof getDb>) {
   const user = {
     username: "testuser",
     password: "T3stp@ssword",
     id: "testuser",
-    isAdmin: 1,
+    isAdmin: 1
   }
   await db.insert(userTable).values(user)
   const session = {
     id: "testsession",
     userId: user.id,
-    expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30,
+    expiresAt: Date.now() + 1000 * 60 * 60 * 24 * 30
   }
   await db.insert(sessionTable).values(session)
 
@@ -49,7 +48,11 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
 }
 
 // @ts-expect-error EdenWS is no longer exported from eden
-export async function converse(socket: Treaty.EdenWS<any>, messages: string[], waitFirst: boolean = false): Promise<string[]> {
+export async function converse(
+  socket: Treaty.EdenWS<any>,
+  messages: string[],
+  waitFirst: boolean = false
+): Promise<string[]> {
   return new Promise(async (resolve) => {
     const responses: string[] = []
 
@@ -65,9 +68,7 @@ export async function converse(socket: Treaty.EdenWS<any>, messages: string[], w
 
     return resolve(responses)
   })
-
 }
-
 
 // @ts-expect-error EdenWS is no longer exported from eden
 export function waitForMessage(socket: EdenWS): Promise<string> {

@@ -8,13 +8,13 @@ import { None, Some, isSome, unwrapOrThrow } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
 
-
 export const channelStore = new Store<ChannelRow[]>([])
 export const messagesStore = new Store<Map<string, MessageRow[]>>(new Map())
 export const usersStore = new Store<PublicUser[]>([])
-export const connectionStore = new Store<Maybe<sdk.Connection>>(None("Not initialized"))
+export const connectionStore = new Store<Maybe<sdk.Connection>>(
+  None("Not initialized")
+)
 export const currentUserStore = new Store<PublicUser | null>(null)
-
 
 export function resetStores() {
   channelStore.setState(() => [])
@@ -85,8 +85,6 @@ export function connectTo(address: string, token: string) {
         })
         break
     }
-
-
   })
 }
 
@@ -101,8 +99,15 @@ export async function useUser(id: string | null) {
   return user || null
 }
 
-export async function updateMessages(connection: sdk.Connection, channelId: string) {
-  const maybe = await connection.getMessagesInChannel(channelId, 200, Date.now())
+export async function updateMessages(
+  connection: sdk.Connection,
+  channelId: string
+) {
+  const maybe = await connection.getMessagesInChannel(
+    channelId,
+    200,
+    Date.now()
+  )
   let messages: MessageRow[] = []
   if (isSome(maybe)) {
     messages = maybe.data
@@ -112,20 +117,21 @@ export async function updateMessages(connection: sdk.Connection, channelId: stri
     state.set(channelId, messages)
     return state
   })
-
 }
 
 export function useConnectionState() {
   const maybe = useStore(connectionStore)
-  const startingState = isSome(maybe) ? {
-    successful: maybe.data.connected,
-    pending: maybe.data.pending,
-    error: maybe.data.error,
-  } : {
-    successful: false,
-    pending: true,
-    error: "",
-  }
+  const startingState = isSome(maybe)
+    ? {
+        successful: maybe.data.connected,
+        pending: maybe.data.pending,
+        error: maybe.data.error
+      }
+    : {
+        successful: false,
+        pending: true,
+        error: ""
+      }
   const [connectionState, setConnectionState] = useState(startingState)
 
   if (isSome(maybe)) {

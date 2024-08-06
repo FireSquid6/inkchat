@@ -9,7 +9,7 @@ export function startEphemeralApp(doSeed: boolean = false) {
 
   const config: AppConfig = {
     storeDir: "store/ephemeral",
-    port: 3001,
+    port: 3001
   }
 
   const db = getDb(":memory:")
@@ -29,13 +29,11 @@ export function startProductionApp() {
   config.storeDir = "store/prod"
   config.port = 3000
 
-
   const db = getDb("store/prod/db.sqlite")
   migrateDb(db)
 
   return startApp(config, db)
 }
-
 
 export async function startDevApp(reset: boolean = false) {
   ensureDirectoryExists("store/dev")
@@ -43,7 +41,7 @@ export async function startDevApp(reset: boolean = false) {
   const config: AppConfig = {
     storeDir: "store/dev",
     port: 3000,
-    doInitialization: false,
+    doInitialization: false
   }
 
   if (reset) {
@@ -66,7 +64,6 @@ function deleteDirectoryIfExists(directory: string) {
     fs.rmdirSync(directory, { recursive: true })
   }
 }
-
 
 function ensureDirectoryExists(directory: string) {
   if (!fs.existsSync(directory)) {

@@ -19,7 +19,7 @@ export type InkchatPlugin = {
   // actions: Record<string, Action>  // actions that the ui can trigger
 
   agents: Agent[]
-  routes: Elysia  // TODO: export kit plugin so that plugins can use it
+  routes: Elysia // TODO: export kit plugin so that plugins can use it
 }
 
 export type Agent = {
@@ -30,4 +30,3 @@ export type Agent = {
 
   onMessage(message: Message): void
 }
-

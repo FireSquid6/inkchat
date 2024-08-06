@@ -10,11 +10,11 @@ const sessionsStore = new Store<Session[]>(
 )
 
 export type Session = {
-  address: string,
-  username: string,
-  token: string,
-  found: boolean,
-  valid: boolean,
+  address: string
+  username: string
+  token: string
+  found: boolean
+  valid: boolean
 }
 
 export function useSessions() {
@@ -23,7 +23,7 @@ export function useSessions() {
 
 export function getStoredSessions(): Maybe<Session[]> {
   try {
-    const sessionsString = localStorage.getItem('sessions')
+    const sessionsString = localStorage.getItem("sessions")
     if (!sessionsString) {
       return Some([])
     }
@@ -44,7 +44,6 @@ export async function revalidateSessions() {
 async function revalidateSession(session: Session) {
   const code = await sdk.validateSession(session.address, session.token)
   removeSession(session)
-
 
   // TODO: if it is found and invalid, we should remove the session
   switch (code) {
@@ -71,7 +70,7 @@ export function storeSession(session: Session): Maybe<void> {
     }
 
     const newSessions = [...sessions.data, session]
-    localStorage.setItem('sessions', JSON.stringify(newSessions))
+    localStorage.setItem("sessions", JSON.stringify(newSessions))
 
     sessionsStore.setState(() => newSessions)
     return Some(undefined)
@@ -87,10 +86,12 @@ export function removeSession(session: Session): Maybe<void> {
       return None(sessions.error)
     }
 
-    const newSessions = sessions.data.filter(s => s.address !== session.address)
+    const newSessions = sessions.data.filter(
+      (s) => s.address !== session.address
+    )
     sdk.signOut(session.address, session.token)
 
-    localStorage.setItem('sessions', JSON.stringify(newSessions))
+    localStorage.setItem("sessions", JSON.stringify(newSessions))
     sessionsStore.setState(() => newSessions)
     return Some(undefined)
   } catch (e) {

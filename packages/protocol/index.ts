@@ -7,7 +7,7 @@ export interface Message {
 }
 
 export class MessageKind<T> {
-  constructor(public name: string) { }
+  constructor(public name: string) {}
   make(payload: T): string {
     return makeMessage(this.name, payload)
   }
@@ -36,7 +36,7 @@ export const serverMessages = {
   modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
   createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
 
-  error: new MessageKind<string>("ERROR"),
+  error: new MessageKind<string>("ERROR")
 }
 
 export const clientMessages = {
@@ -45,7 +45,7 @@ export const clientMessages = {
 
   deleteChannel: new MessageKind<DeleteChannelPayload>("DELETE_CHANNEL"),
   modifyChannel: new MessageKind<ModifyChannelPayload>("MODIFY_CHANNEL"),
-  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL"),
+  createChannel: new MessageKind<CreateChannelPayload>("CREATE_CHANNEL")
 }
 
 export type DeleteChannelPayload = {
@@ -76,7 +76,10 @@ export type ChatPayload = {
 }
 const separator = "|"
 
-export function makeMessage<PayloadType>(kind: string, payload: PayloadType): string {
+export function makeMessage<PayloadType>(
+  kind: string,
+  payload: PayloadType
+): string {
   return kind + separator + JSON.stringify(payload)
 }
 
@@ -89,7 +92,6 @@ export function parseMessage(msg: string): Message {
     throw Error("Invalid message format: " + msg)
   }
 
-
   const parsedMessage: Message = {
     kind: split[0],
     payload: JSON.parse(payload)
@@ -100,7 +102,10 @@ export function parseMessage(msg: string): Message {
 
 export type MessageHandler = (msg: Message) => void | Promise<void>
 
-export async function doForMessage(msg: Message, map: Map<string, MessageHandler>): Promise<boolean> {
+export async function doForMessage(
+  msg: Message,
+  map: Map<string, MessageHandler>
+): Promise<boolean> {
   let handler: MessageHandler
   if (map.has(msg.kind)) {
     handler = map.get(msg.kind)!
@@ -116,6 +121,3 @@ export async function doForMessage(msg: Message, map: Map<string, MessageHandler
 
   return true
 }
-
-
-

@@ -1,11 +1,10 @@
-import { test, expect } from "bun:test";
-import { getTestUser, testApp } from "@/testutils";
-import { userTable } from "@/db/schema";
+import { test, expect } from "bun:test"
+import { getTestUser, testApp } from "@/testutils"
+import { userTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
-
 test("signup and signin flow", async () => {
-  // TODO: 
+  // TODO:
   // - session cookie is returned
   // - session is created
   // - session can be destroyed
@@ -15,11 +14,14 @@ test("signup and signin flow", async () => {
   const { session } = await getTestUser(db)
 
   // new code
-  const codeRes = await api.admin.joincode.post({}, {
-    headers: {
-      Authorization: `Bearer ${session.id}`
+  const codeRes = await api.admin.joincode.post(
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${session.id}`
+      }
     }
-  })
+  )
 
   if (!codeRes.data?.code || codeRes.data?.code === "") {
     throw new Error("No code returned")
@@ -29,20 +31,26 @@ test("signup and signin flow", async () => {
   const res = await api.auth.signup.post({
     username: "testuser1",
     password: "teStp@ssw0rd",
-    code: codeRes.data?.code,
-  });
+    code: codeRes.data?.code
+  })
 
   expect(res.status).toBe(201)
   expect(res.data?.token).toBeDefined()
 
-  const userResult = await db.select().from(userTable).where(eq(userTable.username, "testuser"))
+  const userResult = await db
+    .select()
+    .from(userTable)
+    .where(eq(userTable.username, "testuser"))
   expect(userResult.length).toBe(1)
 
-  const res2 = await api.auth.signout.post({}, {
-    headers: {
-      Authorization: `Bearer ${res.data?.token}`
+  const res2 = await api.auth.signout.post(
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${res.data?.token}`
+      }
     }
-  })
+  )
 
   // log out
   expect(res2.status).toBe(200)

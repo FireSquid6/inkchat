@@ -38,7 +38,7 @@ export function AuthForm(props: AuthFormProps) {
         address: address,
         username: username,
         found: true,
-        valid: true,
+        valid: true
       })
       navigate({ to: `/server/${username}@${address}` })
     } else {
@@ -47,24 +47,60 @@ export function AuthForm(props: AuthFormProps) {
   }, [address, username, password, joincode, newAccount, setError])
 
   return (
-      <form className="my-8 mx-auto max-w-[36rem] flex flex-col p-2 bg-base-100 rounded-lg">
-        <Input label="Address" value={address} onChange={setAddress} placeholder="chat.somewhere.org" id="address" />
-        <Input label="Username" value={username} onChange={setUsername} placeholder="someone" id="username" />
-        <Input label="Password" placeholder="something secret" value={password} onChange={setPassword} id="password" type="password" />
-        <div className="flex flex-row m-4">
-          <input type="checkbox" onChange={() => {
+    <form className="my-8 mx-auto max-w-[36rem] flex flex-col p-2 bg-base-100 rounded-lg">
+      <Input
+        label="Address"
+        value={address}
+        onChange={setAddress}
+        placeholder="chat.somewhere.org"
+        id="address"
+      />
+      <Input
+        label="Username"
+        value={username}
+        onChange={setUsername}
+        placeholder="someone"
+        id="username"
+      />
+      <Input
+        label="Password"
+        placeholder="something secret"
+        value={password}
+        onChange={setPassword}
+        id="password"
+        type="password"
+      />
+      <div className="flex flex-row m-4">
+        <input
+          type="checkbox"
+          onChange={() => {
             setNewAccount(!newAccount)
-          }} className="toggle ml-2" />
-          <label htmlFor="toggle" className="ml-4">Create a New Account</label>
-        </div>
-        <Input label="Joincode" placeholder="123456" id="joincode" onChange={setJoincode} value={joincode} disabled={!newAccount} />
-        <p className="text-red-500 text-center">{error}</p>
-        <button className="btn btn-primary mx-auto m-4" onClick={handleSubmit
-        } type="button">Submit</button>
-      </form>
+          }}
+          className="toggle ml-2"
+        />
+        <label htmlFor="toggle" className="ml-4">
+          Create a New Account
+        </label>
+      </div>
+      <Input
+        label="Joincode"
+        placeholder="123456"
+        id="joincode"
+        onChange={setJoincode}
+        value={joincode}
+        disabled={!newAccount}
+      />
+      <p className="text-red-500 text-center">{error}</p>
+      <button
+        className="btn btn-primary mx-auto m-4"
+        onClick={handleSubmit}
+        type="button"
+      >
+        Submit
+      </button>
+    </form>
   )
 }
-
 
 type InputProps = {
   label: string
@@ -79,13 +115,22 @@ type InputProps = {
 
 function Input(props: InputProps) {
   return (
-    <label className={`input input-bordered flex items-center gap-2 m-4 ${props.className}`}>
+    <label
+      className={`input input-bordered flex items-center gap-2 m-4 ${props.className}`}
+    >
       {props.label}
-      <input type={props.type ?? "text"} disabled={props.disabled ?? false} id={props.id} placeholder={props.placeholder} value={props.value} onChange={(e) => {
-        if (props.onChange) {
-          props.onChange(e.target.value)
-        }
-      }} />
+      <input
+        type={props.type ?? "text"}
+        disabled={props.disabled ?? false}
+        id={props.id}
+        placeholder={props.placeholder}
+        value={props.value}
+        onChange={(e) => {
+          if (props.onChange) {
+            props.onChange(e.target.value)
+          }
+        }}
+      />
     </label>
   )
 }

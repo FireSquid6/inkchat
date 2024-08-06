@@ -10,21 +10,24 @@ import fs from "fs"
 export interface Kit {
   db: ReturnType<typeof getDb>
   auth: ReturnType<typeof getAuth>
-  config: Config 
+  config: Config
 }
 
-export function startApp(appConfig: AppConfig, db: ReturnType<typeof getDb>): Kit {
+export function startApp(
+  appConfig: AppConfig,
+  db: ReturnType<typeof getDb>
+): Kit {
   const config = new Config(appConfig)
   const auth = getAuth(db)
 
   const kit: Kit = {
     db,
     auth,
-    config,
+    config
   }
 
   app.store.kit = kit
-  
+
   app.listen(config.port(), () => {
     console.log(`🚀 Server launched at ${config.port()}`)
   })
@@ -38,7 +41,6 @@ export function startApp(appConfig: AppConfig, db: ReturnType<typeof getDb>): Ki
   return kit
 }
 
-// the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail 
+// the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail
 
-
-export type App = typeof app;
+export type App = typeof app
