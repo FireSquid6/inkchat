@@ -47,8 +47,9 @@ export async function getTestUser(db: ReturnType<typeof getDb>) {
   }
 }
 
-// @ts-expect-error EdenWS is no longer exported from eden
+
 export async function converse(
+  // @ts-expect-error EdenWS is no longer exported from eden
   socket: Treaty.EdenWS<any>,
   messages: string[],
   waitFirst: boolean = false

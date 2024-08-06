@@ -45,7 +45,7 @@ export class Config {
   }
 
   doInitialization(): boolean {
-    return this.givenConfig.doInitialization || true
+    return this.givenConfig.doInitialization ?? true
   }
 
   allowedOrigins(): string[] {

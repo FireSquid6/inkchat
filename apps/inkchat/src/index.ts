@@ -3,7 +3,6 @@ import { getAuth } from "@/db/auth"
 import { app } from "@/api"
 import { Config, type AppConfig } from "@/config"
 import { createInitialChannel, createInitialJoincode } from "./initialization"
-import fs from "fs"
 
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
@@ -41,6 +40,5 @@ export function startApp(
   return kit
 }
 
-// the maybe type wraps a values that may or may not exist. It's used lots of times when a function could fail
 
 export type App = typeof app
