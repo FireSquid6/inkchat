@@ -3,7 +3,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useStore } from '@tanstack/react-store'
 
 export const Route = createFileRoute('/server/$address/admin')({
-  component: () => <Admin />
+  component: () => <p>Hello!</p>
 })
 
 

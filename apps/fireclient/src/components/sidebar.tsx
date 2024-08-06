@@ -81,7 +81,7 @@ function QuickLinks() {
     quickLinks = quickLinks.concat([
       { icon: <MdPerson />, text: "Profile", to: `/server/${connection.address}/profile` }, 
       { icon: <FaCircleInfo />, text: "About", to: `/server/${connection.address}/` },
-      { icon: <FaGear />, text: "Settings", to: `/sever/${connection.address}/admin`},
+      { icon: <FaGear />, text: "Settings", to: `/server/${connection.address}/admin`},
     ])
   }
 
