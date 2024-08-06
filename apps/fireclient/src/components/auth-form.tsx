@@ -40,7 +40,7 @@ export function AuthForm(props: AuthFormProps) {
         found: true,
         valid: true,
       })
-      navigate({ to: `/server/${address}` })
+      navigate({ to: `/server/${username}@${address}` })
     } else {
       setError(res.error)
     }

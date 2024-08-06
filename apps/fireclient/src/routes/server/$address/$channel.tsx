@@ -8,7 +8,7 @@ export const Route = createFileRoute('/server/$address/$channel')({
   component: () => <ChannelComponent />,
   beforeLoad: ({ location }) => {
     const channelId = location.pathname.split("/").pop() || ""
-    const {data: connection } = connectionStore.state
+    const { data: connection } = connectionStore.state
 
     if (connection !== null) {
       updateMessages(connection, channelId)
