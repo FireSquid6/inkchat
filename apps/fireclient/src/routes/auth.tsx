@@ -7,8 +7,7 @@ export const Route = createFileRoute("/auth")({
 })
 
 function AuthComponent() {
-  const query = Route.useSearch()
-  console.log(query)
+  // const query = Route.useSearch()
 
   return (
     <main className="m-2 flex flex-col">
