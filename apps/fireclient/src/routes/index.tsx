@@ -29,7 +29,7 @@ function Index() {
         onDelete={() => {
           removeSession(session)
         }}
-        to={`/server/${session.address}`}
+        to={`/server/${session.username}@${session.address}`}
         text={`${session.username}@${session.address}`}
       />
     )
