@@ -12,6 +12,7 @@ import { useStore } from "@tanstack/react-store"
 import { handleMaybe } from "maybe"
 import { Link, useLocation } from "@tanstack/react-router"
 import useSWR from "swr"
+import { useAddress } from "@/lib/address"
 
 export function SidebarLayout({
   children
@@ -27,9 +28,9 @@ export function SidebarLayout({
   )
 
   return (
-    <div className="drawer lg:drawer-open h-screen">
+    <div className="drawer lg:drawer-open max-h-[100vh]">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
-      <main className="drawer-content h-screen overflow-y-auto">
+      <main className="drawer-content max-h-[100vh] overflow-y-auto flex flex-col">
         <Topbar />
 
         {children}
@@ -90,30 +91,29 @@ export function Sidebar() {
 function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
-  const { data: connection } = useStore(connectionStore)
+  const  [address, username] = useAddress()
   let quickLinks: QuickLinkProps[] = [
     { icon: <FaHouse />, text: "Back to Connections", to: "/" }
   ]
 
-  if (connection !== null) {
-    quickLinks = quickLinks.concat([
-      {
-        icon: <MdPerson />,
-        text: "Profile",
-        to: `/server/${connection.address}/profile`
-      },
-      {
-        icon: <FaCircleInfo />,
-        text: "About",
-        to: `/server/${connection.address}/`
-      },
-      {
-        icon: <FaGear />,
-        text: "Settings",
-        to: `/server/${connection.address}/admin`
-      }
-    ])
-  }
+  const url = `/server/${username}@${address}`
+  quickLinks = quickLinks.concat([
+    {
+      icon: <MdPerson />,
+      text: "Profile",
+      to: `${url}/profile`
+    },
+    {
+      icon: <FaCircleInfo />,
+      text: "About",
+      to: `${url}/about`
+    },
+    {
+      icon: <FaGear />,
+      text: "Settings",
+      to: `${url}/admin`
+    }
+  ])
 
   return (
     <ul className="flex flex-col">

@@ -25,10 +25,10 @@ function ChannelComponent() {
   const channelId = Route.useParams().channel
 
   return (
-    <div className="h-full flex flex-col">
+    <>
       <Messages channelId={channelId} />
       <ChatInput channelId={channelId} />
-    </div>
+    </>
   )
 }
 

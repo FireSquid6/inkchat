@@ -1,3 +1,5 @@
+import { useLocation } from "@tanstack/react-router"
+
 export function getAddressFromPathname(
   pathname: string
 ): [string, string] | null {
@@ -17,4 +19,10 @@ export function getAddressFromPathname(
   return addressSplit.length > 1
     ? [addressSplit[0], addressSplit.slice(1).join("@")]
     : null
+}
+
+
+export function useAddress(): [string, string] | [null, null] {
+  const pathname = useLocation().pathname
+  return getAddressFromPathname(pathname) ?? [null, null]
 }
