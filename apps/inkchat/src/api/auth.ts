@@ -26,36 +26,22 @@ export const unprotectedAuthApi = (app: Elysia) =>
         const joincodeResponse = await validateJoincode(ctx.store.kit, code)
 
         if (isNone(joincodeResponse)) {
-          ctx.set.status = 400
-          return {
-            token: "",
-            message: "Invalid joincode"
-          }
+          return ctx.error(400, { token: "", message: "Invalid joincode" })
         }
 
         const deleteResponse = await deleteJoincode(ctx.store.kit, code)
         if (isNone(deleteResponse)) {
-          ctx.set.status = 500
-          return {
-            token: "",
-            message: "Failed to delete joincode"
-          }
+          return ctx.error(500, { token: "", message: "Failed to delete joincode" })
         }
 
         if (!isValidUsername(username)) {
-          ctx.set.status = 400
-          return {
-            token: "",
-            message: "Invalid username"
-          }
+          return ctx.error(400, { token: "", message: "Invalid username" })
         }
 
         if (!isValidPassword(password)) {
-          ctx.set.status = 400
-          return {
-            token: "",
-            message: "Invalid password"
-          }
+          // TODO - give a better reason as to why
+          // could be done on a the client side instead
+          return ctx.error(400, { token: "", message: "Invalid password" })
         }
 
         let token = ""
@@ -66,8 +52,7 @@ export const unprotectedAuthApi = (app: Elysia) =>
         }
 
         if (token === "") {
-          ctx.set.status = 500
-          return { message: "Invalid username", token: "" }
+          return ctx.error(500, { token: "", message: "Failed to create user" })
         }
 
         ctx.set.status = 201
@@ -92,21 +77,13 @@ export const unprotectedAuthApi = (app: Elysia) =>
         const userRes = await getUserWithUsername(ctx.store.kit, username)
 
         if (userRes.data === null) {
-          ctx.set.status = 400
-          return {
-            token: "",
-            message: "User not found"
-          }
+          return ctx.error(400, { token: "", message: "Invalid username" })
         }
         const user = userRes.data
 
         const passwordValid = await verifyPassword(password, user.password)
         if (!passwordValid) {
-          ctx.set.status = 400
-          return {
-            token: "",
-            message: "Invalid password"
-          }
+          return ctx.error(400, { token: "", message: "Invalid password" })
         }
 
         // TODO: session length should still be a configurable value

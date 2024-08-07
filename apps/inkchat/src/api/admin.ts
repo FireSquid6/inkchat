@@ -17,8 +17,7 @@ export const adminApi = (app: Elysia) =>
         const { error } = await promoteUser(ctx.store.kit, userId)
 
         if (error) {
-          ctx.set.status = 400
-          return { message: "user not found" }
+          return ctx.error(400, { message: "user not found" })
         }
 
         return {}
@@ -33,11 +32,7 @@ export const adminApi = (app: Elysia) =>
       const joincodeRes = await makeJoincode(ctx.store.kit)
 
       if (isNone(joincodeRes)) {
-        ctx.set.status = 500
-        return {
-          message: "Failed to create joincode",
-          code: ""
-        }
+        return ctx.error(500, { message: "Failed to create joincode" })
       }
 
       ctx.set.status = 201
@@ -53,8 +48,7 @@ export const adminApi = (app: Elysia) =>
 
         const deletedMaybe = await deleteJoincode(ctx.store.kit, code)
         if (isNone(deletedMaybe)) {
-          ctx.set.status = 400
-          return deletedMaybe
+          return ctx.error(404, deletedMaybe)
         }
 
         ctx.set.status = 200
