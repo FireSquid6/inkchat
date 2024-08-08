@@ -13,7 +13,7 @@ export const Route = createFileRoute("/server/$address/$channel")({
   component: () => <ChannelComponent />,
   beforeLoad: ({ location }) => {
     const channelId = location.pathname.split("/").pop() || ""
-    const { data: connection } = connectionStore.state
+    const [connection] = connectionStore.state
 
     if (connection !== null) {
       updateMessages(connection, channelId)
@@ -80,7 +80,7 @@ function Message(message: MessageRow) {
 
 function ChatInput(props: { channelId: string }) {
   const [message, setMessage] = useState("")
-  const { data: connection, error } = useStore(connectionStore)
+  const [connection, error] = useStore(connectionStore)
   const onClick = () => {
     if (connection === null) {
       console.error(error)

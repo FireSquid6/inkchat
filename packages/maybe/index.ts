@@ -34,6 +34,18 @@ export function unwrapOr<T>(result: Failable<T>, fallback: T): T {
   }
 }
 
+export function handleFailable<T, R>(
+  result: Failable<T>,
+  ok: (data: T) => R,
+  err: (error: string) => R
+): R {
+  if (isOk(result)) {
+    return ok(result[0])
+  } else {
+    return err(result[1])
+  }
+}
+
 
 // mabye is a legacy type. It shouldn't be used anymroe
 // @deprecated
