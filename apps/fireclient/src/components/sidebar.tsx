@@ -91,7 +91,7 @@ export function Sidebar() {
 function QuickLinks() {
   // TODO: make settings disappear if you're not an admin
   // TODO: make the links work properly depending on the current connection
-  const  [address, username] = useAddress()
+  const  [username, address] = useAddress()
   let quickLinks: QuickLinkProps[] = [
     { icon: <FaHouse />, text: "Back to Connections", to: "/" }
   ]
