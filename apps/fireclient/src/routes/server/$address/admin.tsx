@@ -28,7 +28,7 @@ function Admin() {
 }
 
 function JoincodeGenerator() {
-  const [ connection ] = useStore(connectionStore)
+  const [connection] = useStore(connectionStore)
   const [joincode, setJoincode] = useState<string>("")
   const [error, setError] = useState<string>("")
   const [disabled, setDisabled] = useState<boolean>(false)
@@ -36,15 +36,15 @@ function JoincodeGenerator() {
 
   const onClick = async () => {
     setDisabled(true)
-    const joincode = await connection?.makeJoincode()
+    const [joincode, error] = await connection?.makeJoincode() ?? [null, "No connection"]
 
     if (joincode === undefined) {
       console.error("Failed to make joincode")
       return
     }
 
-    setJoincode(joincode.data ?? "")
-    setError(joincode.error ?? "")
+    setJoincode(joincode ?? "")
+    setError(error)
     setDisabled(false)
 
     modalRef.current?.showModal()
@@ -89,14 +89,14 @@ function JoincodeGenerator() {
 
 function ChannelCreator() {
   const channels = useStore(channelStore)
-  const [ connection ] = useStore(connectionStore)
+  const [connection] = useStore(connectionStore)
 
   const onDelete = useCallback((channel: ChannelRow) => {
     connection?.sendMessage
 
   }, [connection])
 
-  
+
   return (
     <div>
 
