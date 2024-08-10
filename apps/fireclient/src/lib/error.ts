@@ -21,6 +21,11 @@ export function pushError(message: string): string {
 }
 
 
+export function clearErrors() {
+  errorsStore.setState(() => new Map())
+}
+
+
 export function resolveError(key: string) {
   errorsStore.setState((state) => {
     const newState = new Map(state)
