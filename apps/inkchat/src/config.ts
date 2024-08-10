@@ -9,6 +9,7 @@ export interface AppConfig {
   doInitialization?: boolean // whether to create a default channel and joincode if no users or channels exist
   allowedOrigins?: string[] // a list of origins that are allowed to connect to the server. If empty, all origins are allowed
   redirectForDisallowed?: string // the URL to redirect to if the origin is not allowed. Defaults to the rickroll lol
+  commandsInConsole?: boolean // whether to allow commands to be run in the console. Defaults to true
 }
 
 export interface ServerInformation {
@@ -24,20 +25,20 @@ export class Config {
   }
 
   port(): number {
-    return this.givenConfig.port || 3000
+    return this.givenConfig.port ?? 3000
   }
 
   storeDir(): string {
-    return this.givenConfig.storeDir || "./store"
+    return this.givenConfig.storeDir ?? "./store"
   }
 
   maxMessages(): number {
-    return this.givenConfig.maxMessages || 200
+    return this.givenConfig.maxMessages ?? 200
   }
 
   serverInformation(): ServerInformation {
     return (
-      this.givenConfig.serverInformation || {
+      this.givenConfig.serverInformation ?? {
         name: "A cool server",
         iconPath: ""
       }
@@ -49,14 +50,18 @@ export class Config {
   }
 
   allowedOrigins(): string[] {
-    return this.givenConfig.allowedOrigins || []
+    return this.givenConfig.allowedOrigins ?? []
   }
 
   redirectForDisallowed(): string {
     return (
-      this.givenConfig.redirectForDisallowed ||
+      this.givenConfig.redirectForDisallowed ?? 
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     )
+  }
+
+  commandsInConsole(): boolean {
+    return this.givenConfig.commandsInConsole ?? true
   }
 }
 

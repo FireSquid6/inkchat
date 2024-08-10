@@ -11,6 +11,7 @@ export function startEphemeralApp(doSeed: boolean = false) {
     storeDir: "store/ephemeral",
     port: 3001,
     doInitialization: false,
+    commandsInConsole: false,
   }
 
   const db = getDb(":memory:")
