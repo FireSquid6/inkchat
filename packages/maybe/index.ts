@@ -1,3 +1,55 @@
+
+
+export type Failable<T> = [T, string] | [null, string]
+export type AsyncFailable<T> = Promise<Failable<T>>
+
+export function Ok<T>(data: T): Failable<T> {
+  return [data, ""]
+}
+
+export function Err<T>(error: string): Failable<T> {
+  return [null, error]
+}
+
+export function isOk<T>(result: Failable<T>): result is [T, string] {
+  return (result[0] === null)
+}
+
+export function isErr<T>(result: Failable<T>): result is [null, string] {
+  return (result[0] === null)
+}
+
+export function unwrap<T>(result: Failable<T>): T {
+  if (isOk(result)) {
+    return result[0]
+  } else {
+    throw new Error(result[1])
+  }
+}
+
+export function unwrapOr<T>(result: Failable<T>, fallback: T): T {
+  if (isOk(result)) {
+    return result[0]
+  } else {
+    return fallback
+  }
+}
+
+export function handleFailable<T, R>(
+  result: Failable<T>,
+  ok: (data: T) => R,
+  err: (error: string) => R
+): R {
+  if (isOk(result)) {
+    return ok(result[0])
+  } else {
+    return err(result[1])
+  }
+}
+
+
+// mabye is a legacy type. It shouldn't be used anymroe
+// @deprecated
 export type Maybe<T> = { data: T; error: null } | { data: null; error: string }
 
 export type SomeMaybeHandler<T, R> = (some: T) => R
@@ -6,6 +58,7 @@ export type NoneMaybeHandler<R> = (error: string) => R
 export type AsyncMaybe<T> = Promise<Maybe<T>>
 
 // handles a maybe of type T
+// @deprecated
 export function handleMaybe<T, Return>(
   maybe: Maybe<T>,
   some: SomeMaybeHandler<T, Return>,
@@ -18,6 +71,7 @@ export function handleMaybe<T, Return>(
   }
 }
 
+// @deprecated
 export function Some<T>(value: T): Maybe<T> {
   return {
     data: value,
@@ -25,6 +79,7 @@ export function Some<T>(value: T): Maybe<T> {
   }
 }
 
+// @deprecated
 export function None<T>(error: string): Maybe<T> {
   return {
     data: null,
@@ -32,15 +87,19 @@ export function None<T>(error: string): Maybe<T> {
   }
 }
 
+// @deprecated
 export function isSome<T>(maybe: Maybe<T>): maybe is { data: T; error: null } {
   return maybe.data !== null
 }
+
+// @deprecated
 export function isNone<T>(
   maybe: Maybe<T>
 ): maybe is { data: null; error: string } {
   return maybe.data === null
 }
 
+// @deprecated
 export function unwrapOrDefault<T>(maybe: Maybe<T>, fallback: T): T {
   if (isSome(maybe)) {
     return maybe.data
@@ -49,6 +108,7 @@ export function unwrapOrDefault<T>(maybe: Maybe<T>, fallback: T): T {
   }
 }
 
+// @deprecated
 export function unwrapOrThrow<T>(maybe: Maybe<T>): T {
   if (isSome(maybe)) {
     return maybe.data
@@ -57,6 +117,7 @@ export function unwrapOrThrow<T>(maybe: Maybe<T>): T {
   }
 }
 
+// @deprecated
 export function isSomeUnwrapped<T>(
   data: T | null,
   error: string | null

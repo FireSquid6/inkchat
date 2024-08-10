@@ -136,7 +136,7 @@ test("channel routes with sdk", async () => {
   ]
   await db.insert(channelTable).values(channels)
 
-  const { data: foundChannels, error } = await connection.getAllChannels()
+  const [ foundChannels, error ] = await connection.getAllChannels()
 
   if (error) {
     throw new Error(error)

@@ -9,9 +9,8 @@ import {
 import { MdPerson } from "react-icons/md"
 import { channelStore, connectionStore, useConnectionState } from "@/lib/store"
 import { useStore } from "@tanstack/react-store"
-import { handleMaybe } from "maybe"
+import { handleFailable } from "maybe"
 import { Link, useLocation } from "@tanstack/react-router"
-import useSWR from "swr"
 import { useAddress } from "@/lib/address"
 
 export function SidebarLayout({
@@ -19,7 +18,7 @@ export function SidebarLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const connection = useStore(connectionStore)
   let address = ""
-  handleMaybe(
+  handleFailable(
     connection,
     (conn) => {
       address = conn.address

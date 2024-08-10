@@ -7,10 +7,7 @@ import { getAddressFromPathname } from "@/lib/address"
 
 export const Route = createFileRoute("/server/$address")({
   beforeLoad: ({ location }) => {
-    const [username, address] = getAddressFromPathname(location.pathname) || [
-      null,
-      null
-    ]
+    const [username, address] = getAddressFromPathname(location.pathname) 
     const maybe = getStoredSessions()
 
     if (isNone(maybe)) {
@@ -36,9 +33,9 @@ export const Route = createFileRoute("/server/$address")({
       })
     }
 
-    const connectionMaybe = connectionStore.state
+    const [connection] = connectionStore.state
 
-    if (isNone(connectionMaybe) || connectionMaybe.data.address !== address) {
+    if (connection === null || connection.address !== address) {
       connectTo(session.address, session.token)
     }
   },
