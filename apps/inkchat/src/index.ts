@@ -3,6 +3,7 @@ import { getAuth } from "@/db/auth"
 import { app } from "@/api"
 import { Config, type AppConfig } from "@/config"
 import { createInitialChannel, createInitialJoincode } from "./initialization"
+import { listenToConsole } from "./console"
 
 // this kit is in the context for every api request
 // it contains the database, auth, logger, etc.
@@ -35,6 +36,10 @@ export function startApp(
   if (config.doInitialization()) {
     createInitialJoincode(kit)
     createInitialChannel(kit)
+  }
+
+  if (config.commandsInConsole()) {
+    listenToConsole(kit)
   }
 
   return kit
