@@ -4,7 +4,7 @@ import { sdk } from "api"
 import type { Failable } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
-import { Err, Ok, unwrapOrThrow, isSome } from "maybe"
+import { Err, Ok, unwrap } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
 
@@ -56,17 +56,17 @@ export function connectTo(address: string, token: string) {
 
     await Promise.all([
       new Promise<void>(async (resolve) => {
-        const channels = unwrapOrThrow(await connection.getAllChannels())
+        const channels = unwrap<ChannelRow[]>(await connection.getAllChannels())
         channelStore.setState(() => channels)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const users = unwrapOrThrow(await connection.getAllUsers())
+        const users = unwrap<PublicUser[]>(await connection.getAllUsers())
         usersStore.setState(() => users)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const currentUser = unwrapOrThrow(await connection.whoAmI())
+        const currentUser = unwrap<PublicUser>(await connection.whoAmI())
         currentUserStore.setState(() => currentUser)
         resolve()
       })
@@ -103,15 +103,13 @@ export async function updateMessages(
   connection: sdk.Connection,
   channelId: string
 ) {
-  const maybe = await connection.getMessagesInChannel(
+  // TODO - handle error here
+  // maybe a global error store?
+  const [ messages ] = await connection.getMessagesInChannel(
     channelId,
     200,
     Date.now()
   )
-  let messages: MessageRow[] = []
-  if (isSome(maybe)) {
-    messages = maybe.data
-  }
 
   messagesStore.setState((state) => {
     state.set(channelId, messages)

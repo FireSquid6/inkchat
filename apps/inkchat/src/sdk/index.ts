@@ -1,7 +1,7 @@
 import { treaty } from "@elysiajs/eden"
 import type { CustomTreatyResponse } from "@/sdk/types"
 import type { App } from "@/index"
-import { Some, None, type AsyncMaybe, isSome } from "maybe"
+import { type AsyncFailable, Ok, Err } from "maybe"
 import type { ServerInformation } from "@/config"
 import { PublicUser } from "@/api/users"
 import { ChannelRow, MessageRow } from "@/db/schema"
@@ -11,7 +11,7 @@ export async function signIn(
   address: string,
   username: string,
   password: string
-): AsyncMaybe<string> {
+): AsyncFailable<string> {
   const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
@@ -21,14 +21,14 @@ export async function signIn(
   })
 
   if (!res.data) {
-    return None(`No data from server. Code ${res.status}`)
+    return Err(`No data from server. Code ${res.status}`)
   }
 
   if (res.status !== 201) {
-    return None(res.data.message)
+    return Err(res.data.message)
   }
 
-  return Some(res.data.token)
+  return Ok(res.data.token)
 }
 
 export async function validateSession(
@@ -48,7 +48,7 @@ export async function signUp(
   username: string,
   password: string,
   joincode: string
-) {
+): AsyncFailable<string> {
   const url = urlFromAddress(address)
   const api = getTreaty(url, "")
 
@@ -59,14 +59,14 @@ export async function signUp(
   })
 
   if (!res.data) {
-    return None("No data from server")
+    return Err("No data from server")
   }
 
   if (res.status !== 201) {
-    return None(`Failed to sign up: ${res.status} ${res.data.message}`)
+    return Err(`Failed to sign up: ${res.status} ${res.data.message}`)
   }
 
-  return Some(res.data.token)
+  return Ok(res.data.token)
 }
 
 export async function signOut(address: string, token: string) {
@@ -157,19 +157,19 @@ export class Connection {
     )
   }
 
-  async info(): AsyncMaybe<ServerInformation> {
+  async info(): AsyncFailable<ServerInformation> {
     return wrapTreatyResponse<ServerInformation>(await this.api.index.get())
   }
 
-  async getUser(id: string): AsyncMaybe<PublicUser> {
+  async getUser(id: string): AsyncFailable<PublicUser> {
     return wrapTreatyResponse<PublicUser>(await this.api.users({ id }).get())
   }
 
-  async getAllUsers(): AsyncMaybe<PublicUser[]> {
+  async getAllUsers(): AsyncFailable<PublicUser[]> {
     return wrapTreatyResponse<PublicUser[]>(await this.api.users.get())
   }
 
-  async uploadAttachment(filename: string, file: File): AsyncMaybe<string> {
+  async uploadAttachment(filename: string, file: File): AsyncFailable<string> {
     return wrapTreatyResponse<string>(
       await this.api.attachments.post({
         filename,
@@ -178,11 +178,11 @@ export class Connection {
     )
   }
 
-  async getAllChannels(): AsyncMaybe<ChannelRow[]> {
+  async getAllChannels(): AsyncFailable<ChannelRow[]> {
     return wrapTreatyResponse<ChannelRow[]>(await this.api.channels.get())
   }
 
-  async getChannel(id: string): AsyncMaybe<ChannelRow> {
+  async getChannel(id: string): AsyncFailable<ChannelRow> {
     return wrapTreatyResponse<ChannelRow>(await this.api.channels({ id }).get())
   }
 
@@ -190,7 +190,7 @@ export class Connection {
     id: string,
     last: number,
     before: number
-  ): AsyncMaybe<MessageRow[]> {
+  ): AsyncFailable<MessageRow[]> {
     return wrapTreatyResponse<MessageRow[]>(
       await this.api.channels({ id }).messages.get({
         query: {
@@ -201,7 +201,7 @@ export class Connection {
     )
   }
 
-  async whoAmI(): AsyncMaybe<PublicUser> {
+  async whoAmI(): AsyncFailable<PublicUser> {
     return wrapTreatyResponse<PublicUser>(await this.api.whoami.get())
   }
 
@@ -220,31 +220,31 @@ export class Connection {
     this.socket.send(message)
   }
 
-  async makeJoincode(): AsyncMaybe<string> {
+  async makeJoincode(): AsyncFailable<string> {
     const res = await this.api.admin.joincode.post({})
 
     if (!res.data) {
-      return None("No data from server")
+      return Err("No data from server")
     }
 
-    return Some(res.data.code)
+    return Ok(res.data.code)
   }
 }
 
 function wrapTreatyResponse<T>(
   res: CustomTreatyResponse<Record<any, T | null>>
-): AsyncMaybe<T> {
+): AsyncFailable<T> {
   if (res.data === null) {
-    return Promise.resolve(None(`No data from server. Code ${res.status}`))
+    return Promise.resolve(Err(`No data from server. Code ${res.status}`))
   }
 
   if (!isOk(res.status)) {
     return Promise.resolve(
-      None(`Status was not ok. Error was: ${res.error}. Data was: ${res.data}`)
+      Err(`Status was not ok. Error was: ${res.error}. Data was: ${res.data}`)
     )
   }
 
-  return Promise.resolve(Some(res.data))
+  return Promise.resolve(Ok(res.data))
 }
 
 function isOk(code: number) {

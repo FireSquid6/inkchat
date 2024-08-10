@@ -1,6 +1,7 @@
 
 
 export type Failable<T> = [T, string] | [null, string]
+export type AsyncFailable<T> = Promise<Failable<T>>
 
 export function Ok<T>(data: T): Failable<T> {
   return [data, ""]
