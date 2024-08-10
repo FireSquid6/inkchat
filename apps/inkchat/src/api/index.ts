@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors"
 import type { Kit } from "@/index"
 import type { User } from "lucia"
 import { swagger } from "@elysiajs/swagger"
-import { logger } from "@bogeychan/elysia-logger"
+import { Logestic } from "logestic"
 import { ip } from "elysia-ip"
 import { userTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
@@ -86,22 +86,7 @@ export const app = new Elysia()
   // up here is unprotected! No auth required
   .use(cors())
   .use(ip())
-  .use(
-    logger({
-      level: "info",
-      customProps(ctx) {
-        return {
-          ip: ctx.ip
-        }
-      },
-      transport: {
-        target: "pino-pretty",
-        options: {
-          colorize: true
-        }
-      }
-    })
-  )
+  .use(Logestic.preset("fancy"))
   .use(
     swagger({
       documentation: {
