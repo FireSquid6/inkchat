@@ -56,17 +56,38 @@ export function connectTo(address: string, token: string) {
 
     await Promise.all([
       new Promise<void>(async (resolve) => {
-        const channels = unwrapOr<ChannelRow[]>(await connection.getAllChannels(), [])
+        const [channels, error] = await connection.getAllChannels()
+
+        if (channels === null) {
+          console.error("Failed to get channels:", error)
+          resolve()
+          return
+        }
+
         channelStore.setState(() => channels)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const users = unwrapOr<PublicUser[]>(await connection.getAllUsers(), [])
+        const [users, error] = await connection.getAllUsers()
+        
+        if (users === null) {
+          console.error("Failed to get users:", error)
+          resolve()
+          return
+        }
+
         usersStore.setState(() => users)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const currentUser = unwrapOr<PublicUser | null>(await connection.whoAmI(), null)
+        const [currentUser, error] = await connection.whoAmI()
+
+        if (currentUser === null) {
+          console.error("Failed to get current user:", error)
+          resolve()
+          return
+        }
+
         currentUserStore.setState(() => currentUser)
         resolve()
       })
@@ -105,14 +126,14 @@ export async function updateMessages(
 ) {
   // TODO - handle error here
   // maybe a global error store?
-  const [ messages ] = await connection.getMessagesInChannel(
+  const [messages] = await connection.getMessagesInChannel(
     channelId,
     200,
     Date.now()
   )
 
   messagesStore.setState((state) => {
-    state.set(channelId, messages)
+    state.set(channelId, messages ?? [])
     return state
   })
 }
@@ -121,15 +142,15 @@ export function useConnectionState() {
   const [connection] = useStore(connectionStore)
   const startingState = (connection)
     ? {
-        successful: connection.connected,
-        pending: connection.pending,
-        error: connection.error
-      }
+      successful: connection.connected,
+      pending: connection.pending,
+      error: connection.error
+    }
     : {
-        successful: false,
-        pending: true,
-        error: ""
-      }
+      successful: false,
+      pending: true,
+      error: ""
+    }
   const [connectionState, setConnectionState] = useState(startingState)
 
   if (connection !== null) {
