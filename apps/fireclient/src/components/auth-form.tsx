@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react"
-import { None, isSome, type Maybe } from "maybe"
+import { type Failable, Err } from "maybe"
 import { sdk } from "api"
 import { storeSession } from "@/lib/auth"
 import { useNavigate } from "@tanstack/react-router"
@@ -23,7 +23,7 @@ export function AuthForm(props: AuthFormProps) {
   // TODO - make this not the worst code ever
   // TODO - do proper validation here to make sure the user is inputting the right stuff
   const handleSubmit = useCallback(async () => {
-    let res: Maybe<string> = None("Not done yet")
+    let res: Failable<string> = Err("Not done yet")
 
     if (newAccount) {
       res = await sdk.signUp(address, username, password, joincode)
@@ -31,10 +31,13 @@ export function AuthForm(props: AuthFormProps) {
       res = await sdk.signIn(address, username, password)
     }
 
-    if (isSome(res)) {
+    const [token, error] = res
+
+    if (token !== null) {
       setError("")
+      // TODO - check if there is already a session and ask the user if they want to overwrite it
       storeSession({
-        token: res.data,
+        token: token,
         address: address,
         username: username,
         found: true,
@@ -42,7 +45,7 @@ export function AuthForm(props: AuthFormProps) {
       })
       navigate({ to: `/server/${username}@${address}` })
     } else {
-      setError(res.error)
+      setError(error)
     }
   }, [address, username, password, joincode, newAccount, setError])
 

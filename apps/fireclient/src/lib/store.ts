@@ -4,7 +4,7 @@ import { sdk } from "api"
 import type { Failable } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
-import { Err, Ok, unwrap } from "maybe"
+import { Err, Ok, unwrap, unwrapOr } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
 
@@ -56,17 +56,17 @@ export function connectTo(address: string, token: string) {
 
     await Promise.all([
       new Promise<void>(async (resolve) => {
-        const channels = unwrap<ChannelRow[]>(await connection.getAllChannels())
+        const channels = unwrapOr<ChannelRow[]>(await connection.getAllChannels(), [])
         channelStore.setState(() => channels)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const users = unwrap<PublicUser[]>(await connection.getAllUsers())
+        const users = unwrapOr<PublicUser[]>(await connection.getAllUsers(), [])
         usersStore.setState(() => users)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
-        const currentUser = unwrap<PublicUser>(await connection.whoAmI())
+        const currentUser = unwrapOr<PublicUser | null>(await connection.whoAmI(), null)
         currentUserStore.setState(() => currentUser)
         resolve()
       })

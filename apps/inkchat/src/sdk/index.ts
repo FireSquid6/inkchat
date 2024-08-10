@@ -20,8 +20,9 @@ export async function signIn(
     password
   })
 
+
   if (!res.data) {
-    return Err(`No data from server. Code ${res.status}`)
+    return Err(`${res.status} - ${res.error.value.message ?? "Unkown error"}`)
   }
 
   if (res.status !== 201) {
@@ -59,7 +60,7 @@ export async function signUp(
   })
 
   if (!res.data) {
-    return Err("No data from server")
+    return Err(`${res.status} - ${res.error.value.message}`)
   }
 
   if (res.status !== 201) {
