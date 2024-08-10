@@ -16,6 +16,7 @@
     "@capacitor/ios": "^6.1.1",
     "@tanstack/react-store": "^0.5.5",
     "@tanstack/store": "^0.5.5",
+    "@testing-library/react": "^16.0.0",
     "@types/node": "^20.14.11",
     "daisyui": "^4.12.10",
     "react": "^18.3.1",
