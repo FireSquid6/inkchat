@@ -28,7 +28,7 @@ function Admin() {
 }
 
 function JoincodeGenerator() {
-  const { data: connection } = useStore(connectionStore)
+  const [ connection ] = useStore(connectionStore)
   const [joincode, setJoincode] = useState<string>("")
   const [error, setError] = useState<string>("")
   const [disabled, setDisabled] = useState<boolean>(false)
@@ -89,7 +89,7 @@ function JoincodeGenerator() {
 
 function ChannelCreator() {
   const channels = useStore(channelStore)
-  const { data: connection } = useStore(connectionStore)
+  const [ connection ] = useStore(connectionStore)
 
   const onDelete = useCallback((channel: ChannelRow) => {
     connection?.sendMessage

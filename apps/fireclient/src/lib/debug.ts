@@ -28,9 +28,9 @@ export function printDebug() {
     console.log("getStoredSessions returned null")
   }
 
-  const connection = connectionStore.state
+  const [ connection ] = connectionStore.state
   console.log("Connection State:")
-  console.log(connection.data)
+  console.log(connection)
 
   const users = usersStore.state
   console.log("Users State:")

@@ -2,7 +2,7 @@ import { useLocation } from "@tanstack/react-router"
 
 export function getAddressFromPathname(
   pathname: string
-): [string, string] | null {
+): [string, string] | [null, null] {
   const split = pathname.split("/")
   let address = ""
   for (let i = 0; i < split.length; i++) {
@@ -12,17 +12,17 @@ export function getAddressFromPathname(
   }
 
   if (address === "") {
-    return null
+    return [null, null]
   }
 
   const addressSplit = address.split("@")
   return addressSplit.length > 1
     ? [addressSplit[0], addressSplit.slice(1).join("@")]
-    : null
+    : [null, null] 
 }
 
 
 export function useAddress(): [string, string] | [null, null] {
   const pathname = useLocation().pathname
-  return getAddressFromPathname(pathname) ?? [null, null]
+  return getAddressFromPathname(pathname) 
 }

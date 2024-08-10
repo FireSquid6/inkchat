@@ -4,7 +4,7 @@ import { sdk } from "api"
 import type { Failable } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
-import { Err, Ok, unwrapOrThrow, isSome, isNone } from "maybe"
+import { Err, Ok, unwrapOrThrow, isSome } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
 

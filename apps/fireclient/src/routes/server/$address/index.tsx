@@ -4,7 +4,7 @@ import { getAddressFromPathname } from "@/lib/address"
 
 export const Route = createFileRoute('/server/$address/')({
   beforeLoad: ({ location }) => {
-    const [username, address] = getAddressFromPathname(location.pathname) ?? [null, null]
+    const [username, address] = getAddressFromPathname(location.pathname) 
 
     if (username === null || address === null) {
       throw redirect({
