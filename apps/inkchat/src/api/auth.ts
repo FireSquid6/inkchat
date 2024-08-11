@@ -10,7 +10,7 @@ import {
   deleteJoincode
 } from "@/db/auth"
 import { getUserWithUsername } from "@/db/user"
-import { isNone, type Maybe } from "maybe"
+import { isNone } from "maybe"
 
 export const unprotectedAuthApi = (app: Elysia) =>
   app

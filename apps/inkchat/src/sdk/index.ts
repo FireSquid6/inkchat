@@ -119,16 +119,15 @@ export class Connection {
         })
       )
     }
-    
 
     // TODO - does the the close event get called when the server errors? Or just the error event?
-    this.socket.onerror = () => {
-      this.connected = false
-      this.pending = false
-      this.error = "Something went wrong. Unspecified websocket error"
-      this.tryReconnect()
-      this.publishState()
-    }
+    // this.socket.onerror = () => {
+    //   this.connected = false
+    //   this.pending = false
+    //   this.error = "Something went wrong. Unspecified websocket error"
+    //   this.tryReconnect()
+    //   this.publishState()
+    // }
 
     this.socket.onclose = (e) => {
       this.connected = false
