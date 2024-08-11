@@ -94,8 +94,10 @@ export class Connection {
   }>()
   newMessage = new Pubsub<Message>()
   address: string
+  retryTimeout: number   // the amount of time in ms to wait before trying to reconnect
 
-  constructor(address: string, token: string) {
+  constructor(address: string, token: string, retryTimeout: number = -1) {
+    this.retryTimeout = retryTimeout
     this.url = urlFromAddress(address)
     this.api = getTreaty(this.url, token)
     this.address = address
@@ -117,18 +119,22 @@ export class Connection {
         })
       )
     }
+    
 
+    // TODO - does the the close event get called when the server errors? Or just the error event?
     this.socket.onerror = () => {
       this.connected = false
       this.pending = false
-      this.error = "Something went wrong. Websocket error"
+      this.error = "Something went wrong. Unspecified websocket error"
+      this.tryReconnect()
       this.publishState()
     }
 
-    this.socket.onclose = () => {
+    this.socket.onclose = (e) => {
       this.connected = false
       this.pending = false
-      this.error = "Connection closed"
+      this.error = "Websocket closed: " + e.reason
+      this.tryReconnect()
       this.publishState()
     }
 
@@ -139,6 +145,16 @@ export class Connection {
     }
   }
 
+  private async tryReconnect() {
+    this.socket.close()
+    
+    if (this.retryTimeout === -1) {
+      return
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, this.retryTimeout))
+  }
+
   private publishState() {
     this.stateChanged.publish({
       successful: this.connected,
@@ -147,6 +163,14 @@ export class Connection {
     })
   }
 
+  // disconnects the websocket
+  disconnect() {
+    this.retryTimeout = -1
+    this.socket.close()
+  }
+
+  // invalidates the current token
+  // you probably also want to call disconnect
   logout() {
     this.api.auth.signout.post(
       {},
