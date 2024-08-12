@@ -1,7 +1,7 @@
 {
-  "name": "inkchat",
-  "module": "src/index.ts",
-  "main": "src/index.ts",
+  "name": "@firesquid/inkchat",
+  "main": "dist/inkchat.js",
+  "version": "0.4.0",
   "type": "module",
   "devDependencies": {
     "@types/bun": "latest",
