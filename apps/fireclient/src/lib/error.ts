@@ -1,5 +1,5 @@
-import { useStore } from "@tanstack/react-store"
 import { Store } from "@tanstack/store"
+import { useEffect, useState } from "react"
 
 
 // when something fails, we can store that message here
@@ -12,7 +12,9 @@ export function pushError(message: string): string {
   console.error(message) // we also print the error to the console to make debugging easier
   const key = Math.random().toString()
   errorsStore.setState((state) => {
+    console.log(state)
     const newState = new Map(state)
+    console.log(newState)
     newState.set(key, message)
     return newState
   })
@@ -36,6 +38,14 @@ export function resolveError(key: string) {
 
 
 export function useErrors() {
-  const errors = useStore(errorsStore)
-  return errors.values()
+  const [errors, setErrors] = useState<Map<string, string>>(new Map())
+
+  useEffect(() => {
+    return errorsStore.subscribe(() => {
+      setErrors(errorsStore.state)
+    })
+  }, [setErrors])
+
+  return errors
+
 }
