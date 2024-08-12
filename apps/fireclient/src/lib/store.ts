@@ -7,6 +7,7 @@ import { useStore } from "@tanstack/react-store"
 import { Err, Ok, unwrap, unwrapOr } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
+import { pushError } from "./error"
 
 export const channelStore = new Store<ChannelRow[]>([])
 export const messagesStore = new Store<Map<string, MessageRow[]>>(new Map())
@@ -43,6 +44,9 @@ export function useMessagesStore(extraFunction?: () => void) {
   return messages
 }
 
+
+// TODO - make this function smaller
+// it's way too big and does too much
 export function connectTo(address: string, token: string) {
   resetStores()
   const connection = new sdk.Connection(address, token)
@@ -120,9 +124,22 @@ export function connectTo(address: string, token: string) {
           })
           return [...state]
         })
+        break
+      case serverMessages.error.name:
+        const error = serverMessages.error.payloadAs(message)
+        pushError(error)
+        break
 
       // TODO - channel modified
     }
+  })
+
+  connection.stateChanged.subscribe(({successful, pending, error}) => {
+    if (successful || pending) {
+      return
+    }
+
+    pushError(error)
   })
 
 }
