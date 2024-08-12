@@ -28,5 +28,7 @@ export type Agent = {
   // TODO: provide some slash commands that the agend can respond to
   // the client should be able to get a list of agents and the commands they have
 
+  preProcessMessage(message: Message): Message
   onMessage(message: Message): void
+
 }
