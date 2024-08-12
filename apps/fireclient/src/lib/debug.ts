@@ -6,12 +6,9 @@ import {
   connectionStore,
   currentUserStore
 } from "@/lib/store"
-import { pushError } from "./error"
 
 export function printDebug() {
   const { data: sessions } = getStoredSessions()
-
-  pushError("This is an error!")
 
   if (sessions) {
     console.log("===============================================")

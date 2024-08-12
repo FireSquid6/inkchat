@@ -9,12 +9,9 @@ const errorsStore = new Store<Map<string, string>>(new Map())
 // adds an error messsage to the store
 // returns the key where it is stored. that error can later be "resolved" by removing it from the store
 export function pushError(message: string): string {
-  console.error(message) // we also print the error to the console to make debugging easier
   const key = Math.random().toString()
   errorsStore.setState((state) => {
-    console.log(state)
     const newState = new Map(state)
-    console.log(newState)
     newState.set(key, message)
     return newState
   })
