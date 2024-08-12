@@ -1,5 +1,5 @@
 {
-  "name": "@firesquid/inkchat",
+  "name": "inkchat",
   "main": "dist/inkchat.js",
   "version": "0.4.0",
   "type": "module",
