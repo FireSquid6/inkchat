@@ -102,11 +102,29 @@ export function connectTo(address: string, token: string) {
           const messages = state.get(chat.channelId) ?? []
           messages.push(chat)
           state.set(chat.channelId, messages)
-          return state
+          return new Map(state)
         })
         break
+      case serverMessages.channelCreated.name:
+        const createdChannel = serverMessages.channelCreated.payloadAs(message)
+        channelStore.setState((state) => {
+          state.push(createdChannel)
+          return [...state]
+        })
+        break
+      case serverMessages.channelDeleted.name:
+        const deletedChannel = serverMessages.channelDeleted.payloadAs(message)
+        channelStore.setState((state) => {
+          state.filter((channel) => {
+            return channel.id === deletedChannel.id
+          })
+          return [...state]
+        })
+
+      // TODO - channel modified
     }
   })
+
 }
 
 export async function useUser(id: string | null) {

@@ -32,9 +32,9 @@ export const serverMessages = {
   userJoined: new MessageKind<UserJoinedPayload>("USER_JOINED"),
   userLeft: new MessageKind<UserLeftPayload>("USER_LEFT"),
 
-  channelDeleted: new MessageKind<{ id: string }>("DELETE_CHANNEL"),
-  channelModified: new MessageKind<ChannelRow>("MODIFY_CHANNEL"),
-  channelCreated: new MessageKind<ChannelRow>("CREATE_CHANNEL"),
+  channelDeleted: new MessageKind<{ id: string }>("CHANNEL_DELETED"),
+  channelModified: new MessageKind<ChannelRow>("CHANNEL_MODIFIED"),
+  channelCreated: new MessageKind<ChannelRow>("CHANNEL_CREATED"),
 
   error: new MessageKind<string>("ERROR")
 }
