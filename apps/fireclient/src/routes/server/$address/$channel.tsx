@@ -96,6 +96,7 @@ function ChatInput(props: { channelId: string }) {
       <input
         type="text"
         value={message}
+        placeholder="Type a message..."
         onKeyUp={(e) => {
           if (e.key === "Enter") {
             onClick()

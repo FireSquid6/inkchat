@@ -27,7 +27,7 @@ export function SidebarLayout({
   )
 
   return (
-    <div className="drawer lg:drawer-open max-h-[100vh]">
+    <div className="drawer lg:drawer-open h-[100vh]">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <main className="drawer-content max-h-[100vh] overflow-y-auto flex flex-col">
         <Topbar />
