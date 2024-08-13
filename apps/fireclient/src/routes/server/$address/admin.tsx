@@ -1,4 +1,4 @@
-import { connectionStore, currentUserStore, channelStore } from "@/lib/store"
+import { connectionStore, currentUserStore, channelStore, useConnectionState } from "@/lib/store"
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { ChannelRow } from "api"
@@ -23,7 +23,7 @@ function Admin() {
   return (
     <div className="m-4">
       <JoincodeGenerator />
-      <ChannelCreator />
+      <ChannelEditor />
     </div>
   )
 }
@@ -88,7 +88,7 @@ function JoincodeGenerator() {
 }
 
 
-function ChannelCreator() {
+function ChannelEditor() {
   const channels = useStore(channelStore)
   const [connection] = useStore(connectionStore)
   const [focusedChannel, setFocusedChannel] = useState<ChannelRow | null>(null)
@@ -127,6 +127,7 @@ function ChannelCreator() {
           ))
         }
       </div>
+      <ChannelCreator />
       <dialog id="delete-modal" ref={deleteModalRef} className="modal">
         <div className="modal-box">
           <h2 className="font-bold text-lg">
@@ -173,5 +174,28 @@ function Channel(props: ChannelProps) {
       </button>
     </div>
   )
+}
 
+
+function ChannelCreator() {
+  const [channelName, setChannelName] = useState<string>("")
+  const [connection] = useStore(connectionStore)
+
+  const onClick = () => {
+    if (channelName === "") {
+      return
+    }
+
+    // TODO - check if name is already taken
+    // TODO - validate channel name
+
+    connection?.createChannel(channelName, "")
+  }
+
+  return (
+    <div className="flex flex-row">
+      <input value={channelName} onChange={(e) => setChannelName(e.target.value)} type="text" placeholder="Enter channel name..." className="input input-bordered w-full mr-4" />
+      <button className="btn" onClick={onClick}>Create Channel</button>
+    </div>
+  )
 }

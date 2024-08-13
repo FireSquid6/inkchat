@@ -99,6 +99,7 @@ export function connectTo(address: string, token: string) {
   })
 
   connection.newMessage.subscribe((message) => {
+    console.log("New message:", message.kind, message.payload)
     switch (message.kind) {
       case serverMessages.newChat.name:
         const chat = serverMessages.newChat.payloadAs(message)
@@ -113,16 +114,15 @@ export function connectTo(address: string, token: string) {
         const createdChannel = serverMessages.channelCreated.payloadAs(message)
         channelStore.setState((state) => {
           state.push(createdChannel)
-          return [...state]
+          return state.slice()
         })
         break
       case serverMessages.channelDeleted.name:
         const deletedChannel = serverMessages.channelDeleted.payloadAs(message)
         channelStore.setState((state) => {
-          state.filter((channel) => {
+          return state.filter((channel) => {
             return channel.id === deletedChannel.id
           })
-          return [...state]
         })
         break
       case serverMessages.error.name:
@@ -131,6 +131,7 @@ export function connectTo(address: string, token: string) {
         break
 
       // TODO - channel modified
+      // TODO - user joined/left
     }
   })
 
