@@ -41,8 +41,23 @@ export function useComplexStore<T>(store: Store<T>) {
   return state
 }
 
-export function useMessagesStore() {
-  return useComplexStore(messagesStore)
+export function useMessagesStore(extraFunction?: () => void) {
+  const [messages, setMessages] = useState(messagesStore.state)
+
+  useEffect(() => {
+    const unsubscribe = messagesStore.subscribe(() => {
+      if (extraFunction) {
+        extraFunction()
+      }
+      setMessages(new Map(messagesStore.state))
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [setMessages])
+
+  return messages
 }
 
 
