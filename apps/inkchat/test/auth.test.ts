@@ -4,12 +4,6 @@ import { userTable } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
 test("signup and signin flow", async () => {
-  // TODO:
-  // - session cookie is returned
-  // - session is created
-  // - session can be destroyed
-  // - new session can be created by logging in
-
   const { api, db } = testApp()
   const { session } = await getTestUser(db)
 
