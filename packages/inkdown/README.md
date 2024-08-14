@@ -6,6 +6,7 @@ Inkdown is a lightweight markdown-ish parser built for messaging applications
 - Fast - parsing should be able to be done on the client side with
 - Simple - no weird magic stuff. Just a function that turns inkdown into html or provided 
 - Customizable - enable and disable certain features
+- Safe - no XSS attacks should be possible by default
 
 ## Nongoals
 - follow the markdown spec
