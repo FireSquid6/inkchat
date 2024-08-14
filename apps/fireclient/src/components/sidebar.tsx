@@ -7,7 +7,7 @@ import {
   FaGear
 } from "react-icons/fa6"
 import { MdPerson } from "react-icons/md"
-import { channelStore, connectionStore, useConnectionState } from "@/lib/store"
+import { channelStore, connectionStore, useComplexStore, useConnectionState } from "@/lib/store"
 import { useStore } from "@tanstack/react-store"
 import { handleFailable } from "maybe"
 import { Link, useLocation } from "@tanstack/react-router"
@@ -141,7 +141,7 @@ function QuickLink(props: QuickLinkProps) {
 }
 
 function ChannelList() {
-  const channels = useStore(channelStore)
+  const channels = useComplexStore(channelStore)
 
   return (
     <ul className="flex flex-col">

@@ -4,7 +4,7 @@ import { sdk } from "api"
 import type { Failable } from "maybe"
 import { Store } from "@tanstack/store"
 import { useStore } from "@tanstack/react-store"
-import { Err, Ok, unwrap, unwrapOr } from "maybe"
+import { Err, Ok } from "maybe"
 import { serverMessages } from "protocol"
 import { useEffect } from "react"
 import { pushError } from "./error"
@@ -25,23 +25,24 @@ export function resetStores() {
   connectionStore.setState(() => Err("Not initialized"))
 }
 
-export function useMessagesStore(extraFunction?: () => void) {
-  const [messages, setMessages] = useState(messagesStore.state)
-
+// whenver the store has arrays, `useStore` does some magic that causes it to not work
+// Thanks react! It's probably my fault, but this works anyways. If it's slow, I'll fix it
+export function useComplexStore<T>(store: Store<T>) {
+  const [state, setState] = useState(store.state)
   useEffect(() => {
-    const unsubscribe = messagesStore.subscribe(() => {
-      if (extraFunction) {
-        extraFunction()
-      }
-      setMessages(new Map(messagesStore.state))
+    const unsubscribe = store.subscribe(() => {
+      setState(store.state)
     })
 
     return () => {
       unsubscribe()
     }
-  }, [setMessages])
+  })
+  return state
+}
 
-  return messages
+export function useMessagesStore() {
+  return useComplexStore(messagesStore)
 }
 
 
@@ -67,13 +68,13 @@ export function connectTo(address: string, token: string) {
           resolve()
           return
         }
-
+        {}
         channelStore.setState(() => channels)
         resolve()
       }),
       new Promise<void>(async (resolve) => {
         const [users, error] = await connection.getAllUsers()
-        
+
         if (users === null) {
           console.error("Failed to get users:", error)
           resolve()
@@ -121,7 +122,7 @@ export function connectTo(address: string, token: string) {
         const deletedChannel = serverMessages.channelDeleted.payloadAs(message)
         channelStore.setState((state) => {
           return state.filter((channel) => {
-            return channel.id === deletedChannel.id
+            return channel.id !== deletedChannel.id
           })
         })
         break
@@ -135,7 +136,7 @@ export function connectTo(address: string, token: string) {
     }
   })
 
-  connection.stateChanged.subscribe(({successful, pending, error}) => {
+  connection.stateChanged.subscribe(({ successful, pending, error }) => {
     if (successful || pending) {
       return
     }

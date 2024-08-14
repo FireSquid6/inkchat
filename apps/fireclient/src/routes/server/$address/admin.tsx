@@ -1,4 +1,4 @@
-import { connectionStore, currentUserStore, channelStore, useConnectionState } from "@/lib/store"
+import { connectionStore, currentUserStore, channelStore, useConnectionState, useComplexStore } from "@/lib/store"
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { ChannelRow } from "api"
@@ -89,7 +89,7 @@ function JoincodeGenerator() {
 
 
 function ChannelEditor() {
-  const channels = useStore(channelStore)
+  const channels = useComplexStore(channelStore)
   const [connection] = useStore(connectionStore)
   const [focusedChannel, setFocusedChannel] = useState<ChannelRow | null>(null)
   const deleteModalRef = useRef<HTMLDialogElement>(null)
