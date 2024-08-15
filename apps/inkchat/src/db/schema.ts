@@ -5,6 +5,8 @@ export const userTable = sqliteTable("user", {
   id: text("id").notNull().primaryKey(),
   password: text("password").notNull(),
   username: text("username").unique().notNull(),
+  displayName: text("display_name"),
+  bio: text("bio"),
   isAdmin: integer("is_admin").notNull().default(0)
 })
 export type UserRow = InferSelectModel<typeof userTable>

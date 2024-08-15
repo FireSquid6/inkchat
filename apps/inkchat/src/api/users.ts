@@ -7,9 +7,15 @@ export interface PublicUser {
   id: string
   username: string
   isAdmin: boolean
+  bio?: string
+  displayName?: string
 }
 
-// TODO: allow the user to set their own information
+export interface Profile {
+  displayName: string
+  bio: string
+}
+
 // bio, display name, etc
 export const usersApi = (app: Elysia) =>
   app
@@ -28,7 +34,9 @@ export const usersApi = (app: Elysia) =>
         return {
           id: res.data.id,
           username: res.data.username,
-          isAdmin: res.data.isAdmin === 1
+          isAdmin: res.data.isAdmin === 1,
+          bio: res.data.bio ?? undefined,
+          displayName: res.data.displayName ?? undefined,
         }
       },
       {
@@ -46,7 +54,9 @@ export const usersApi = (app: Elysia) =>
       const userIds = res.data.map((user) => ({
         id: user.id,
         username: user.username,
-        isAdmin: user.isAdmin === 1
+        isAdmin: user.isAdmin === 1,
+        bio: user.bio ?? undefined,
+        displayName: user.displayName ?? undefined,
       }))
 
       return userIds
@@ -65,6 +75,8 @@ export const usersApi = (app: Elysia) =>
       return {
         username: user.data.username,
         id: user.data.id,
-        isAdmin: user.data.isAdmin === 1
+        isAdmin: user.data.isAdmin === 1,
+        bio: user.data.bio ?? undefined,
+        displayName: user.data.displayName ?? undefined,
       }
     })
