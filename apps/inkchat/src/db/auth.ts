@@ -136,7 +136,7 @@ export async function createUser(
   username: string,
   password: string
 ): Promise<string> {
-  const { db } = kit
+  const { db, config } = kit
 
   const passwordHash = await hash(password, {
     // recommended minimum parameters
@@ -160,7 +160,7 @@ export async function createUser(
   const session = await createSession(
     kit,
     userId,
-    Date.now() + 1000 * 60 * 60 * 24 * 30
+    Date.now() + config.defaultSessionLength()
   )
   token = session.id
 
