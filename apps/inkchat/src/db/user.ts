@@ -1,8 +1,9 @@
 import { userTable, type UserRow } from "@/db/schema"
 import { eq } from "drizzle-orm"
-import type { Maybe } from "maybe"
+import type { AsyncMaybe, Maybe } from "maybe"
 import type { Kit } from "@/index"
 import { Some, None } from "maybe"
+import { Profile } from "@/api/users"
 
 export async function getUserWithUsername(
   kit: Kit,
@@ -72,4 +73,37 @@ export async function promoteUser(
   } catch (e) {
     return None(`database error while promoting user: ${e}`)
   }
+}
+
+
+export async function updateProfile(
+  kit: Kit,
+  userId: string,
+  profile: Profile,
+): AsyncMaybe<void> {
+  const { db } = kit
+  const { displayName, bio } = profile
+
+  try {
+    await db.update(userTable).set({ displayName, bio }).where(eq(userTable.id, userId))
+  } catch (e) {
+    return None(e as string)
+  }
+
+  return Some(undefined)
+}
+
+
+export function validateProfile(profile: Profile): Maybe<void> {
+  const { displayName, bio } = profile
+
+  if (displayName.length > 50) {
+    return None("Display name too long")
+  }
+
+  if (bio.length > 160) {
+    return None("Bio too long")
+  }
+
+  return Some(undefined)
 }
