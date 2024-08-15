@@ -32,7 +32,7 @@ export const adminApi = (app: Elysia) =>
       const joincodeRes = await makeJoincode(ctx.store.kit)
 
       if (isNone(joincodeRes)) {
-        return ctx.error(500, { message: "Failed to create joincode" })
+        return ctx.error(500, { message: joincodeRes.error })
       }
 
       ctx.set.status = 201

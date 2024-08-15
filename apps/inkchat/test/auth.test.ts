@@ -18,6 +18,8 @@ test("signup and signin flow", async () => {
   )
 
   if (!codeRes.data?.code || codeRes.data?.code === "") {
+    console.log(codeRes.data?.message)
+    console.log(codeRes.error?.value)
     throw new Error("No code returned")
   }
 
