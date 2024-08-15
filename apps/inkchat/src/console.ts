@@ -2,6 +2,7 @@ import { isNone } from "maybe"
 import { Kit } from "."
 import { makeJoincode } from "./db/auth"
 import { getUserWithUsername, promoteUser } from "./db/user"
+import { collectGarbage } from "./db/garbage-collector"
 
 export async function listenToConsole(kit: Kit) {
   for await (const line of console) {
@@ -74,4 +75,7 @@ const commands: Record<string, ConsoleCommand> = {
 
     console.log(`Promoted ${user} to admin`)
   },
+  gc: async (kit) => {
+    await collectGarbage(kit)
+  }
 }
