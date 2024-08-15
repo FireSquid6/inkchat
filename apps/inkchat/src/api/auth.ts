@@ -41,7 +41,7 @@ export const unprotectedAuthApi = (app: Elysia) =>
         if (!isValidPassword(password)) {
           // TODO - give a better reason as to why
           // could be done on a the client side instead
-          return ctx.error(400, { token: "", message: "Invalid password" })
+          return ctx.error(400, { token: "", message: "Invalid password. Password must contain a capital letter, a lowecase letter, a number, and at least one special character." })
         }
 
         let token = ""
