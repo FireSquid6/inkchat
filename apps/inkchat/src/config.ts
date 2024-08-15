@@ -10,6 +10,7 @@ export interface AppConfig {
   allowedOrigins?: string[] // a list of origins that are allowed to connect to the server. If empty, all origins are allowed
   redirectForDisallowed?: string // the URL to redirect to if the origin is not allowed. Defaults to the rickroll lol
   commandsInConsole?: boolean // whether to allow commands to be run in the console. Defaults to true
+  defaultSessionLength?: number // the default length of a session in seconds. Defaults to one month.
 }
 
 export interface ServerInformation {
@@ -55,13 +56,17 @@ export class Config {
 
   redirectForDisallowed(): string {
     return (
-      this.givenConfig.redirectForDisallowed ?? 
+      this.givenConfig.redirectForDisallowed ??
       "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     )
   }
 
   commandsInConsole(): boolean {
     return this.givenConfig.commandsInConsole ?? true
+  }
+
+  defaultSessionLength(): number {
+    return 1000 * (this.givenConfig.defaultSessionLength ?? 60 * 60 * 24 * 30)
   }
 }
 
