@@ -28,6 +28,13 @@ export async function getChannel(
   }
 }
 
+export function validateChannelName(name: string): boolean {
+  // more than 0 characters
+  // less than 50 characters
+  // only a-z A-Z 0-9 _ - .
+  return /^[a-zA-Z0-9_.-]{1,50}$/.test(name)
+}
+
 export async function getLastMessagesInChannel(
   kit: Kit,
   channelId: string,

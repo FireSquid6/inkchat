@@ -12,7 +12,7 @@ import { generateIdFromEntropySize } from "lucia"
 import { kitPlugin } from "@/api"
 import type { Kit } from "@/index"
 import { canModifyChannels } from "@/permissions"
-import { deleteChannel, makeChannel, modifyChannel } from "@/db/channels"
+import { deleteChannel, makeChannel, modifyChannel, validateChannelName } from "@/db/channels"
 import { isNone } from "maybe"
 
 export const SOCKET_PATH = "/socket"
@@ -175,8 +175,10 @@ export async function getResponse(
             return
           }
 
-          // TODO - validate inputs
-          
+          if (!validateChannelName(payload.name)) {
+            error = "Invalid channel name"
+            return
+          } 
 
           const result = await makeChannel(kit, payload.name, payload.description)
 
@@ -198,8 +200,6 @@ export async function getResponse(
             return
           }
 
-          // TODO - validate inputs
-
           const result = await deleteChannel(kit, payload.id)
           if (!result) {
             error = "Failed to delete channel"
@@ -218,7 +218,10 @@ export async function getResponse(
             error = "User doesn't have permission to modify a channel"
           }
 
-          // TODO - validate inputs
+          if (!validateChannelName(payload.name)) {
+            error = "Invalid channel name"
+            return
+          } 
 
           const result = await modifyChannel(kit, payload.id, {
             name: payload.name,

@@ -5,6 +5,7 @@ import { test, expect } from "bun:test"
 import { clientMessages, parseMessage, serverMessages } from "protocol"
 import { converse } from "@/testutils"
 import { eq } from "drizzle-orm"
+import { validateChannelName } from "@/db/channels"
 
 test("channels routes", async () => {
   const { api, db } = testApp()
@@ -204,4 +205,13 @@ test("create, modify, and delete channels", async () => {
 
   // if the test is failing here it's because the socket is being shut down
   expect(doneEverything).toBe(true)
+})
+
+
+test("validate channel name", () => {
+  expect(validateChannelName("")).toBe(false)
+  expect(validateChannelName("a")).toBe(true)
+  expect(validateChannelName("a".repeat(50))).toBe(true)
+  expect(validateChannelName("a".repeat(51))).toBe(false)
+  expect(validateChannelName("a b")).toBe(false)
 })
