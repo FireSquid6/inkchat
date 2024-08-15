@@ -99,7 +99,8 @@ export const usersApi = (app: Elysia) =>
       if (isNone(res)) {
         return ctx.error(500, { message: "Failed to update profile: " + res.error })
       }
-
+      
+      ctx.set.status = 201
       return { message: "Profile updated" }
     }, {
       body: t.Object({

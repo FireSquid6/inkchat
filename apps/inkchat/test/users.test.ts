@@ -1,6 +1,7 @@
 import { userTable } from "@/db/schema"
 import { getTestUser, testApp } from "@/testutils"
 import { expect, test } from "bun:test"
+import { eq } from "drizzle-orm"
 
 test("users route", async () => {
   const { db, api } = testApp()
@@ -59,3 +60,24 @@ test("users route", async () => {
     isAdmin: true
   })
 })
+
+test("update user profile", async () => {
+  const kit = testApp()
+  const { user, session }= await getTestUser(kit.db)
+
+  const res = await kit.api.users({ id: user.id }).profile.post({
+    bio: "Hello, I am a test user",
+    displayName: "Test User"
+  }, {
+    headers: {
+      Authorization: `Bearer ${session.id}`
+    }
+  })
+
+  expect(res.status).toBe(201)
+  const newUser = (await kit.db.select().from(userTable).where(eq(userTable.id, user.id)))[0]
+
+  expect(newUser.bio).toBe("Hello, I am a test user")
+  expect(newUser.displayName).toBe("Test User")
+})
+
