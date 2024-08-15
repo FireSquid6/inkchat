@@ -39,12 +39,14 @@ export async function makeJoincode(
   kit: Kit,
   asAdmin: boolean = false
 ): Promise<Maybe<string>> {
+  const { config, db } = kit
   try {
     const joincode = Math.random().toString(36).substring(2, 8)
 
-    await kit.db.insert(joincodeTable).values({
+    await db.insert(joincodeTable).values({
       id: joincode,
       createdAt: Date.now(),
+      expiresAt: Date.now() + config.defaultJoincodeLifespan(),
       isAdmin: asAdmin ? 1 : 0
     })
 
@@ -64,6 +66,13 @@ export async function validateJoincode(
       .from(joincodeTable)
       .where(eq(joincodeTable.id, code))
     if (joincodes.length === 0) {
+      return Some(false)
+    }
+
+    const joincode = joincodes[0]
+
+    if (joincode.expiresAt < Date.now()) {
+      await deleteJoincode(kit, code)
       return Some(false)
     }
 

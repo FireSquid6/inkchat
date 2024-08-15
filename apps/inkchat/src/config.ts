@@ -11,6 +11,7 @@ export interface AppConfig {
   redirectForDisallowed?: string // the URL to redirect to if the origin is not allowed. Defaults to the rickroll lol
   commandsInConsole?: boolean // whether to allow commands to be run in the console. Defaults to true
   defaultSessionLength?: number // the default length of a session in seconds. Defaults to one month.
+  defaultJoincodeLifespan?: number // the default lifespan of a joincode in seconds. Defaults to one day.
 }
 
 export interface ServerInformation {
@@ -67,6 +68,10 @@ export class Config {
 
   defaultSessionLength(): number {
     return 1000 * (this.givenConfig.defaultSessionLength ?? 60 * 60 * 24 * 30)
+  }
+
+  defaultJoincodeLifespan(): number {
+    return 1000 * (this.givenConfig.defaultJoincodeLifespan ?? 60 * 60 * 24)
   }
 }
 
