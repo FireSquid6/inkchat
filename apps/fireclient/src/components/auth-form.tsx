@@ -4,15 +4,14 @@ import { sdk } from "api"
 import { storeSession } from "@/lib/auth"
 import { useNavigate } from "@tanstack/react-router"
 
-type AuthFormProps = {
-  signup?: boolean
+export type AuthFormProps = {
   address?: string
   joincode?: string
 }
 
 export function AuthForm(props: AuthFormProps) {
   // TODO - change this to using tanstack form
-  const [newAccount, setNewAccount] = useState(props.signup ?? false)
+  const [newAccount, setNewAccount] = useState(props.address !== undefined && props.joincode !== undefined)
   const [address, setAddress] = useState(props.address ?? "")
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
@@ -80,6 +79,8 @@ export function AuthForm(props: AuthFormProps) {
             setNewAccount(!newAccount)
           }}
           className="toggle ml-2"
+          value="toggle"
+          checked={newAccount}
         />
         <label htmlFor="toggle" className="ml-4">
           Create a New Account
