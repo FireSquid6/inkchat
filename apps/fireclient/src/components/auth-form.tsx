@@ -78,6 +78,7 @@ export function AuthForm(props: AuthFormProps) {
         <Input
           id="password"
           label="Password"
+          type="password"
           placeholder="something secret"
           value={field.state.value}
           onChange={field.handleChange}
