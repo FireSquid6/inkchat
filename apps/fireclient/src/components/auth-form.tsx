@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react"
+import { useState } from "react"
 import { type Failable, Err } from "maybe"
 import { sdk } from "api"
 import { storeSession } from "@/lib/auth"
