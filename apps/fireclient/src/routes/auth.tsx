@@ -1,13 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router"
 import { AuthForm } from "@/components/auth-form"
 import { FaArrowLeft } from "react-icons/fa"
+import type { AuthFormProps } from "@/components/auth-form"
 
 export const Route = createFileRoute("/auth")({
   component: () => <AuthComponent />
 })
 
 function AuthComponent() {
-  // const query = Route.useSearch()
+  const query: AuthFormProps = Route.useSearch()
 
   return (
     <main className="m-2 flex flex-col">
@@ -18,8 +19,7 @@ function AuthComponent() {
       <h1 className="text-4xl text-center mb-16 mt-16">
         Register a New or Existing Identity
       </h1>
-      <AuthForm />
-
+      <AuthForm address={query.address} joincode={query.joincode} />
     </main>
   )
 }

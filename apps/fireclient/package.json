@@ -14,6 +14,7 @@
     "@capacitor/android": "^6.1.1",
     "@capacitor/core": "^6.1.1",
     "@capacitor/ios": "^6.1.1",
+    "@tanstack/react-form": "^0.29.1",
     "@tanstack/react-store": "^0.5.5",
     "@tanstack/store": "^0.5.5",
     "@testing-library/react": "^16.0.0",
