@@ -26,7 +26,7 @@ function Admin() {
     <div className="m-4">
       <JoincodeGenerator />
       <JoincodeViewer />
-      <ChannelEditor />
+      <ChannelList />
     </div>
   )
 }
@@ -91,7 +91,7 @@ function JoincodeGenerator() {
 }
 
 
-function ChannelEditor() {
+function ChannelList() {
   const channels = useComplexStore(channelStore)
   const [connection] = useStore(connectionStore)
   const [focusedChannel, setFocusedChannel] = useState<ChannelRow | null>(null)
@@ -167,7 +167,7 @@ function Channel(props: ChannelProps) {
   // TODO - shorten channel name
   // TODO - drag and drop channels to sort position
   return (
-    <div className="flex flex-row m-2 p-2 rounded-lg bg-base-200 w-full">
+    <div className="flex flex-row my-2 p-2 rounded-lg bg-base-200 w-full">
       <p className="text-lg font-bold w-full my-auto ml-4">{props.channel.name}</p>
       <button className="btn btn-info mx-1" onClick={() => props.onEdit?.(props.channel)}>
         <FaPen />
@@ -196,7 +196,7 @@ function ChannelCreator() {
   }
 
   return (
-    <div className="flex flex-row">
+    <div className="flex flex-row my-4">
       <input value={channelName} onChange={(e) => setChannelName(e.target.value)} type="text" placeholder="Enter channel name..." className="input input-bordered w-full mr-4" />
       <button className="btn" onClick={onClick}>Create Channel</button>
     </div>
