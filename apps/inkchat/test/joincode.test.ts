@@ -5,7 +5,7 @@ import { joincodeTable } from "@/db/schema"
 
 test("joincode listing, creation, and deletion", async () => {
   const { db, api } = testApp()
-  const { session, user } = await getTestUser(db)
+  const { session } = await getTestUser(db)
 
 
   // TODO - test that normal users can't access this endpoint
