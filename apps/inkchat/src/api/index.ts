@@ -15,7 +15,7 @@ import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
 import { filesApi } from "@/api/files"
 import type { ServerInformation } from "@/config"
-import { rateLimit } from "elysia-rate-limit"
+
 
 export const kitPlugin = (app: Elysia) =>
   app
@@ -99,11 +99,7 @@ export const app = new Elysia()
       }
     })
   )
-  .use(rateLimit({
-    // max of 10 requests per second
-    max: 10,
-    duration: 1000
-  }))
+
   .use(unprotectedAuthApi)
   .get("/", (ctx): ServerInformation => {
     return ctx.store.kit.config.serverInformation()

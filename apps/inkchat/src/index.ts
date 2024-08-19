@@ -15,7 +15,7 @@ export interface Kit {
 
 export function startApp(
   appConfig: AppConfig,
-  db: ReturnType<typeof getDb>
+  db: ReturnType<typeof getDb>,
 ): Kit {
   const config = new Config(appConfig)
   const auth = getAuth(db)
