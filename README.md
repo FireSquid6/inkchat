@@ -4,20 +4,7 @@ Inkchat is a self hosted chat application. It provides the ability to create mul
 
 ## Running Inkchat
 
-The easiest way to run inkchat is with docker. This docker compose should work:
-
-```
-services:
-  inkchat:
-    image: firesquid/inkchat
-    ports:
-      - "3000:3000"
-    volumes:
-      - inkchat-store:/app/store
-volumes:
-  inkchat-store:
-    external: true
-```
+You can run inkchat by just downloading the binary from github releases. There is currently no system in place to use command line arguments, but that should be coming in 1.0.0.
 
 The `inkchat-store` volume is where all of your data is stored.
 
