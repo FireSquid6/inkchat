@@ -1,8 +1,10 @@
-import { connectionStore, currentUserStore, channelStore, useConnectionState, useComplexStore } from "@/lib/store"
+import { pushError } from "@/lib/error"
+import { connectionStore, currentUserStore, channelStore, useComplexStore } from "@/lib/store"
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { ChannelRow } from "api"
-import { useCallback, useRef, useState } from "react"
+import { JoincodeRow } from "inkchat/src/db/schema"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { FaCopy, FaTrash, FaPen } from "react-icons/fa"
 
 export const Route = createFileRoute("/server/$address/admin")({
@@ -23,6 +25,7 @@ function Admin() {
   return (
     <div className="m-4">
       <JoincodeGenerator />
+      <JoincodeViewer />
       <ChannelEditor />
     </div>
   )
@@ -119,7 +122,7 @@ function ChannelEditor() {
 
   return (
     <>
-      <h1 className="my-16 m-4 text-4xl">Modify Channels</h1>
+      <h1 className="my-16 m-4 text-4xl">Channels</h1>
       <div className="flex flex-col">
         {
           channels.map((channel) => (
@@ -196,6 +199,61 @@ function ChannelCreator() {
     <div className="flex flex-row">
       <input value={channelName} onChange={(e) => setChannelName(e.target.value)} type="text" placeholder="Enter channel name..." className="input input-bordered w-full mr-4" />
       <button className="btn" onClick={onClick}>Create Channel</button>
+    </div>
+  )
+}
+
+function JoincodeViewer() {
+  const [joincodes, setJoincodes] = useState<JoincodeRow[]>([])
+  const [connection] = useStore(connectionStore)
+
+  if (connection === null) {
+    return <p>No connection</p>
+  }
+
+  const fetchJoincodes = useCallback(async () => {
+    const [joincodes, error] = await connection.getJoincodes()
+
+    if (joincodes === null) {
+      pushError(error)
+      return
+    }
+
+    setJoincodes(joincodes)
+  }, [setJoincodes, connection])
+
+  useEffect(() => {
+    fetchJoincodes()
+  }, [fetchJoincodes])
+
+  return (
+    <>
+      <h1 className="flex flex-col my-16 m-4 text-4xl">Joincodes</h1>
+      <div className="flex flex-col">
+        {joincodes.map((joincode) => (
+          <Joincode key={joincode.id} {...joincode} onDelete={async () => {
+            // TODO - make stuff invalid while waiting
+            await connection.deleteJoincode(joincode.id)
+            fetchJoincodes()
+          }} />))}
+      </div>
+    </>
+  )
+
+}
+
+type JoincodeProps = JoincodeRow & {
+  onDelete: () => void
+}
+
+function Joincode(props: JoincodeProps) {
+  return (
+    <div className="flex-row mx-4 my-2 w-full align-middle items-center">
+      <span className="w-16 font-mono font-bold text-primary mr-4">{props.id}</span>
+      <span className="font-mono">Created At: {new Date(props.createdAt).toLocaleString()}</span>
+      <button className="bg-error text-black p-2 rounded-lg ml-6" onClick={props.onDelete}>
+        <FaTrash />
+      </button>
     </div>
   )
 }
