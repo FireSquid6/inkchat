@@ -41,6 +41,11 @@ export const adminApi = (app: Elysia) =>
         message: "Joincode created"
       }
     })
+    .get("/admin/joincode", async (ctx) => {
+      const { db } = ctx.store.kit
+      const joincodes = await db.select().from(joincodeTable)
+      return joincodes
+    })
     .delete(
       "/admin/joincode",
       async (ctx) => {

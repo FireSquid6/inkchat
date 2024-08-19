@@ -4,7 +4,7 @@ import type { App } from "@/index"
 import { type AsyncFailable, Ok, Err } from "maybe"
 import type { ServerInformation } from "@/config"
 import { PublicUser } from "@/api/users"
-import { ChannelRow, MessageRow } from "@/db/schema"
+import { ChannelRow, JoincodeRow, MessageRow } from "@/db/schema"
 import { clientMessages, Message, parseMessage } from "protocol"
 
 export async function signIn(
@@ -252,6 +252,23 @@ export class Connection {
     }
 
     return Ok(res.data.code)
+  }
+
+  async deleteJoincode(code: string): AsyncFailable<string> {
+    const res = await this.api.admin.joincode.delete({
+      code
+    })
+
+    if (res.status === 404) {
+      return Err("Joincode not found")
+    }
+
+    return Ok("Joincode deleted")
+  }
+
+  async getJoincodes(): AsyncFailable<JoincodeRow[]> {
+    const res = await this.api.admin.joincode.get()
+    return wrapTreatyResponse<JoincodeRow[]>(res)
   }
 }
 
