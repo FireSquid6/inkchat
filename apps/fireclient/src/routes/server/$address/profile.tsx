@@ -34,7 +34,9 @@ function ProfileCard() {
 
   return (
     <>
-      <img src={connection.getAvatarUrl(currentUser.id)} />
+      <object type="image/png" data={connection.getAvatarUrl(currentUser.id)} width={480} height={480}>
+        <p>Fallback image</p>
+      </object>
     </>
   )
 }
