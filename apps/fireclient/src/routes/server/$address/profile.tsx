@@ -37,6 +37,9 @@ function ProfileCard() {
       <object type="image/png" data={connection.getAvatarUrl(currentUser.id)} width={480} height={480}>
         <p>Fallback image</p>
       </object>
+      <form>
+      <input type="file" accept="image/png" />
+      </form>
     </>
   )
 }
