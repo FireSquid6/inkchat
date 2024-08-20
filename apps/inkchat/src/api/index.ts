@@ -13,7 +13,7 @@ import { channelsApi } from "@/api/channels"
 import { usersApi } from "@/api/users"
 import { connectionApi } from "@/api/connection"
 import { adminApi } from "@/api/admin"
-import { filesApi } from "@/api/files"
+import { filesApi, unprotectedFilesApi } from "@/api/files"
 import type { ServerInformation } from "@/config"
 
 
@@ -101,6 +101,7 @@ export const app = new Elysia()
   )
 
   .use(unprotectedAuthApi)
+  .use(unprotectedFilesApi)
   .get("/", (ctx): ServerInformation => {
     return ctx.store.kit.config.serverInformation()
   })

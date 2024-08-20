@@ -270,6 +270,11 @@ export class Connection {
     const res = await this.api.admin.joincode.get()
     return wrapTreatyResponse<JoincodeRow[]>(res)
   }
+
+
+  getAvatarUrl(userId: string): string {
+    return `${this.url}/avatars/${userId}`
+  }
 }
 
 function wrapTreatyResponse<T>(

@@ -73,16 +73,7 @@ export const filesApi = (app: Elysia) =>
       ctx.set.status = 200
       return file
     })
-    .get("/avatars/:id", async (ctx) => {
-      const { config } = ctx.store.kit
-      const filepath = path.join(config.storeDir(), "avatars", ctx.params.id)
 
-      if (!fs.existsSync(filepath)) {
-        return ctx.error(404, "Avatar not found")
-      }
-
-      return Bun.file(filepath)
-    })
     .post("/avatars", async (ctx) => {
       const { config } = ctx.store.kit
       if (ctx.user === null) {
@@ -106,3 +97,19 @@ export const filesApi = (app: Elysia) =>
         file: t.File()
       })
     })
+
+
+export const unprotectedFilesApi = (app: Elysia) => 
+  app
+    .use(kitPlugin)
+    .get("/avatars/:id", async (ctx) => {
+      const { config } = ctx.store.kit
+      const filepath = path.join(config.storeDir(), "avatars", ctx.params.id)
+
+      if (!fs.existsSync(filepath)) {
+        return ctx.error(404, "Avatar not found")
+      }
+
+      return Bun.file(filepath)
+    })
+  
