@@ -1,4 +1,5 @@
 import { Marked } from "marked"
+import DOMPurify from "dompurify"
 
 
 // TODO - sanitize? not sure if that's necessary
@@ -13,5 +14,5 @@ export function parseMarkdown(text: string): string {
     async: false,
   })
 
-  return html
+  return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
 }
