@@ -121,23 +121,25 @@ export function AuthForm(props: AuthFormProps) {
 
 type InputProps = {
   label: string
-  placeholder: string
+  placeholder?: string
   id: string
   value?: string
   onChange?: (value: string) => void
   type?: string
   className?: string
   disabled?: boolean
+  accpet?: string
 }
 
-function Input(props: InputProps) {
+export function Input(props: InputProps) {
   return (
     <label
       className={`input input-bordered flex items-center gap-2 m-4 ${props.className}`}
     >
-      {props.label}
+      <span className="font-bold">{props.label}</span>
       <input
         type={props.type ?? "text"}
+        accept={props.accpet}
         disabled={props.disabled ?? false}
         id={props.id}
         placeholder={props.placeholder}
