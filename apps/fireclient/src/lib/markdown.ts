@@ -2,7 +2,6 @@ import { Marked } from "marked"
 import DOMPurify from "dompurify"
 
 
-// TODO - sanitize? not sure if that's necessary
 // TODO - latex support?
 // TODO - code highlighting?
 export function parseMarkdown(text: string): string {

@@ -8,6 +8,7 @@ import {
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { MessageRow } from "api"
+import { parseMarkdown } from "@/lib/markdown"
 
 export const Route = createFileRoute("/server/$address/$channel")({
   component: () => <ChannelComponent />,
@@ -63,6 +64,7 @@ function Message(message: MessageRow) {
   const users = useStore(usersStore)
 
   const user = users.find((u) => u.id === message.userId)
+  const html = parseMarkdown(message.content)
   const dateTime = new Date(message.createdAt).toLocaleString()
   // TODO - render the message content using some sort of markdown system
   // probably need a custom compiler for this to be honest.
@@ -73,7 +75,7 @@ function Message(message: MessageRow) {
         <span className="mx-2">-</span>
         <span className="ml-auto text-neutral">{dateTime}</span>
       </div>
-      <p className="ml-2">{message.content}</p>
+      <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )
 }
@@ -93,12 +95,15 @@ function ChatInput(props: { channelId: string }) {
 
   return (
     <div className="flex flex-row m-2">
-      <input
-        type="text"
+      <textarea
         value={message}
         placeholder="Type a message..."
         onKeyUp={(e) => {
           if (e.key === "Enter") {
+            if (e.shiftKey) {
+              setMessage((prev) => prev + "\n")
+              return
+            }
             onClick()
           }
         }}
