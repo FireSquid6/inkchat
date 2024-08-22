@@ -28,7 +28,7 @@ function Profile() {
 function ProfileCard() {
   const currentUser = useStore(currentUserStore)
   const [connection] = useStore(connectionStore)
-  const [username, setUsername] = useState(currentUser?.username || "")
+
 
 
   if (connection === null || currentUser === null) {
@@ -40,22 +40,37 @@ function ProfileCard() {
       <object type="image/png" data={connection.getAvatarUrl(currentUser.id)} width={480} height={480}>
         <FallbackImage username={currentUser.username} />
       </object>
-      <form className="flex flex-col">
-        <h2 className="text-3xl my-8">Update Profile</h2>
-        <div>
-          <Input type="text" label="Username" value={username} onChange={setUsername} id="username" />
-
-          <label htmlFor="avatar" className="flex flex-col m-4 p-1 border border-neutral-600 ">
-            <span>Avatar</span>
-            <input type="file" id="avatar" className="file-input w-full max-w-xs" />
-          </label>
-        </div>
-      </form>
+      <ProfileEditor />
     </>
   )
 }
 
 function ProfileEditor() {
+  const [connection] = useStore(connectionStore)
+  const currentUser = useStore(currentUserStore)
+  const [username, setUsername] = useState(currentUser?.username || "")
+
+  const onClick = () => {
+    if (connection === null) {
+      console.error("Shouldn't be here at all. Grep for this text.")
+      return
+    }
+  }
+
+  return (
+    <form className="flex flex-col">
+      <h2 className="text-3xl my-8">Update Profile</h2>
+      <div>
+        <Input type="text" label="Username" value={username} onChange={setUsername} id="username" />
+        <label htmlFor="avatar" className="flex flex-row align-middle m-4 p-1 input input-bordered h-auto">
+          <span className="align-middle my-auto mx-3 font-bold">Avatar</span>
+          <input type="file" id="avatar" className="file-input w-full max-w-xs" />
+        </label>
+        <button onClick={onClick} type="button" className="btn btn-primary m-4">Save</button>
+      </div>
+    </form>
+
+  )
 
 }
 
