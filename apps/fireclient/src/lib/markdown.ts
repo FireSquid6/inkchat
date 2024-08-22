@@ -13,5 +13,6 @@ export function parseMarkdown(text: string): string {
     async: false,
   })
 
+
   return DOMPurify.sanitize(html, { USE_PROFILES: { html: true } })
 }
