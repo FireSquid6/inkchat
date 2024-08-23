@@ -9,6 +9,7 @@ import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
 import { MessageRow } from "api"
 import { parseMarkdown } from "@/lib/markdown"
+import { ProfilePicture } from "@/components/profile-picture"
 
 export const Route = createFileRoute("/server/$address/$channel")({
   component: () => <ChannelComponent />,
@@ -69,13 +70,17 @@ function Message(message: MessageRow) {
   // TODO - render the message content using some sort of markdown system
   // probably need a custom compiler for this to be honest.
   return (
-    <div className="flex flex-col mt-6">
-      <div className="flxe flex-row">
-        <span className="text-primary">{user?.displayName ?? `@${user?.username}` ?? <i>"Unknown User"</i>}</span>
-        <span className="mx-2">-</span>
-        <span className="ml-auto text-neutral">{dateTime}</span>
+    <div className="flex flex-row">
+      <ProfilePicture className="m-4 mt-4" avatarUrl={""} username={user?.username ?? "Unknown User"} width={64} height={64} />
+
+      <div className="flex flex-col mt-6">
+        <div className="flxe flex-row">
+          <span className="text-primary">{user?.displayName ?? `@${user?.username}` ?? <i>"Unknown User"</i>}</span>
+          <span className="mx-2">-</span>
+          <span className="ml-auto text-neutral">{dateTime}</span>
+        </div>
+        <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
       </div>
-      <div className="prose" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   )
 }

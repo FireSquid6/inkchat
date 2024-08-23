@@ -18,9 +18,6 @@ export const unprotectedAuthApi = (app: Elysia) =>
     .post(
       "/auth/signup",
       async (ctx) => {
-        // TODO: users should only be able to sign up if they have a specific code to do so
-        // TODO: santize inputs to prevent XSS or SQL injection
-        // TODO: joincodes should expire at some point
         const { password, username, code } = ctx.body
 
         const joincodeResponse = await validateJoincode(ctx.store.kit, code)
