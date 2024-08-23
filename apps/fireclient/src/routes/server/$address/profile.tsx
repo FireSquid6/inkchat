@@ -12,23 +12,24 @@ export const Route = createFileRoute("/server/$address/profile")({
 
 function Profile() {
   const currentUser = useStore(currentUserStore)
+  const [connection] = useStore(connectionStore)
 
-  if (currentUser === null) {
+  if (currentUser === null || connection === null) {
     return <p>Not logged in</p>
   }
+
+  // TODO - make getAvatarUrl not depend on the connection
+  const avatarUrl = connection.getAvatarUrl(currentUser.id)
 
   return (
     <div className="m-4">
       <h1 className="text-4xl my-16 m-4">Profile</h1>
       <h2 className="text-3xl my-8 m-4">Profile Card</h2>
-      <ProfileCard />
+      <ProfileCard avatarUrl={avatarUrl} {...currentUser} />
       <ProfileEditor />
     </div>
   )
 }
-
-
-
 
 
 function ProfileEditor() {
