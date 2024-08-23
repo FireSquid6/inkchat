@@ -36,12 +36,36 @@ function ProfileEditor() {
   const [connection] = useStore(connectionStore)
   const currentUser = useStore(currentUserStore)
   const [username, setUsername] = useState(currentUser?.displayName ?? currentUser?.username ?? "")
+  const [bio, setBio] = useState(currentUser?.bio ?? "This user has not set a bio")
+  const [avatar, setAvatar] = useState<File | null>(null)
 
-  const onClick = () => {
-    if (connection === null) {
-      console.error("No code should be here at all. Grep for this text.")
+  const onClick = async () => {
+    if (connection === null || currentUser === null) {
+      console.error("No code should be here at all. Grep for this text and figure out why it's being printed.")
       return
     }
+
+
+    const res = await Promise.all([
+      new Promise<void>(async (resolve) => {
+        const res = connection.updateProfile(currentUser.id, {
+          displayName: username,
+          bio: bio,
+        })
+        console.log(res)
+        resolve()
+      }),
+      new Promise<void>(async (resolve) => {
+        if (avatar === null) {
+          return
+        }
+        const res = connection.setAvatar(avatar)
+        console.log(res)
+        resolve()
+      }),
+    ])
+
+    console.log(res)
   }
 
   return (
@@ -50,9 +74,10 @@ function ProfileEditor() {
       <form className="flex flex-col">
         <div>
           <Input type="text" label="Display Name" value={username} onChange={setUsername} id="username" />
+          <Input type="text" label="Bio" value={bio} onChange={setBio} id="bio" />
           <label htmlFor="avatar" className="flex flex-row align-middle m-4 p-1 input input-bordered h-auto">
-            <span className="align-middle my-auto mx-3 font-bold">Avatar</span>
-            <input type="file" id="avatar" className="file-input w-full max-w-xs" />
+            <span className="align-middle my-auto mx-3 font-bold">Avatar (Not supported yet)</span>
+            <input disabled type="file" onChange={(e) => setAvatar((e.target.files ?? [null])[0])} id="avatar" className="file-input w-full max-w-xs" />
           </label>
           <button onClick={onClick} type="button" className="btn btn-primary m-4">Save</button>
         </div>

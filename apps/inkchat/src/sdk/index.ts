@@ -3,7 +3,7 @@ import type { CustomTreatyResponse } from "@/sdk/types"
 import type { App } from "@/index"
 import { type AsyncFailable, Ok, Err } from "maybe"
 import type { ServerInformation } from "@/config"
-import { PublicUser } from "@/api/users"
+import { Profile, PublicUser } from "@/api/users"
 import { ChannelRow, JoincodeRow, MessageRow } from "@/db/schema"
 import { clientMessages, Message, parseMessage } from "protocol"
 
@@ -274,6 +274,20 @@ export class Connection {
 
   getAvatarUrl(userId: string): string {
     return `${this.url}/avatars/${userId}`
+  }
+
+  async updateProfile(id: string, profile: Profile) {
+    const res = await this.api.users({ id: id }).profile.post({
+      ...profile
+    })
+    return wrapTreatyResponse(res)
+  }
+
+  async setAvatar(file: File) {
+    const res = await this.api.avatars.post({
+      file
+    })
+    return wrapTreatyResponse(res)
   }
 }
 
