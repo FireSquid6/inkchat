@@ -22,7 +22,7 @@ export const unprotectedAuthApi = (app: Elysia) =>
 
         const joincodeResponse = await validateJoincode(ctx.store.kit, code)
 
-        if (isNone(joincodeResponse)) {
+        if (isNone(joincodeResponse) || joincodeResponse.data === false) {
           return ctx.error(400, { token: "", message: "Invalid joincode" })
         }
 

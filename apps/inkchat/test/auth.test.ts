@@ -23,6 +23,15 @@ test("signup and signin flow", async () => {
     throw new Error("No code returned")
   }
 
+  // this should fail!
+  const failedRes = await api.auth.signup.post({
+    username: "notrealperson",
+    password: "teStp@ssw0rd",
+    code: "1234567890",  // too long to even be a joincode so that 
+  })
+
+  expect(failedRes.status).toBe(400)
+
   // create a new account
   const res = await api.auth.signup.post({
     username: "testuser1",
