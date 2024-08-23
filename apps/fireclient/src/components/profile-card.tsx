@@ -19,10 +19,15 @@ export function ProfileCard() {
       <object type="image/png" data={connection.getAvatarUrl(currentUser.id)} width={120} height={120}>
         <FallbackImage username={currentUser.username} />
       </object>
-
       </div>
-
-
     </>
+  )
+}
+
+function FallbackImage({ username }: { username: string }) {
+  return (
+    <div className="bg-green-700 w-full h-full flex items-center justify-center rounded-full">
+      <p className="text-4xl text-white">{username[0]}</p>
+    </div>
   )
 }

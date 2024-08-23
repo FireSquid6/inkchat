@@ -38,7 +38,7 @@ function ProfileEditor() {
 
   const onClick = () => {
     if (connection === null) {
-      console.error("Shouldn't be here at all. Grep for this text.")
+      console.error("No code should be here at all. Grep for this text.")
       return
     }
   }
@@ -58,13 +58,6 @@ function ProfileEditor() {
       </form>
     </>
   )
-
 }
 
-function FallbackImage({ username }: { username: string }) {
-  return (
-    <div className="bg-green-700 w-full h-full flex items-center justify-center rounded-full">
-      <p className="text-4xl text-white">{username[0]}</p>
-    </div>
-  )
-}
+

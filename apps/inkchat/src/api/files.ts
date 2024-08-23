@@ -99,7 +99,7 @@ export const filesApi = (app: Elysia) =>
     })
 
 
-export const nprotectedFilesApi = (app: Elysia) => 
+export const unprotectedFilesApi = (app: Elysia) => 
   app
     .use(kitPlugin)
     .get("/avatars/:id", async (ctx) => {
