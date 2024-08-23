@@ -71,7 +71,7 @@ function Message(message: MessageRow) {
   return (
     <div className="flex flex-col mt-6">
       <div className="flxe flex-row">
-        <span className="text-primary">{user?.username ?? "Unknown User"}</span>
+        <span className="text-primary">{user?.displayName ?? user?.username ?? <i>"Unknown User"</i>}</span>
         <span className="mx-2">-</span>
         <span className="ml-auto text-neutral">{dateTime}</span>
       </div>
