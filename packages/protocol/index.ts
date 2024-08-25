@@ -29,8 +29,8 @@ export class MessageKind<T> {
 
 export const serverMessages = {
   newChat: new MessageKind<NewMessagePayload>("NEW_MESSAGE"),
-  userJoined: new MessageKind<UserJoinedPayload>("USER_JOINED"),
-  userLeft: new MessageKind<UserLeftPayload>("USER_LEFT"),
+  userJoined: new MessageKind<UserEventPayload>("USER_JOINED"),
+  userLeft: new MessageKind<UserEventPayload>("USER_LEFT"),
 
   channelDeleted: new MessageKind<{ id: string }>("CHANNEL_DELETED"),
   channelModified: new MessageKind<ChannelRow>("CHANNEL_MODIFIED"),
@@ -62,10 +62,7 @@ export type CreateChannelPayload = {
 }
 
 export type NewMessagePayload = InferSelectModel<typeof Schema.messageTable>
-export type UserJoinedPayload = {
-  id: string
-}
-export type UserLeftPayload = {
+export type UserEventPayload= {
   id: string
 }
 export type ConnectPayload = {

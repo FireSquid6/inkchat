@@ -145,9 +145,22 @@ export function connectTo(address: string, token: string) {
         const error = serverMessages.error.payloadAs(message)
         pushError(error)
         break
+      case serverMessages.userJoined.name || serverMessages.userLeft.name:
+        const { id } = serverMessages.userJoined.payloadAs(message)
+        const fn = async () => {
+          const [user, error] = await connection.getUser(id)
+          
+          if (user === null) {
+            pushError(error)
+            return
+          }
 
+          usersStore.setState((state) => {
+            return [...state, user]
+          })
+        }
+        fn()
       // TODO - channel modified
-      // TODO - user joined/left
     }
   })
 
