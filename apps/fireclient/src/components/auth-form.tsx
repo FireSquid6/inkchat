@@ -102,6 +102,7 @@ export function AuthForm(props: AuthFormProps) {
       <form.Field name="joincode" children={(field) => (
         <Input
           id="joincode"
+          disabled={!newAccount}
           label="Joincode"
           placeholder="123456"
           value={field.state.value}
