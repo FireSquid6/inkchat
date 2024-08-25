@@ -83,7 +83,7 @@ export function connectTo(address: string, token: string) {
           resolve()
           return
         }
-        {}
+        { }
         channelStore.setState(() => channels)
         resolve()
       }),
@@ -149,9 +149,14 @@ export function connectTo(address: string, token: string) {
         const { id } = serverMessages.userJoined.payloadAs(message)
         const fn = async () => {
           const [user, error] = await connection.getUser(id)
-          
+
           if (user === null) {
             pushError(error)
+            return
+          }
+
+          if (usersStore.state.find((u) => u.id === user.id)) {
+            // we already have this user
             return
           }
 
