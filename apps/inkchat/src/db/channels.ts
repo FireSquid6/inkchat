@@ -96,7 +96,8 @@ export async function deleteChannel(
 ): Promise<boolean> {
   try {
     const result = await kit.db.delete(channelTable).where(eq(channelTable.id, id)).returning()
-    return result.length > 0
+    const messagesResult = await kit.db.delete(messageTable).where(eq(messageTable.channelId, id)).returning()
+    return result.length > 0 && messagesResult.length > 0
   } catch (e) {
     return false
   }
