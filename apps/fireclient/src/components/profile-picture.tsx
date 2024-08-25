@@ -1,5 +1,5 @@
 
-export function ProfilePicture(props: { avatarUrl: string, username: string, width?: number, height?: number, className: string }) {
+export function ProfilePicture(props: { avatarUrl: string, username: string, width?: number, height?: number, className?: string }) {
   return (
     <object type="image/png" className={`${props.className}`} data={props.avatarUrl} width={props.width ?? 120} height={props.height ?? 120}>
       <FallbackImage username={props.username} />

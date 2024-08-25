@@ -7,9 +7,10 @@ import {
 } from "@/lib/store"
 import { createFileRoute } from "@tanstack/react-router"
 import { useStore } from "@tanstack/react-store"
-import { MessageRow } from "api"
+import { MessageRow, PublicUser } from "api"
 import { parseMarkdown } from "@/lib/markdown"
 import { ProfilePicture } from "@/components/profile-picture"
+import { ProfileCard } from "@/components/profile-card"
 
 export const Route = createFileRoute("/server/$address/$channel")({
   component: () => <ChannelComponent />,
@@ -52,30 +53,48 @@ function Messages(props: { channelId: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto m-4">
-      {messages.map((message, i) => (
-        <Message key={i} {...message} />
-      ))}
-      <div ref={dummyDiv} />
-    </div>
+    <>
+      <div className="flex flex-col h-full overflow-y-auto m-4">
+        {messages.map((message, i) => (
+          <Message key={i} {...message} onClick={() => {
+            console.log("User")
+          }} />
+        ))}
+        <div ref={dummyDiv} />
+      </div>
+    </>
   )
 }
 
-function Message(message: MessageRow) {
+function FloatingProfile(props: PublicUser) {
+  const [connection] = useStore(connectionStore)
+
+  if (connection === null) {
+    throw new Error("Shouldn't be here")
+  }
+}
+
+function Message(props: MessageRow & { onClick?: () => void }) {
   const users = useStore(usersStore)
 
-  const user = users.find((u) => u.id === message.userId)
-  const html = parseMarkdown(message.content)
-  const dateTime = new Date(message.createdAt).toLocaleString()
+  const user = users.find((u) => u.id === props.userId)
+  const html = parseMarkdown(props.content)
+  const dateTime = new Date(props.createdAt).toLocaleString()
   // TODO - render the message content using some sort of markdown system
   // probably need a custom compiler for this to be honest.
+  const onClick = () => {
+    if (props.onClick) {
+      props.onClick()
+    }
+  }
+
   return (
     <div className="flex flex-row">
       <ProfilePicture className="m-4 mt-4" avatarUrl={""} username={user?.username ?? "Unknown User"} width={64} height={64} />
 
       <div className="flex flex-col mt-6">
         <div className="flxe flex-row">
-          <span className="text-primary">{user?.displayName ?? `@${user?.username}` ?? <i>"Unknown User"</i>}</span>
+          <button onClick={onClick} className="text-primary hover:underline">{user?.displayName ?? `@${user?.username}` ?? <i>"Unknown User"</i>}</button>
           <span className="mx-2">-</span>
           <span className="ml-auto text-neutral">{dateTime}</span>
         </div>
