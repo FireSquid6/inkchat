@@ -37,6 +37,12 @@ function ChannelComponent() {
 
 function Messages(props: { channelId: string }) {
   const dummyDiv = useRef<HTMLDivElement | null>(null)
+  const modalRef = useRef<HTMLDialogElement | null>(null)
+  const [connection] = useStore(connectionStore)
+  if (connection === null) {
+    throw new Error("Shouldn't be here")
+  }
+
   const currentMessages = useMessagesStore(() => {
     // ugly! terrible! I should be shot for this!
     setTimeout(() => {
@@ -47,6 +53,11 @@ function Messages(props: { channelId: string }) {
   })
 
   let messages = currentMessages.get(props.channelId)
+  const [selectedUser, setSelectedUser] = useState<PublicUser>({
+    username: "Unknown User",
+    id: "12345",
+    isAdmin: false,
+  })
 
   if (messages === undefined) {
     messages = []
@@ -54,24 +65,36 @@ function Messages(props: { channelId: string }) {
 
   return (
     <>
+      <dialog id="profile-modal" className="modal" ref={modalRef}>
+        <div className="modal-box">
+          <h2>Profile for {selectedUser.displayName ?? selectedUser.username}</h2>
+          <ProfileCard {...selectedUser} avatarUrl={connection.getAvatarUrl(selectedUser.id)} />
+          <form method="dialog">
+            <button className="btn">Close</button>
+          </form>
+        </div>
+      </dialog>
       <div className="flex flex-col h-full overflow-y-auto m-4">
         {messages.map((message, i) => (
           <Message key={i} {...message} onClick={() => {
-            console.log("User")
+            const user = usersStore.state.find((u) => u.id === message.userId)
+            if (user) {
+              setSelectedUser(user)
+            } else {
+              setSelectedUser({
+                username: "Unknown User",
+                id: "12345",
+                isAdmin: false,
+              })
+            }
+            
+            modalRef.current?.showModal()
           }} />
         ))}
         <div ref={dummyDiv} />
       </div>
     </>
   )
-}
-
-function FloatingProfile(props: PublicUser) {
-  const [connection] = useStore(connectionStore)
-
-  if (connection === null) {
-    throw new Error("Shouldn't be here")
-  }
 }
 
 function Message(props: MessageRow & { onClick?: () => void }) {
