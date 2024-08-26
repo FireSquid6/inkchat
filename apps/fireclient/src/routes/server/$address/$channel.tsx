@@ -154,7 +154,6 @@ function ChatInput(props: { channelId: string }) {
         onKeyUp={(e) => {
           if (e.key === "Enter") {
             if (e.shiftKey) {
-              setMessage((prev) => prev + "\n")
               return
             }
             onClick()
