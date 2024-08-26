@@ -130,21 +130,27 @@ function Message(props: MessageRow & { onClick?: () => void }) {
 function ChatInput(props: { channelId: string }) {
   const [message, setMessage] = useState("")
   const [connection, error] = useStore(connectionStore)
+  const textarea = useRef<HTMLTextAreaElement | null>(null)
   const onClick = () => {
     if (connection === null) {
       console.error(error)
       return
     }
 
+    if (message.length === 0 || message === "\n") {
+      setMessage("")
+      return
+    }
+
     connection.sendMessage(props.channelId, message)
-    setMessage("")
+
   }
 
   return (
     <div className="flex flex-row m-2">
       <textarea
+        ref={textarea}
         value={message}
-        placeholder="Type a message..."
         onKeyUp={(e) => {
           if (e.key === "Enter") {
             if (e.shiftKey) {
@@ -152,9 +158,15 @@ function ChatInput(props: { channelId: string }) {
               return
             }
             onClick()
+            setMessage("")
           }
         }}
-        onChange={(e) => setMessage(e.target.value)}
+        onChange={(e) => {
+          const area = textarea.current!
+
+          area.style.height = "auto"
+          area.style.height = `${Math.min(area.scrollHeight, 200)}px`
+          setMessage(e.target.value)}}
         className="input input-primary input-bordered w-full mr-2"
       />
       <button
