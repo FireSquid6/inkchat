@@ -85,3 +85,30 @@ export function configFromFile(filepath: string): AppConfig {
 
   return config
 }
+
+
+export function configFromArgs(args: string[]): AppConfig {
+  const config: Record<string, any> = {}
+  for (let i = 0; i < args.length; i++) {
+    if (!args[i].startsWith("--")) {
+      continue
+    }
+    const key = args[i].slice(2)
+
+    if (i + 1 >= args.length) {
+      config[key] = true  // we assume that if the key is present, it's a boolean flag
+      continue
+    }
+
+    const value = args[i + 1]
+
+    if (value.startsWith("--")) {
+      config[key] = true
+      continue
+    }
+
+    config[key] = value
+  }
+
+  return config as AppConfig  // AppConfig is a subset of Record<string, any>
+}
